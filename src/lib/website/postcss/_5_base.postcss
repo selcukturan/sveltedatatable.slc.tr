@@ -1,0 +1,55 @@
+@layer base {
+	* {
+		@apply border-border;
+	}
+
+	html,
+	body {
+		@apply bg-surface-50 font-slc text-surface-950 text-base;
+		font-feature-settings:
+			'rlig' 1,
+			'calt' 1;
+	}
+
+	/* ############################# BEGIN selection ################################# */
+	::-moz-selection {
+		background-color: hsl(var(--primary-500) / 0.6);
+	}
+	::selection {
+		background-color: hsl(var(--primary-500) / 0.6);
+	}
+	/* ############################# EBD selection ################################### */
+
+	/* ############################# BEGIN scrollbar ################################# */
+	/* sm: 640px >  < ∞ */
+	@media screen and (min-width: 640px) {
+		/* Modern browsers with `scrollbar-*` support */
+		@supports (scrollbar-width: auto) {
+			html {
+				/* scrollbar-color: <thumb> <track>; */
+				scrollbar-color: hsl(var(--surface-500) / 0.6) transparent;
+				scrollbar-width: thin;
+				scroll-behavior: smooth;
+			}
+
+			html * {
+				scrollbar-width: inherit;
+			}
+		}
+
+		/* Legacy browsers with `::-webkit-scrollbar-*` support */
+		@supports selector(::-webkit-scrollbar) {
+			::-webkit-scrollbar-track {
+				background: transparent;
+			}
+			::-webkit-scrollbar-thumb {
+				background-color: hsl(var(--surface-500) / 0.6);
+			}
+			::-webkit-scrollbar {
+				max-width: 8px;
+				max-height: 8px;
+			}
+		}
+	}
+	/* ############################# END scrollbar ################################### */
+}
