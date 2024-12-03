@@ -16,8 +16,8 @@
 
 	const table = getTable<TData>();
 
-	const cellReferance = `r${ri}c${ci}`;
-	const focusedCellReferance =
+	const cell = `r${ri}c${ci}`;
+	const originalCell =
 		typeof row.originalRowIndex === 'number' && typeof col.originalColIndex === 'number'
 			? `r${row.originalRowIndex}c${col.originalColIndex}`
 			: '';
@@ -28,32 +28,24 @@
 
 			const { row, col, originalrowindex, originalcolindex, field } = cellNode.dataset;
 
-			const rowIndex = row ? +row : undefined;
-			const colIndex = col ? +col : undefined;
-			const originalRowIndex = originalrowindex ? +originalrowindex : undefined;
-			const originalColIndex = originalcolindex ? +originalcolindex : undefined;
-
 			if (
 				typeof field === 'undefined' ||
-				typeof rowIndex === 'undefined' ||
-				typeof colIndex === 'undefined' ||
-				typeof originalRowIndex === 'undefined' ||
-				typeof originalColIndex === 'undefined'
+				typeof row === 'undefined' ||
+				typeof col === 'undefined' ||
+				typeof originalrowindex === 'undefined' ||
+				typeof originalcolindex === 'undefined'
 			) {
 				return;
 			}
 
-			const cell = `r${rowIndex}c${colIndex}`;
-			const originalCell = `r${originalRowIndex}c${originalColIndex}`;
-
 			table.focusedCell = {
-				rowIndex,
-				colIndex,
-				cell,
-				originalCell,
-				originalRowIndex,
-				originalColIndex,
-				field
+				field,
+				rowIndex: +row,
+				colIndex: +col,
+				cell: `r${row}c${col}`,
+				originalRowIndex: +originalrowindex,
+				originalColIndex: +originalcolindex,
+				originalCell: `r${originalrowindex}c${originalcolindex}`
 			};
 		};
 
@@ -73,57 +65,62 @@
 	style:grid-row-start="var(--slc-grid-row-start)"
 	class:slc-table-td={true}
 	class={classes}
-	class:slc-table-td-focusedCell={table?.focusedCell?.originalCell === focusedCellReferance
-		? true
-		: false}
-	tabindex={table?.focusedCell?.originalCell === focusedCellReferance ? 0 : -1}
-	aria-selected={table?.focusedCell?.originalCell === focusedCellReferance ? 'true' : 'false'}
+	class:slc-table-td-focusedCell={table?.focusedCell?.originalCell === originalCell ? true : false}
+	tabindex={table?.focusedCell?.originalCell === originalCell ? 0 : -1}
+	aria-selected={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
 	aria-colindex={ci}
 	data-col={ci}
 	data-row={ri}
-	data-cell={cellReferance}
+	data-cell={cell}
 	data-originalrowindex={row.originalRowIndex}
 	data-originalcolindex={col.originalColIndex}
-	data-originalcell={focusedCellReferance}
+	data-originalcell={originalCell}
 	data-field={col?.field}
 	spellcheck="false"
 	{...attributes}
 >
-	<div class="flex h-full w-full justify-between">
-		<div class="hidden items-center">x</div>
+	<div style="display: flex; height: 100%; width: 100%; justify-content: space-between;">
+		<div style="display: none; align-items: center;">x</div>
 		<div
+			style="display: flex; min-width: 0px; flex: 1 1 0%; align-items: center;"
 			style:justify-content={col.align === 'center'
 				? 'center'
 				: col.align === 'right'
 					? 'flex-end'
 					: 'flex-start'}
-			class="flex min-w-0 flex-1 items-center"
 		>
-			<p class="overflow-hidden text-ellipsis whitespace-nowrap">
+			<p style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 				{@render children?.()}
 			</p>
 		</div>
-		<div class="hidden items-center">x</div>
+		<div style="display: none; align-items: center;">x</div>
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	.slc-table-td {
-		@apply relative;
-		@apply z-[2];
-		@apply select-none;
-		@apply overflow-hidden;
-		@apply border-b;
-		@apply border-r;
-		@apply p-0;
-		@apply px-2;
-		@apply outline-none;
-		@apply [&:nth-last-child(1)]:border-l;
-		@apply [&:nth-last-child(2)]:border-r-0;
+		position: relative;
+		z-index: 2;
+		user-select: none;
+		overflow: hidden;
+		border-bottom-width: 1px;
+		border-right-width: 1px;
+		border-style: solid;
+		padding: 0px;
+		padding-left: 0.5rem; /* 8px */
+		padding-right: 0.5rem; /* 8px */
+		outline: 2px solid transparent;
+		outline-offset: 2px;
+	}
+	.slc-table-td:nth-last-child(1) {
+		border-left-width: 1px;
+	}
+	.slc-table-td:nth-last-child(2) {
+		border-right-width: 0px;
 	}
 	.slc-table-td-focusedCell {
-		@apply outline-2;
-		@apply -outline-offset-2;
-		@apply outline-amber-500;
+		outline-width: 2px;
+		outline-offset: -2px;
+		outline-color: #f59e0b;
 	}
 </style>

@@ -34,8 +34,8 @@
 	{@render children?.()}
 </div>
 
-<style lang="postcss">
+<style>
 	.slc-table-trd {
-		@apply contents;
+		display: contents;
 	}
 </style>

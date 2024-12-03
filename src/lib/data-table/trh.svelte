@@ -21,8 +21,8 @@
 	{@render children?.()}
 </div>
 
-<style lang="postcss">
+<style>
 	.slc-table-trh {
-		@apply contents;
+		display: contents;
 	}
 </style>

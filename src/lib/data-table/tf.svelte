@@ -30,10 +30,10 @@
 	data-originalcolindex={col.originalColIndex}
 	{...attributes}
 >
-	<div class="flex h-full w-full justify-between">
-		<div class="hidden items-center">x</div>
+	<div style="display: flex; height: 100%; width: 100%; justify-content: space-between;">
+		<div style="display: none; align-items: center;">x</div>
 		<div
-			class="flex min-w-0 flex-1 items-center"
+			style="display: flex; min-width: 0px; flex: 1 1 0%; align-items: center;"
 			style:justify-content={col.alignFooter
 				? col.alignFooter === 'center'
 					? 'center'
@@ -46,27 +46,34 @@
 						? 'flex-end'
 						: 'flex-start'}
 		>
-			<p class="overflow-hidden text-ellipsis whitespace-nowrap">
+			<p style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 				{@render children?.()}
 			</p>
 		</div>
-		<div class="hidden items-center">x</div>
+		<div style="display: none; align-items: center;">x</div>
 	</div>
 </div>
 
-<style lang="postcss">
+<style>
 	.slc-table-tf {
-		@apply sticky;
-		/* @apply bottom-0; */
-		@apply z-[4];
-		@apply select-none;
-		@apply overflow-hidden;
-		@apply border-b;
-		@apply border-r;
-		@apply border-solid;
-		@apply px-2;
-		@apply outline-none;
-		@apply [&:nth-last-child(1)]:border-l;
-		@apply [&:nth-last-child(2)]:border-r-0;
+		position: sticky;
+		/* bottom: 0px; */
+		z-index: 4;
+		user-select: none;
+		overflow: hidden;
+		border-bottom-width: 1px;
+		border-right-width: 1px;
+		border-style: solid;
+		padding: 0px;
+		padding-left: 0.5rem; /* 8px */
+		padding-right: 0.5rem; /* 8px */
+		outline: 2px solid transparent;
+		outline-offset: 2px;
+	}
+	.slc-table-tf:nth-last-child(1) {
+		border-left-width: 1px;
+	}
+	.slc-table-tf:nth-last-child(2) {
+		border-right-width: 0px;
 	}
 </style>

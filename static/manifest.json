@@ -1,6 +1,6 @@
 {
-	"name": "SLC Web Applications",
-	"short_name": "SLC Web Apps",
+	"name": "SLC Svelte Virtul Data Table",
+	"short_name": "SLC Data Table",
 	"display": "standalone",
 	"start_url": "/",
 	"theme_color": "#000000",

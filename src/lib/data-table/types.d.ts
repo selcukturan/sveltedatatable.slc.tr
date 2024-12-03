@@ -32,23 +32,26 @@ export type Footer<TData> = {
 	[K in keyof TData]?: string;
 };
 
-export type DefaultSettings<TData> = {
-	selectionColumn: boolean;
-	actionColumn: boolean;
-	theadRowHeight: number;
-	tbodyRowHeight: number;
-	tfootRowHeight: number;
+export type Settings<TData> = {
+	width?: string;
+	height?: string;
+	overscanThreshold?: number;
+	selectionColumn?: boolean;
+	actionColumn?: boolean;
+	theadRowHeight?: number;
+	tbodyRowHeight?: number;
+	tfootRowHeight?: number;
 	columns: Column<TData>[];
-	footers: Footer<TData>[];
+	footers?: Footer<TData>[];
 };
-export type Settings<TData> = Partial<DefaultSettings<TData>>;
+export type DefaultSettings<TData> = Required<Settings<TData>>;
 
 export type FocucedCell<TData> = {
+	field: Field<TData>;
 	rowIndex: number;
 	colIndex: number;
 	cell: string;
-	originalCell: string;
 	originalRowIndex: number;
 	originalColIndex: number;
-	field: Field<TData>;
+	originalCell: string;
 };

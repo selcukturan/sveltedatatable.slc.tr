@@ -15,8 +15,6 @@
 		class?: string;
 		tableContainerClass?: string;
 		containerClass?: string;
-		height?: string;
-		width?: string;
 	};
 	const {
 		data,
@@ -28,12 +26,11 @@
 		class: tableClass,
 		tableContainerClass,
 		containerClass,
-		height = '100%',
-		width = '100%',
 		...attributes
 	}: Props = $props();
 
 	const table = getTable<TData>();
+	const headerCount = 1;
 
 	const scrollAction = (tableNode: HTMLDivElement) => {
 		let isScrolling: boolean = false;
@@ -48,22 +45,6 @@
 			table.scrollTop = table.lastScrollTop; // scrollTop değiştiğinde `data` yeniden hesaplanır
 			await tick(); // table.scrollTop state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
 			isScrolling = false;
-
-			/* const scrollableHeight = scrollHeight - clientHeight;
-			const scrollableWidth = scrollWidth - clientWidth;
-			const scrollableTop = Math.floor(scrollTop);
-			const scrollableLeft = Math.floor(scrollLeft); */
-
-			// iOS cihazlardaki bounce effect kontrolü.
-			// Scroll yapılabilir alanın dışına çıkıldığında `tableNode.scrollTo` manuel çalıştırılmaz.
-			/* if (
-				scrollableTop >= 0 &&
-				scrollableTop <= scrollableHeight &&
-				scrollableLeft >= 0 &&
-				scrollableLeft <= scrollableWidth
-			) {
-				tableNode.scrollTo({ top: table.scrollTop });
-			} */
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
@@ -76,13 +57,15 @@
 	};
 </script>
 
-<div class:slc-table-main={true} class={containerClass} style:width style:height>
+<div
+	class:slc-table-main={true}
+	class={containerClass}
+	style:width={table.settings.width}
+	style:height={table.settings.height}
+>
 	{@render toolbar?.()}
 	<div class:slc-table-container={true} class={tableContainerClass}>
-		<div
-			style:display={table.setData.length > 0 ? 'none' : 'flex'}
-			class="pointer-events-none absolute z-50 flex h-full w-full items-center justify-center bg-transparent"
-		>
+		<div style:display={table.setData.length > 0 ? 'none' : 'flex'} class:slc-no-data={true}>
 			No data to display
 		</div>
 		<div
@@ -94,10 +77,7 @@
 			class={tableClass}
 			style:grid-template-rows={table.gridTemplateRows}
 			style:grid-template-columns={table.gridTemplateColumns}
-			data-len={table.footers.length * table.settings.tfootRowHeight}
-			data-len2={table.settings.tfootRowHeight}
-			data-rowh={table.settings.theadRowHeight}
-			style:scroll-padding-block={`${table.settings.theadRowHeight}px ${table.footers.length * table.settings.tfootRowHeight}px`}
+			style:scroll-padding-block={`${headerCount * table.settings.theadRowHeight}px ${table.footers.length * table.settings.tfootRowHeight}px`}
 			{...attributes}
 		>
 			{@render thead?.()}
@@ -105,6 +85,7 @@
 			{#each table.data as row, rowindex (row.id)}
 				{@render tbody?.(row, rowindex)}
 			{/each}
+
 			{#if table.setData.length > 0}
 				{#each table.footers as foot, footerindex}
 					{@render tfoot?.(foot, footerindex)}
@@ -115,21 +96,32 @@
 	{@render statusbar?.()}
 </div>
 
-<style lang="postcss">
+<style>
 	.slc-table-main {
-		@apply flex;
-		@apply flex-col;
-		@apply overflow-hidden;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 	}
 	.slc-table-container {
-		@apply relative;
-		@apply flex-1;
-		@apply overflow-hidden;
+		position: relative;
+		flex: 1 1 0%;
+		overflow: hidden;
 	}
 	.slc-table {
-		@apply grid;
-		@apply h-full;
-		@apply w-full;
-		@apply overflow-auto;
+		display: grid;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+	}
+	.slc-no-data {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: transparent;
+		height: 100%;
+		width: 100%;
+		pointer-events: none;
+		position: absolute;
+		z-index: 50;
 	}
 </style>

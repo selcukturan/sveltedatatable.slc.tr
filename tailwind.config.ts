@@ -1,3 +1,4 @@
+import { fontFamily } from 'tailwindcss/defaultTheme';
 import type { Config } from 'tailwindcss';
 import typography from '@tailwindcss/typography';
 import forms from '@tailwindcss/forms';
@@ -278,28 +279,9 @@ export default {
 				lg: 'var(--token-radius)'
 			},
 			fontFamily: {
-				slc: ['system-ui', 'sans-serif'] // `font-slc` class
+				sans: [...fontFamily.sans]
 			}
 		}
 	},
-	plugins: [
-		typography,
-		forms,
-		({ addUtilities }) => {
-			addUtilities({
-				'.slc-image-select-none': {
-					'user-select': 'none', // Resmin secilemez olmasini saglar
-					'-webkit-user-drag': 'none', // WebKit tabanli tarayicilarda surukleme olayini engeller
-					'-webkit-touch-callout': 'none' // WebKit tabanli tarayicilarda dokunarak cagirma olayini engeller
-				},
-				'.slc-hide-scrollbar': {
-					'-ms-overflow-style': 'none',
-					'scrollbar-width': 'none'
-				},
-				'.slc-hide-scrollbar::-webkit-scrollbar': {
-					display: 'none'
-				}
-			});
-		}
-	]
+	plugins: [typography, forms]
 } satisfies Config;

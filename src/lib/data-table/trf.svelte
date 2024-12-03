@@ -30,8 +30,8 @@
 	{@render children?.()}
 </div>
 
-<style lang="postcss">
+<style>
 	.slc-table-trf {
-		@apply contents;
+		display: contents;
 	}
 </style>

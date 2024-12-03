@@ -4,8 +4,8 @@
 
 <footer
 	data-component="Footer"
-	class="border-t border-border/70 bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+	class="bg-background/95 supports-[backdrop-filter]:bg-background/60 border-t border-border/70 p-4 backdrop-blur"
 >
 	<!-- {@render children?.()} -->
-	(v.0.0.6)
+	(v.0.0.7)
 </footer>
