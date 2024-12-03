@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { TableShowCase } from '$lib/website/components/base/table-showcase';
 	import { Page, Main, MainContent } from '$lib/website/templates/base';
-	import { BaseDataTable, type Settings } from '$lib/data-table/provider';
+	import { BaseDataTable, type Settings } from '$lib/data-table/providers';
 	import { browser } from '$app/environment';
 
 	type DataType = {

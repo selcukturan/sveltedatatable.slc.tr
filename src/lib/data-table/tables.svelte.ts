@@ -31,7 +31,7 @@ class Table<TData extends Row> {
 	// derived columns. kolon bilgileri okurken bu değişken kullanılacak. `table.columns`
 	columns = $derived(
 		this.settings.columns
-			?.map((col, index) => {
+			.map((col, index) => {
 				return {
 					...col,
 					originalColIndex: index

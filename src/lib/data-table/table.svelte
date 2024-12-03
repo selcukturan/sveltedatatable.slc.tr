@@ -82,12 +82,12 @@
 		>
 			{@render thead?.()}
 
-			{#each table.data as row, rowindex (row.id)}
+			{#each table.data as row, rowindex (row.originalRowIndex)}
 				{@render tbody?.(row, rowindex)}
 			{/each}
 
 			{#if table.setData.length > 0}
-				{#each table.footers as foot, footerindex}
+				{#each table.footers as foot, footerindex (footerindex)}
 					{@render tfoot?.(foot, footerindex)}
 				{/each}
 			{/if}
