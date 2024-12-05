@@ -2,14 +2,24 @@
 	* {
 		@apply border-border;
 	}
+	body {
+		@apply bg-surface-50 text-surface-950;
+		/* font-feature-settings: "rlig" 1, "calt" 1; */
+		font-synthesis-weight: none;
+		text-rendering: optimizeLegibility;
+	}
 
-	html,
+	html {
+		-webkit-tap-highlight-color: rgba(128, 128, 128, 0.5);
+	}
+
+	/* html,
 	body {
 		@apply bg-surface-50 text-base text-surface-950;
 		font-feature-settings:
 			'rlig' 1,
 			'calt' 1;
-	}
+	} */
 
 	/* ############################# BEGIN selection ################################# */
 	::-moz-selection {

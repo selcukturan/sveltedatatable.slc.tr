@@ -1,0 +1,164 @@
+/* Genel Stil */
+.slc-markdown {
+	/* font-family: Arial, sans-serif;
+	line-height: 1.6; */
+	color: theme(backgroundColor.surface.700);
+	/* max-width: 800px;
+	margin: 0 auto;
+	padding: 20px; */
+}
+
+/* Başlıklar */
+.slc-markdown h1,
+.slc-markdown h2,
+.slc-markdown h3,
+.slc-markdown h4,
+.slc-markdown h5,
+.slc-markdown h6 {
+	font-weight: bold;
+	margin-top: 1.5em;
+	margin-bottom: 0.5em;
+}
+
+.slc-markdown h1 {
+	font-size: 2em;
+	border-color: theme(backgroundColor.surface.200);
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	padding-bottom: 0.3em;
+}
+
+.slc-markdown h2 {
+	font-size: 1.75em;
+	border-color: theme(backgroundColor.surface.200);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	padding-bottom: 0.3em;
+}
+
+.slc-markdown h3 {
+	font-size: 1.5em;
+}
+
+.slc-markdown h4 {
+	font-size: 1.25em;
+}
+
+.slc-markdown h5 {
+	font-size: 1em;
+}
+
+.slc-markdown h6 {
+	font-size: 0.875em;
+	color: #777;
+}
+
+/* Paragraflar */
+.slc-markdown p {
+	margin: 1em 0;
+}
+
+/* Listeler */
+.slc-markdown ul,
+.slc-markdown ol {
+	/* margin: 1em 0; */
+	padding-left: 1em;
+}
+
+.slc-markdown ul li,
+.slc-markdown ol li {
+	margin: 0.5em 0;
+}
+
+.slc-markdown ul > li:before {
+	/* // The "-" will be added as a prefix for every unordered list element. */
+	content: '- ';
+	/*  // The element itself does not generate any box
+  // but its children's boxes will appear as if they were direct
+  // children of the element's parent. */
+	display: contents;
+}
+
+.slc-markdown ol {
+	/* // Each time a new "ol" appears, the counter resets. */
+	counter-reset: numbers;
+}
+
+.slc-markdown ol > li {
+	/* // When an "li" element occurs directly under "ol", the counter is incremented. */
+	counter-increment: numbers;
+}
+
+.slc-markdown ol > li::before {
+	/* // Assigning marker as an incremented number. */
+	content: counter(numbers) '. ';
+}
+
+.slc-markdown li ol,
+.slc-markdown li ul {
+	/* // Every nested list inside "li" will have an increased margin. */
+	margin-left: 16px;
+}
+
+/* Bağlantılar */
+.slc-markdown a {
+	color: red;
+	text-decoration: none;
+}
+
+.slc-markdown a:hover {
+	text-decoration: underline;
+}
+
+/* Kod Blokları */
+.slc-markdown pre {
+	background: #f5f5f5;
+	padding: 1em;
+	overflow-x: auto;
+	border-radius: 5px;
+}
+
+.slc-markdown code {
+	background: theme(backgroundColor.surface.200);
+	color: theme(textColor.surface.800);
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-family: 'Courier New', Courier, monospace;
+}
+
+/* Blok Alıntılar */
+.slc-markdown blockquote {
+	margin: 1em 0;
+	padding: 0.5em 1em;
+	border-left-width: 5px;
+	border-left-style: solid;
+	border-left-color: theme(backgroundColor.primary.500);
+	color: theme(backgroundColor.surface.800);
+	background: theme(backgroundColor.surface.200);
+}
+
+/* Tablolar */
+.slc-markdown table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 1em 0;
+}
+
+.slc-markdown th,
+.slc-markdown td {
+	border-width: 1px;
+	border-style: solid;
+	border-color: theme(backgroundColor.surface.300);
+	padding: 0.5em 1em;
+}
+
+.slc-markdown th {
+	background: theme(backgroundColor.surface.200);
+	font-weight: bold;
+}
+
+/* Resimler */
+.slc-markdown img {
+	max-width: 100%;
+	height: auto;
+}

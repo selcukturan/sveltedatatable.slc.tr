@@ -5,8 +5,99 @@ date: '2023-10-01'
 
 # { title }
 
-SLC Data Table'ın `vertical virtual scroll`daki sırrı Svelte'in `each` bloklarıdır. Anahtar (key) kullanımı, her bir öğeyi benzersiz bir şekilde tanımlar ve Svelte'in listeyi daha verimli bir şekilde güncellemesine yardımcı olur. Örneğin, bir satır öğesi eklendiğinde veya çıkarıldığında, Svelte sadece değişen öğeleri günceller ve diğer öğeleri olduğu gibi bırakır. Bu, performansı artırır ve gereksiz DOM manipülasyonlarını önler. Eğer `each` kullanımında anahtar (key) kullanılmazsa, Svelte veri değiştiğinde listeyi farklılaştırmak için değişiklikleri sondaki öğelere ekleyerek veya sondaki öğelerden kaldırarak yapacaktır. Tabloda dikey scroll yapıldığında `$derived` olarak ayarlanmış olan `table.data` yeniden hesaplanacak, `table.data.originalRowIndex` değirini takip eden `each` bloğu sadece yeni gelen satırları dom'a ekleyecek ve çıkması gerekenleri çıkartacaktır.
+[An Internal Link](/)
 
-Buraya kadar `vertical virtual scroll` için Svelte'ten destek aldım ve işin Javascript ve HTML kısmını tasarladım.
+# Başlık 1
 
-Sırada CSS ile ekran yerleşimlerini doğru bir şekilde ayarlamak kaldı. Bunun için klasik `<table>` etiketini kullanmak yerine. `display: grid;` ve `role="grid"` olarak ayarlanmış `<div>` kullandım. Bunun avantajı `role="grid"` olan tablo elementinde `grid-template-rows` stiliyle tüm satırları rezerve ettiktten sonra `role="gridcell"` olan hücre elementinde satır sıralarını `grid-row-start` stili ile aldım. Hücre elementine `grid-row-start` değerini, `role="row"` olan satır elementinden aldım. `grid-row-start` stili hücrenin rezerve edilmiş bölümde yerinin neresi olduğunu belirtir. Svelte her scroll'da veriyi güncellediğinde, görünür olan hücreler tablo alanı içinde tam da olması gereken yerde görünür olur.
+## Başlık 2
+
+### Başlık 3
+
+#### Başlık 4
+
+##### Başlık 5
+
+###### Başlık 6
+
+---
+
+**Kalın metin**
+
+_İtalik metin_
+
+~~Üstü çizili metin~~
+
+---
+
+> Bu bir blok alıntıdır.
+>
+> İkinci satır.
+
+---
+
+- Liste öğesi 1
+- Liste öğesi 2
+  1. Alt liste öğesi 1
+  2. Alt liste öğesi 2
+
+1. Numaralı liste öğesi 1
+2. Numaralı liste öğesi 2
+   - Alt numaralı liste öğesi 1
+   - Alt numaralı liste öğesi 2
+
+---
+
+1. First Item
+   - Subitem A
+   - Subitem B
+     1. Sub-subitem I
+     2. Sub-subitem II
+   - Subitem C
+
+---
+
+Colons can be used to align columns.
+
+| Tables        |      Are      |   Cool |
+| ------------- | :-----------: | -----: |
+| col 3 is      | right-aligned | selçuk |
+| col 2 is      |   centered    |        |
+| zebra stripes |   are neat    |        |
+
+The outer pipes (|) are optional, and you don't need to make the raw Markdown line up prettily. You can also use inline Markdown.
+
+| Markdown | Less      | Pretty     |
+| -------- | --------- | ---------- |
+| _Still_  | `renders` | **nicely** |
+| 1        | 2         | 3          |
+
+---
+
+`inline code`
+
+```javascript
+// Bu bir kod bloğudur
+<script>
+  import Prism from 'prismjs';
+  let code = 'console.log("Hello world");';
+</script>
+
+<Main>
+	<MainContent>
+		<p>introduction</p>
+		<a href="/docs/installation">installation</a>
+		<a href="/">home</a>
+		<div class="slc-markdown">
+			<Test />
+			<Test />
+			<Test />
+		</div>
+    <div>
+			{@html Prism.highlight(code, Prism.languages.javascript)}
+		</div>
+	</MainContent>
+	{#snippet sidebarRight()}
+		<SidebarRight />
+	{/snippet}
+</Main>
+```
