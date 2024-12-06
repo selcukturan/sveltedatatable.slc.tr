@@ -1,7 +1,7 @@
 export type RowValue = unknown | object | any[];
 export type Row = {
 	[key: string]: RowValue;
-	originalIndex?: number;
+	oi?: number; // original index
 };
 
 export type Field<TData> = keyof TData;
@@ -25,7 +25,7 @@ export type Column<TData> = {
 	alignHeader?: 'left' | 'center' | 'right';
 	alignFooter?: 'left' | 'center' | 'right';
 	width?: Width;
-	originalIndex?: number;
+	oi?: number; // original index
 };
 
 export type Footer<TData> = {

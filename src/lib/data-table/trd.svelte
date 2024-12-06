@@ -16,10 +16,7 @@
 
 	const headerCount = 1;
 	const indexToRow = 1;
-	const gridRowStart =
-		typeof row.originalIndex === 'number'
-			? row.originalIndex + headerCount + indexToRow
-			: undefined;
+	const gridRowStart = typeof row.oi === 'number' ? row.oi + headerCount + indexToRow : undefined;
 </script>
 
 <div
@@ -28,7 +25,7 @@
 	class={classes}
 	style:--slc-grid-row-start={gridRowStart}
 	aria-rowindex={ri}
-	data-originalrowindex={row.originalIndex}
+	data-originalrowindex={row.oi}
 	{...attributes}
 >
 	{@render children?.()}

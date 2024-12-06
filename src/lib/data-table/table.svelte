@@ -36,14 +36,14 @@
 		let isScrolling: boolean = false;
 
 		const setScrollTop = async () => {
-			if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıyı atlar
+			if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
 			const { scrollTop } = tableNode;
-			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır
+			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
 
 			isScrolling = true;
 			table.lastScrollTop = scrollTop;
-			table.scrollTop = table.lastScrollTop; // scrollTop değiştiğinde `data` yeniden hesaplanır
-			await tick(); // table.scrollTop state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
+			table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
+			await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
 			isScrolling = false;
 		};
 
@@ -65,7 +65,7 @@
 >
 	{@render toolbar?.()}
 	<div class:slc-table-container={true} class={tableContainerClass}>
-		<div style:display={table.setData.length > 0 ? 'none' : 'flex'} class:slc-no-data={true}>
+		<div style:display={table.setData.length > 0 ? 'none' : 'flex'} class:slc-table-no-data={true}>
 			No data to display
 		</div>
 		<div
@@ -82,7 +82,7 @@
 		>
 			{@render thead?.()}
 
-			{#each table.data as row, rowindex (row.originalIndex)}
+			{#each table.data as row, rowindex (row.oi)}
 				{@render tbody?.(row, rowindex)}
 			{/each}
 
@@ -113,7 +113,7 @@
 		height: 100%;
 		overflow: auto;
 	}
-	.slc-no-data {
+	.slc-table-no-data {
 		display: flex;
 		align-items: center;
 		justify-content: center;

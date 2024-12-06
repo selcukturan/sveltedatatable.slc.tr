@@ -15,7 +15,7 @@
 <Table {data} class="bg-zinc-50 dark:bg-zinc-950" >
 	{#snippet thead()}
 		<Trh>
-			{#each table.columns as col, ci (col.originalIndex)}
+			{#each table.columns as col, ci (col.oi)}
 				{@const header = col.label}
 				<Th {data} {col} {ci} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
 					{header}
@@ -25,7 +25,7 @@
 	{/snippet}
 	{#snippet tbody(row, ri)}
 		<Trd {row} {ri}>
-			{#each table.columns as col, ci (col.originalIndex)}
+			{#each table.columns as col, ci (col.oi)}
 				{@const cell = row[col.field]}
 				<Td {col} {ci} {row} {ri} class="border-zinc-200 dark:border-zinc-700">
 					{cell}
@@ -35,8 +35,8 @@
 	{/snippet}
 	{#snippet tfoot(foot, fi)}
 		<Trf {data} {fi}>
-			{#each table.columns as col, ci (col.originalIndex)}
-				{@const footer = foot[table.columns[ci].field]}
+			{#each table.columns as col, ci (col.oi)}
+				{@const footer = foot[col.field]}
 				<Tf {data} {col} {ci} {foot} {fi} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
 					{footer}
 				</Tf>

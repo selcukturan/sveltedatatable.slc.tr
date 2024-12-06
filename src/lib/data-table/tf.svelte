@@ -27,7 +27,7 @@
 	style:bottom
 	data-foot={fi}
 	data-col={ci}
-	data-originalcolindex={col.originalIndex}
+	data-originalcolindex={col.oi}
 	{...attributes}
 >
 	<div style="display: flex; height: 100%; width: 100%; justify-content: space-between;">

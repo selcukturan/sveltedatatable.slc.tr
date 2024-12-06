@@ -18,9 +18,7 @@
 
 	const cell = `r${ri}c${ci}`;
 	const originalCell =
-		typeof row.originalIndex === 'number' && typeof col.originalIndex === 'number'
-			? `r${row.originalIndex}c${col.originalIndex}`
-			: '';
+		typeof row.oi === 'number' && typeof col.oi === 'number' ? `r${row.oi}c${col.oi}` : '';
 
 	const focusAction = (cellNode: HTMLDivElement) => {
 		const handleFocus = () => {
@@ -72,8 +70,8 @@
 	data-col={ci}
 	data-row={ri}
 	data-cell={cell}
-	data-originalrowindex={row.originalIndex}
-	data-originalcolindex={col.originalIndex}
+	data-originalrowindex={row.oi}
+	data-originalcolindex={col.oi}
 	data-originalcell={originalCell}
 	data-field={col?.field}
 	spellcheck="false"

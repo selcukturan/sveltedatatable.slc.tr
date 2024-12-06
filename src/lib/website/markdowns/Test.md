@@ -89,10 +89,11 @@ The outer pipes (|) are optional, and you don't need to make the raw Markdown li
 	});
 </script>
 
+<!-- prettier-ignore -->
 <Table {data}>
 	{#snippet thead()}
 		<Trh>
-			{#each table.columns as col, ci (col.originalIndex)}
+			{#each table.columns as col, ci (col.oi)}
 				{@const header = col.label}
 				<Th {data} {col} {ci}>
 					{header}
@@ -102,7 +103,7 @@ The outer pipes (|) are optional, and you don't need to make the raw Markdown li
 	{/snippet}
 	{#snippet tbody(row, ri)}
 		<Trd {row} {ri}>
-			{#each table.columns as col, ci (col.originalIndex)}
+			{#each table.columns as col, ci (col.oi)}
 				{@const cell = row[col.field]}
 				<Td {col} {ci} {row} {ri}>
 					{cell}
@@ -112,8 +113,8 @@ The outer pipes (|) are optional, and you don't need to make the raw Markdown li
 	{/snippet}
 	{#snippet tfoot(foot, fi)}
 		<Trf {data} {fi}>
-			{#each table.columns as col, ci (col.originalIndex)}
-				{@const footer = foot[table.columns[ci].field]}
+			{#each table.columns as col, ci (col.oi)}
+				{@const footer = foot[col.field]}
 				<Tf {data} {col} {ci} {foot} {fi}>
 					{footer}
 				</Tf>
