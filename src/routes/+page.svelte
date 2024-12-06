@@ -3,6 +3,7 @@
 	import { Page, Main, MainContent } from '$lib/website/templates/base';
 	import { BaseDataTable, type Settings } from '$lib/data-table/providers';
 	import { browser } from '$app/environment';
+	import { parse } from 'svelte/compiler';
 
 	type DataType = {
 		sira: string;
@@ -12,7 +13,7 @@
 		bolge: string;
 		il: string;
 		ilce: string;
-		tutar: string;
+		tutar: number;
 	};
 
 	function generateData(count: number): DataType[] {
@@ -27,7 +28,7 @@
 				bolge: 'IC EGE',
 				il: 'DENIZLI',
 				ilce: 'CAL',
-				tutar: (Math.random() * 100000).toFixed(2)
+				tutar: parseFloat((Math.random() * 100000).toFixed(2))
 			});
 		}
 		return data;
@@ -63,7 +64,7 @@
 			bolge: 'IC EGE',
 			il: 'DENIZLI',
 			ilce: 'CAL',
-			tutar: (Math.random() * 100000).toFixed(2)
+			tutar: parseFloat((Math.random() * 100000).toFixed(2))
 		};
 	};
 	const hiddenSecondColumn = () => {

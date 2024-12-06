@@ -34,7 +34,7 @@ class Table<TData extends Row> {
 			.map((col, index) => {
 				return {
 					...col,
-					originalColIndex: index
+					originalIndex: index
 				};
 			})
 			.filter((column) => !column.hidden)
@@ -70,7 +70,7 @@ class Table<TData extends Row> {
 		return this.setData.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1).map((row, index) => {
 			return {
 				...row,
-				originalRowIndex: rowOverscanStartIndex + index
+				originalIndex: rowOverscanStartIndex + index
 			};
 		});
 	});

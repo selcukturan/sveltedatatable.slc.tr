@@ -20,7 +20,7 @@
 	class={classes}
 	style:grid-row-start="var(--slc-grid-row-start)"
 	data-col={ci}
-	data-originalcolindex={col.originalColIndex}
+	data-originalcolindex={col.originalIndex}
 	{...attributes}
 >
 	<div style="display: flex; height: 100%; width: 100%; justify-content: space-between;">

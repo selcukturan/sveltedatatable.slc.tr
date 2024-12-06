@@ -82,7 +82,7 @@
 		>
 			{@render thead?.()}
 
-			{#each table.data as row, rowindex (row.originalRowIndex)}
+			{#each table.data as row, rowindex (row.originalIndex)}
 				{@render tbody?.(row, rowindex)}
 			{/each}
 

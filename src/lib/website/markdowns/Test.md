@@ -75,11 +75,60 @@ The outer pipes (|) are optional, and you don't need to make the raw Markdown li
 
 `inline code`
 
-```javascript
-// Bu bir kod bloğudur
-<script>
-  import Prism from 'prismjs';
-  let code = 'console.log("Hello world");';
+```svelte
+<script lang="ts" generics="TData extends Row">
+	import { setTable, type Settings, type Row } from '../tables.svelte';
+	import { Table, Th, Td, Tf, Trh, Trd, Trf } from '..';
+
+	const { data, settings }: { data: TData[]; settings: Settings<TData> } = $props();
+	const table = setTable<TData>(data, settings);
+
+	$effect(() => {
+		table.setAllData(data);
+		table.setAllSettings(settings);
+	});
+</script>
+
+<Table {data}>
+	{#snippet thead()}
+		<Trh>
+			{#each table.columns as col, ci (col.originalIndex)}
+				{@const header = col.label}
+				<Th {data} {col} {ci}>
+					{header}
+				</Th>
+			{/each}
+		</Trh>
+	{/snippet}
+	{#snippet tbody(row, ri)}
+		<Trd {row} {ri}>
+			{#each table.columns as col, ci (col.originalIndex)}
+				{@const cell = row[col.field]}
+				<Td {col} {ci} {row} {ri}>
+					{cell}
+				</Td>
+			{/each}
+		</Trd>
+	{/snippet}
+	{#snippet tfoot(foot, fi)}
+		<Trf {data} {fi}>
+			{#each table.columns as col, ci (col.originalIndex)}
+				{@const footer = foot[table.columns[ci].field]}
+				<Tf {data} {col} {ci} {foot} {fi}>
+					{footer}
+				</Tf>
+			{/each}
+		</Trf>
+	{/snippet}
+</Table>
+```
+
+---
+
+```svelte
+<script lang="ts">
+	import Test from '$lib/website/markdowns/Test.md';
+	import { Main, MainContent, SidebarRight } from '$lib/website/templates/base';
 </script>
 
 <Main>
@@ -91,9 +140,6 @@ The outer pipes (|) are optional, and you don't need to make the raw Markdown li
 			<Test />
 			<Test />
 			<Test />
-		</div>
-    <div>
-			{@html Prism.highlight(code, Prism.languages.javascript)}
 		</div>
 	</MainContent>
 	{#snippet sidebarRight()}

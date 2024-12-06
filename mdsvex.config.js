@@ -1,13 +1,21 @@
-import { defineMDSveXConfig as defineConfig } from 'mdsvex';
-/* import { fileURLToPath } from 'url';
-import * as path from 'path'; */
+import { defineMDSveXConfig as defineConfig, escapeSvelte } from 'mdsvex';
+import { createHighlighter } from 'shiki';
 
-/* const dirname = path.resolve(fileURLToPath(import.meta.url), '../'); */
+const theme = 'one-dark-pro';
+const highlighter = await createHighlighter({
+    themes: [theme],
+    langs: ['javascript', 'typescript', 'svelte']
+});
 
 const config = defineConfig({
-    extensions: ['.md', '.svx'],
-    smartypants: { dashes: 'oldschool' }/* ,
-    layout: { blog: path.join(dirname, './src/routes/blog/_layout.svelte') } */
+    extensions: ['.md'],
+    smartypants: { dashes: 'oldschool' },
+    highlight: {
+        highlighter: async (code, lang = 'text') => {
+            const html = escapeSvelte(highlighter.codeToHtml(code, { lang, theme }));
+            return `{@html \`${html}\` }`;
+        }
+    }
 });
 
 export default config;
