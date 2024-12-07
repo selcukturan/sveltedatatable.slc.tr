@@ -9,6 +9,10 @@
 		table.setAllData(data);
 		table.setAllSettings(settings);
 	});
+
+	function toNumber(value: unknown): number {
+		return typeof value === 'number' ? value : 0;
+	}
 </script>
 
 <!-- prettier-ignore -->
@@ -38,7 +42,7 @@
 			{#each table.columns as col, ci (col.oi)}
 				{@const footer = foot[col.field]}
 				<Tf {data} {col} {ci} {foot} {fi} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
-					{footer}
+					{table.setData.reduce((acc, row) => acc + toNumber(row[col.field]), 0) || 'sum'}					
 				</Tf>
 			{/each}
 		</Trf>

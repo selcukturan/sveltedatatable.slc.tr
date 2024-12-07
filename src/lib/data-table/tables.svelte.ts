@@ -94,8 +94,9 @@ class Table<TData extends Row> {
 				: ``;
 		return `${repeatThead} ${repeatTbody} ${repeatTfoot}`;
 	});
-	gridTemplateColumns: string = $derived(this.columns.map(() => `150px`).join(' '));
-
+	gridTemplateColumns: string = $derived(
+		this.columns.map((col) => (col.width ? col.width : `150px`)).join(' ')
+	);
 	setAllData = (data: TData[]) => {
 		this.setData = data;
 	};

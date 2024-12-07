@@ -1,70 +1,55 @@
 <script lang="ts">
 	import { TableShowCase } from '$lib/website/components/base/table-showcase';
 	import { Page, Main, MainContent } from '$lib/website/templates/base';
-	import { BaseDataTable, type Settings } from '$lib/data-table/providers';
-	import { browser } from '$app/environment';
-	import { parse } from 'svelte/compiler';
+	import { BaseDataTableProvider, type Settings } from '$lib/data-table/providers';
+	import common from '$lib/website/utils/common';
 
 	type DataType = {
-		sira: string;
-		id: string;
-		mustahsil: string;
-		tip: string;
-		bolge: string;
-		il: string;
-		ilce: string;
-		tutar: number;
+		order: number;
+		producer: string;
+		province: string;
+		district: string;
+		village: string;
+		grape: string;
+		grapeColor: string;
+		quantity: number;
+		price: number;
+		amount: number;
 	};
 
-	function generateData(count: number): DataType[] {
-		if (!browser) return [];
-		const data: DataType[] = [];
-		for (let i = 1; i <= count; i++) {
-			data.push({
-				sira: i.toString(),
-				id: (31000 + i).toString(),
-				mustahsil: `Mustahsil ${i}`,
-				tip: 'AVANS_ODEME',
-				bolge: 'IC EGE',
-				il: 'DENIZLI',
-				ilce: 'CAL',
-				tutar: parseFloat((Math.random() * 100000).toFixed(2))
-			});
-		}
-		return data;
-	}
+	let data: DataType[] = $state(common.generateExampleData(10));
 
-	let data: DataType[] = $state(generateData(10));
 	let settings: Settings<DataType> = $state({
 		columns: [
-			{ field: 'sira', label: 'Sıra' },
-			{ field: 'id', label: 'ID', hidden: true },
-			{ field: 'mustahsil', label: 'Mustahsil' },
-			{ field: 'tip', label: 'Tip' },
-			{ field: 'bolge', label: 'Bölge' },
-			{ field: 'il', label: 'İl' },
-			{ field: 'ilce', label: 'İlçe' },
-			{ field: 'tutar', label: 'Tutar' }
+			{ field: 'order', label: 'Order', width: '75px' },
+			{ field: 'producer', label: 'Producer', width: '150px' },
+			{ field: 'province', label: 'Province', width: '90px' },
+			{ field: 'district', label: 'District', width: '100px' },
+			{ field: 'village', label: 'Village', width: '120px' },
+			{ field: 'grape', label: 'Grape', width: '160px' },
+			{ field: 'grapeColor', label: 'Grape Color', width: '110px', hidden: false },
+			{ field: 'quantity', label: 'Quantity', align: 'right', width: '100px' },
+			{ field: 'price', label: 'Price', align: 'right', width: '100px' },
+			{ field: 'amount', label: 'Amount', align: 'right', width: '100px' }
 		],
-		footers: [
-			{ sira: 'F2', id: '2', mustahsil: '3', tip: '4', bolge: '5', il: '6', ilce: '7', tutar: '8' },
-			{ sira: 'F2', id: '2', mustahsil: '3', tip: '4', bolge: '5', il: '6', ilce: '7', tutar: '8' }
-		]
+		footers: [{ order: 'f1' }, { quantity: 'f2' }]
 	});
 
 	const setPageData = (count: number) => {
-		data = generateData(count);
+		data = common.generateExampleData(count);
 	};
 	const setFirstRow = () => {
 		data[0] = {
-			sira: '0',
-			id: '0',
-			mustahsil: 'New 0',
-			tip: 'AVANS_ODEME',
-			bolge: 'IC EGE',
-			il: 'DENIZLI',
-			ilce: 'CAL',
-			tutar: parseFloat((Math.random() * 100000).toFixed(2))
+			order: 0,
+			producer: 'Mustahsil',
+			province: 'Tip',
+			district: 'Bölge',
+			village: 'İl',
+			grape: 'İlçe',
+			grapeColor: '0',
+			quantity: 0,
+			price: 0,
+			amount: 0
 		};
 	};
 	const hiddenSecondColumn = () => {
@@ -79,7 +64,7 @@
 			<a href="/docs">Documentation</a>
 			<a href="/dev/theme">Theme</a>
 			<TableShowCase>
-				<BaseDataTable {data} {settings} />
+				<BaseDataTableProvider {data} {settings} />
 			</TableShowCase>
 		</MainContent>
 		<MainContent>
