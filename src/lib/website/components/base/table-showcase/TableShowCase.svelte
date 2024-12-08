@@ -118,7 +118,7 @@
 	});
 </script>
 
-<div class="relative mt-2 rounded-sm border-8 border-amber-500/60" style:height style:width>
+<div class="relative mt-2 rounded-sm border-8 border-surface-300" style:height style:width>
 	<div class="h-full w-full">
 		{#if children}
 			{@render children?.()}
@@ -132,17 +132,17 @@
 	<div
 		use:verticalHandleAction={(e) => verticalHandleResizeUpdate(e)}
 		class:vertical-handle-position={true}
-		class="absolute z-30 inline-flex h-16 w-2 cursor-col-resize !touch-none select-none items-center justify-center rounded-full bg-primary"
+		class="absolute z-30 inline-flex h-16 w-2 cursor-col-resize !touch-none select-none items-center justify-center rounded-full bg-secondary-400"
 	></div>
 	<div
 		use:horizontalHandleAction={(e) => horizontalHandleResizeUpdate(e)}
 		class:horizonral-handle-position={true}
-		class="absolute z-30 inline-flex h-2 w-16 cursor-row-resize !touch-none select-none items-center justify-center rounded-full bg-primary"
+		class="absolute z-30 inline-flex h-2 w-16 cursor-row-resize !touch-none select-none items-center justify-center rounded-full bg-secondary-400"
 	></div>
 
 	<div
 		class:horizonral-title-position={true}
-		class="absolute z-30 inline-flex w-16 select-none items-center justify-center rounded-sm bg-amber-500 text-slate-950"
+		class="absolute z-30 inline-flex w-16 select-none items-center justify-center rounded-sm bg-surface-300"
 	>
 		Vitrin
 	</div>

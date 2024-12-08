@@ -283,5 +283,32 @@ export default {
 			}
 		}
 	},
-	plugins: [typography, forms]
+	plugins: [
+		typography,
+		forms,
+		({ addUtilities }) => {
+			addUtilities({
+				'.slc-select-none': {
+					'user-select': 'none', // Non-prefixed version, currently supported by Chrome and Opera
+					'-webkit-touch-callout': 'none', // iOS Safari
+					'-webkit-user-select': 'none', // Safari
+					'-khtml-user-select': 'none', // Konqueror HTML
+					'-moz-user-select': 'none', // Firefox
+					'-ms-user-select': 'none' // Internet Explorer-Edge
+				},
+				'.slc-image-select-none': {
+					'user-select': 'none', // Resmin secilemez olmasini saglar
+					'-webkit-user-drag': 'none', // WebKit tabanli tarayicilarda surukleme olayini engeller
+					'-webkit-touch-callout': 'none' // WebKit tabanli tarayicilarda dokunarak cagirma olayini engeller
+				},
+				'.slc-hide-scrollbar': {
+					'-ms-overflow-style': 'none',
+					'scrollbar-width': 'none'
+				},
+				'.slc-hide-scrollbar::-webkit-scrollbar': {
+					display: 'none'
+				}
+			});
+		}
+	]
 } satisfies Config;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { TableShowCase } from '$lib/website/components/base/table-showcase';
 	import { Page, Main, MainContent } from '$lib/website/templates/base';
-	import { BaseDataTableProvider, type Settings } from '$lib/data-table/providers';
+	import { BaseDataTableView, type Settings } from '$lib/data-table/views';
 	import common from '$lib/website/utils/common';
 
 	type DataType = {
@@ -64,7 +64,7 @@
 			<a href="/docs">Documentation</a>
 			<a href="/dev/theme">Theme</a>
 			<TableShowCase>
-				<BaseDataTableProvider {data} {settings} />
+				<BaseDataTableView {data} {settings} />
 			</TableShowCase>
 		</MainContent>
 		<MainContent>

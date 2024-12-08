@@ -123,28 +123,3 @@ The outer pipes (|) are optional, and you don't need to make the raw Markdown li
 	{/snippet}
 </Table>
 ```
-
----
-
-```svelte
-<script lang="ts">
-	import Test from '$lib/website/markdowns/Test.md';
-	import { Main, MainContent, SidebarRight } from '$lib/website/templates/base';
-</script>
-
-<Main>
-	<MainContent>
-		<p>introduction</p>
-		<a href="/docs/installation">installation</a>
-		<a href="/">home</a>
-		<div class="slc-markdown">
-			<Test />
-			<Test />
-			<Test />
-		</div>
-	</MainContent>
-	{#snippet sidebarRight()}
-		<SidebarRight />
-	{/snippet}
-</Main>
-```
