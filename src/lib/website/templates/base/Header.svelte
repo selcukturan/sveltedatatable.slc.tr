@@ -12,7 +12,7 @@
 				<a href="/" class="relative mx-2 my-3 grid grid-cols-2 rounded-sm bg-surface-200">
 					<div class="relative flex items-center justify-center">
 						<img
-							class="object-fit slc-image-select-none absolute inset-0 h-full w-full"
+							class="object-fit absolute inset-0 h-full w-full slc-image-select-none"
 							src="/images/logo/logo_512.png"
 							alt="SLC Web logo"
 						/>
@@ -34,7 +34,7 @@
 			</div>
 		</div>
 		<div class=" bg-secondary-500">2</div>
-		<div>3</div>
+		<div><ThemeToggle /></div>
 		<!-- <div class="grid">
 			<div class="grid">
 				<a href="/" class="relative mx-2 my-3 grid grid-cols-1 rounded-sm bg-surface-200">
