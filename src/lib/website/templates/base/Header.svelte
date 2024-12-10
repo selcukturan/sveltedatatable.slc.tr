@@ -9,23 +9,30 @@
 	<div class="container flex">
 		<div class="flex items-center">
 			<div data-component="Logo" class="flex h-12 items-center justify-center">
-				<a href="/" class="relative mx-2 my-3 flex rounded-sm bg-surface-100">
+				<a
+					href="/"
+					class="relative mx-2 my-3 flex items-center border border-surface-200 bg-surface-100"
+				>
 					<img
 						class="object-fit inset-0 h-8 w-8 slc-image-select-none"
 						src="/images/logo/logo_512.png"
 						alt="SLC Web logo"
 					/>
 					<div class="flex flex-col">
-						<div class="flex items-center justify-center rounded-t-sm bg-surface-200 px-1 text-xs">
-							<p class="select-none text-nowrap text-primary-400">svelte</p>
+						<div
+							class="flex items-center justify-center border-l border-surface-200 bg-surface-200/40 px-1"
+						>
+							<p class="select-none text-nowrap text-xs font-bold text-primary-800">svelte</p>
 						</div>
-						<div class="flex items-center justify-center rounded-b-sm bg-surface-300 px-1 text-xs">
-							<p class="select-none text-nowrap text-secondary-400">data table</p>
+						<div
+							class="flex items-center justify-center border-2 border-primary-token-500 bg-surface-300/40 px-1"
+						>
+							<p class="select-none text-nowrap text-xs font-bold text-secondary-800">data table</p>
 						</div>
 					</div>
 
 					<span
-						class="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 select-none rounded-sm bg-quaternary-200 px-1 text-[0.50rem]"
+						class="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 select-none rounded-sm border bg-quaternary-200 px-1 font-mono text-[0.50rem] font-bold text-quaternary-950"
 						>v0.0.1</span
 					>
 				</a>
