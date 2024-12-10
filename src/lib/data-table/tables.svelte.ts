@@ -5,7 +5,7 @@ class Table<TData extends Row> {
 	private readonly defaultSettings: DefaultSettings<TData> = {
 		width: '100%',
 		height: '100%',
-		overscanThreshold: 0,
+		overscanThreshold: 4,
 		selectionColumn: false,
 		actionColumn: false,
 		theadRowHeight: 35,
