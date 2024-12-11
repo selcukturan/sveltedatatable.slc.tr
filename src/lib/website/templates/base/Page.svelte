@@ -10,7 +10,7 @@
 
 <style lang="postcss">
 	.base {
-		@apply container mx-auto grid grid-cols-1;
+		@apply container mx-auto grid grid-cols-1 py-4;
 	}
 	.visible-left-sidebar {
 		@apply lg:grid-cols-[auto_minmax(0px,1fr)];

@@ -2,6 +2,10 @@
 	import { TableShowCase } from '$lib/website/components/base/table-showcase';
 	import { Page, Main, MainContent } from '$lib/website/templates/base';
 	import { BaseDataTableView, type Settings } from '$lib/data-table/views';
+
+	import { MarkdownContent } from '$lib/website/components/base/markdown-content';
+	import Giris, { metadata } from '$lib/website/contents/Giris.md';
+
 	import common from '$lib/website/utils/common';
 
 	type DataType = {
@@ -60,9 +64,25 @@
 
 <Page>
 	<Main>
+		<div class="flex select-none items-center justify-center gap-4 rounded-full p-2">
+			<div class="flex items-center gap-1">
+				<img
+					src="/images/svelte-logo.png"
+					alt="Svelte Logo"
+					class="h-8 w-8 slc-image-select-none"
+				/>
+				<p class=" text-lg font-semibold">Svelte</p>
+			</div>
+			<div class="flex items-center gap-1">
+				<img
+					src="/images/ts-logo-512.png"
+					alt="TypeScript Logo"
+					class="h-8 w-8 slc-image-select-none"
+				/>
+				<p class=" text-lg font-semibold">TypeScript</p>
+			</div>
+		</div>
 		<MainContent>
-			<a href="/docs">Documentation</a>
-			<a href="/dev/theme">Theme</a>
 			<TableShowCase>
 				<BaseDataTableView {data} {settings} />
 			</TableShowCase>
@@ -84,6 +104,15 @@
 				<p>Current Count:{data.length}</p>
 			</div>
 		</MainContent>
-		<MainContent>Paragraph 3</MainContent>
+		<MainContent>
+			<TableShowCase>
+				<BaseDataTableView {data} {settings} />
+			</TableShowCase>
+		</MainContent>
+		<MainContent>
+			<MarkdownContent {metadata}>
+				<Giris />
+			</MarkdownContent>
+		</MainContent>
 	</Main>
 </Page>

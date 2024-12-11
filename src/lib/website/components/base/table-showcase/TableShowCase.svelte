@@ -118,7 +118,12 @@
 	});
 </script>
 
-<div class="relative mt-2 rounded-sm border-8 border-surface-300" style:height style:width>
+<div
+	data-component="TableShowCase"
+	class="relative mt-2 rounded-sm border-8 border-surface-300 bg-transparent"
+	style:height
+	style:width
+>
 	<div class="h-full w-full">
 		{#if children}
 			{@render children?.()}
@@ -142,9 +147,9 @@
 
 	<div
 		class:horizonral-title-position={true}
-		class="absolute z-30 inline-flex w-16 select-none items-center justify-center rounded-sm bg-surface-300"
+		class="absolute inline-flex select-none items-center justify-center rounded-sm bg-surface-300 px-2 pb-1 text-sm"
 	>
-		Vitrin
+		Showcase
 	</div>
 </div>
 

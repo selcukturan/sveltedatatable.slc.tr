@@ -1,18 +1,16 @@
 <script lang="ts">
 	import { ThemeToggle } from '$lib/website/components/base/theme-toggle';
+	import { Icon } from '$lib/website/components/icons';
 </script>
 
 <header
 	data-component="Header"
-	class="sticky top-0 z-50 flex border-b border-border/70 bg-surface-50/60 backdrop-blur supports-[backdrop-filter]:bg-surface-50/30"
+	class="sticky top-0 z-50 flex border-b border-border/30 bg-surface-50/30 backdrop-blur supports-[backdrop-filter]:bg-surface-50/30"
 >
 	<div class="container flex">
 		<div class="flex items-center">
-			<div data-component="Logo" class="flex h-12 items-center justify-center">
-				<a
-					href="/"
-					class="relative mx-2 my-3 flex items-center border border-surface-200 bg-surface-100"
-				>
+			<div data-component="Logo" class="flex items-center justify-center bg-red-500">
+				<a href="/" class="relative flex items-center border border-surface-200 bg-surface-100">
 					<img
 						class="object-fit inset-0 h-8 w-8 slc-image-select-none"
 						src="/images/logo/logo_512.png"
@@ -22,114 +20,38 @@
 						<div
 							class="flex items-center justify-center border-l border-surface-200 bg-surface-200/40 px-1"
 						>
-							<p class="select-none text-nowrap text-xs font-bold text-primary-800">svelte</p>
+							<p class="select-none text-nowrap text-xs font-bold leading-4 text-primary-800">
+								svelte
+							</p>
 						</div>
 						<div
 							class="flex items-center justify-center border-2 border-primary-token-500 bg-surface-300/40 px-1"
 						>
-							<p class="select-none text-nowrap text-xs font-bold text-secondary-800">data table</p>
+							<p class="select-none text-nowrap text-sm font-bold text-secondary-800">data table</p>
 						</div>
 					</div>
 
 					<span
-						class="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 select-none rounded-sm border bg-quaternary-200 px-1 font-mono text-[0.50rem] font-bold text-quaternary-950"
-						>v0.0.1</span
+						class="absolute right-0 top-0 -translate-y-1/3 translate-x-2/3 select-none rounded-sm bg-quaternary-600/80 px-0.5 py-0.5 text-[0.625rem] font-semibold leading-none text-quaternary-token-950"
 					>
+						v0.0.1
+					</span>
 				</a>
 			</div>
 		</div>
 		<div class="flex flex-1 justify-center">
-			<p>2</p>
+			<p>&nbsp;</p>
 		</div>
-		<div class="flex">
-			<ThemeToggle />
-		</div>
-		<!-- <div class="flex">
-			<div data-component="Logo" class="grid w-40">
-				<a href="/" class="relative mx-2 my-3 grid grid-cols-2 rounded-sm bg-surface-200">
-					<div class="relative flex items-center justify-center">
-						<img
-							class="object-fit absolute inset-0 h-full w-full slc-image-select-none"
-							src="/images/logo/logo_512.png"
-							alt="SLC Web logo"
-						/>
-					</div>
-					<div class="grid">
-						<div class="flex items-center justify-center rounded-t-md bg-quaternary-300/80 text-xs">
-							<p>svelte</p>
-						</div>
-						<div class="flex items-center justify-center rounded-b-md bg-primary-400/80 text-xs">
-							<p>data table</p>
-						</div>
-					</div>
-
-					<span
-						class="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 rounded-md bg-secondary-200/80"
-						>v0.0.1</span
-					>
-				</a>
-			</div>
-		</div>
-		<div class=" bg-secondary-500">2</div>
-		<div><ThemeToggle /></div> -->
-		<!-- <div class="grid">
-			<div class="grid">
-				<a href="/" class="relative mx-2 my-3 grid grid-cols-1 rounded-sm bg-surface-200">
-					<div class="flex items-center">
-						<img class="h-6 w-6 select-none" src="/images/logo/logo_512.png" alt="SLC Web logo" />
-					</div>
-					<div class="grid">
-						<div
-							class="text flex items-center justify-center rounded-t-md bg-quaternary-300/80 px-1 text-xs"
-						>
-							<p>svelte</p>
-						</div>
-						<div
-							class="flex items-center justify-center rounded-b-md bg-primary-400/80 px-1 text-xs"
-						>
-							<p>data table</p>
-						</div>
-					</div>
-
-					<span
-						class="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 rounded-md bg-secondary-200/80 px-1 text-xs"
-						>v0.0.1</span
-					>
-				</a>
-			</div>
-			<div class=" bg-red-500">2</div>
-			<div class="bg-red-500">3</div>
-		</div> -->
-	</div>
-
-	<!-- <div class="container flex items-center justify-stretch">
-		<div>
-			<a href="/" class="relative flex items-center justify-center rounded-sm bg-surface-200">
-				<div class="px-1">
-					<img class="h-6 w-6 select-none" src="/images/logo/logo_512.png" alt="SLC Web logo" />
-				</div>
-				<div class="flex flex-col">
-					<div
-						class="text flex w-full items-center justify-center rounded-t-md bg-surface-300/80 px-1 text-xs"
-					>
-						svelte
-					</div>
-					<div
-						class="flex w-full items-center justify-center rounded-b-md bg-surface-400/80 px-1 text-xs"
-					>
-						data table
-					</div>
-				</div>
-				<span
-					class="absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 rounded-md bg-secondary-200/80 px-1 text-xs"
-					>v0.0.1</span
-				>
+		<div class="flex items-center gap-4">
+			<a
+				class="flex gap-1 rounded-full border border-quaternary-800 bg-quaternary-100 p-2 text-quaternary-800 hover:bg-quaternary-200 active:bg-quaternary-100"
+				href="https://github.com/selcukturan/sveltedatatable.slc.tr"
+				target="_blank"
+			>
+				<Icon id={`github`} />
+				<span class="hidden select-none text-sm font-semibold sm:block">Github</span>
 			</a>
-		</div>
-		<div class="flex flex-1 items-center justify-center">2</div>
-		<div class="flex gap-3">
-			<a href="/">Github</a>
 			<ThemeToggle />
 		</div>
-	</div> -->
+	</div>
 </header>
