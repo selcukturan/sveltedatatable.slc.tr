@@ -1,12 +1,12 @@
 <script lang="ts" generics="TData extends Row">
-	import type { Row, Footer } from './types';
+	import type { Row, Footer, Settings } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
-		data: TData[];
+		settings: Settings<TData>;
 		toolbar?: Snippet;
 		thead: Snippet;
 		tbody: Snippet<[TData, number]>;
@@ -17,7 +17,7 @@
 		containerClass?: string;
 	};
 	const {
-		data,
+		settings,
 		toolbar,
 		thead,
 		tbody,
@@ -29,7 +29,7 @@
 		...attributes
 	}: Props = $props();
 
-	const table = getTable<TData>();
+	const table = getTable<TData>(settings.id);
 	const headerCount = 1;
 
 	const scrollAction = (tableNode: HTMLDivElement) => {
@@ -65,7 +65,10 @@
 >
 	{@render toolbar?.()}
 	<div class:slc-table-container={true} class={tableContainerClass}>
-		<div style:display={table.setData.length > 0 ? 'none' : 'flex'} class:slc-table-no-data={true}>
+		<div
+			style:display={table.settings.data.length > 0 ? 'none' : 'flex'}
+			class:slc-table-no-data={true}
+		>
 			No data to display
 		</div>
 		<div
@@ -86,7 +89,7 @@
 				{@render tbody?.(row, rowindex)}
 			{/each}
 
-			{#if table.setData.length > 0}
+			{#if table.settings.data.length > 0}
 				{#each table.footers as foot, footerindex (footerindex)}
 					{@render tfoot?.(foot, footerindex)}
 				{/each}

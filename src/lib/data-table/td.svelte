@@ -1,10 +1,11 @@
 <script lang="ts" generics="TData extends Row">
-	import type { Row, Column } from './types';
+	import type { Row, Column, Settings } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { type Snippet } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
+		settings: Settings<TData>;
 		row: TData;
 		children: Snippet;
 		ri: number;
@@ -12,9 +13,9 @@
 		col: Column<TData>;
 		class?: string;
 	};
-	const { row, children, ri, ci, col, class: classes, ...attributes }: Props = $props();
+	const { settings, row, children, ri, ci, col, class: classes, ...attributes }: Props = $props();
 
-	const table = getTable<TData>();
+	const table = getTable<TData>(settings.id);
 
 	const cell = `r${ri}c${ci}`;
 	const originalCell =

@@ -5,6 +5,7 @@
 	import { MarkdownContent } from '$lib/website/components/base/markdown-content';
 	import common from '$lib/website/utils/common';
 	import { BaseDataTableView, type Settings } from '$lib/data-table/views';
+	import { setTable } from '$lib/data-table/tables.svelte';
 
 	import Giris, { metadata } from '$lib/website/contents/Giris.md';
 	import Code, { metadata as codeMetaData } from '$lib/website/contents/Code.md';
@@ -24,9 +25,9 @@
 		amount: number;
 	};
 
-	let data: DataType[] = $state(common.generateExampleData(10));
-
 	let settings: Settings<DataType> = $state({
+		id: 'data-table-1',
+		data: common.generateExampleData(10),
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
 			{ field: 'producer', label: 'Producer', width: '150px' },
@@ -42,11 +43,13 @@
 		footers: [{ order: 'f1' }, { quantity: 'f2' }]
 	});
 
+	const table = setTable<DataType>(settings);
+
 	const setPageData = (count: number) => {
-		data = common.generateExampleData(count);
+		table.setSettings.data = common.generateExampleData(count);
 	};
 	const setFirstRow = () => {
-		data[0] = {
+		table.setSettings.data[0] = {
 			order: 0,
 			producer: 'Mustahsil',
 			province: 'Tip',
@@ -60,8 +63,8 @@
 		};
 	};
 	const hiddenSecondColumn = () => {
-		if (typeof settings.columns === 'undefined') return;
-		settings.columns[1].hidden = !settings.columns[1].hidden;
+		if (typeof table.settings.columns === 'undefined') return;
+		table.settings.columns[1].hidden = !table.settings.columns[1].hidden;
 	};
 </script>
 
@@ -94,7 +97,7 @@
 				{#snippet contents()}
 					<TabContent value="preview">
 						<ShowCase>
-							<BaseDataTableView {data} {settings} />
+							<BaseDataTableView {settings} />
 						</ShowCase>
 					</TabContent>
 					<TabContent value="code">
@@ -121,7 +124,7 @@
 				<button onclick={() => hiddenSecondColumn()} class="bg-surface-200 p-1"
 					>hiddenSecondColumn</button
 				>
-				<p>Current Count:{data.length}</p>
+				<p>Current Count:{table.settings.data.length}</p>
 			</div>
 		</MainContent>
 	</Main>

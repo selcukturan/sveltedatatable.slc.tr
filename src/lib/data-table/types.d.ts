@@ -1,4 +1,6 @@
-export type Row = Record<string, unknown> & {
+export type RowValue = unknown | object | any[];
+
+export type Row = Record<string, RowValue> & {
 	oi?: number; // original index
 };
 
@@ -31,6 +33,8 @@ export type Footer<TData> = {
 };
 
 export type Settings<TData> = {
+	id: string;
+	data: TData[];
 	width?: string;
 	height?: string;
 	overscanThreshold?: number;

@@ -3,6 +3,8 @@ import { getContext, setContext } from 'svelte';
 
 class Table<TData extends Row> {
 	private readonly defaultSettings: DefaultSettings<TData> = {
+		id: '',
+		data: [],
 		width: '100%',
 		height: '100%',
 		overscanThreshold: 4,
@@ -17,10 +19,8 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Constructor ###############################################################
 	element!: HTMLDivElement;
-	setData: TData[] = $state([]); // orjinal data. veriyi değiştirirken bu değişken kullanılacak. `table.setData`
-	setSettings: Settings<TData> = $state({ columns: [] }); // orjinal settings. ayarları değiştirirken bu değişken kullanılacak. `table.setSettings`
-	constructor(data: TData[] = [], settings: Settings<TData>) {
-		this.setData = data;
+	setSettings: Settings<TData> = $state({ id: '', data: [], columns: [] }); // orjinal settings. ayarları değiştirirken bu değişken kullanılacak. `table.setSettings`
+	constructor(settings: Settings<TData>) {
 		this.setSettings = settings;
 	}
 	// ################################## END Constructor ###############################################################
@@ -57,7 +57,7 @@ class Table<TData extends Row> {
 		const overscanThreshold = this.settings.overscanThreshold;
 		const clientHeight = this.clientHeight;
 		const scrollTop = this.scrollTop;
-		const dataLength = this.setData.length;
+		const dataLength = this.settings.data.length;
 
 		const rowVisibleStartIndex = Math.floor(scrollTop / rowHeight);
 		const rowVisibleEndIndex = Math.min(
@@ -67,12 +67,14 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
 		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
 
-		return this.setData.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1).map((row, index) => {
-			return {
-				...row,
-				oi: rowOverscanStartIndex + index // original row index
-			};
-		});
+		return this.settings.data
+			.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)
+			.map((row, index) => {
+				return {
+					...row,
+					oi: rowOverscanStartIndex + index // original row index
+				};
+			});
 	});
 	// ################################## END Properties ###############################################################
 
@@ -85,8 +87,8 @@ class Table<TData extends Row> {
 		const repeatThead =
 			headerCount >= 1 ? `repeat(${headerCount}, ${this.settings.theadRowHeight}px)` : ``;
 		const repeatTbody =
-			this.setData.length > 0
-				? `repeat(${this.setData.length}, ${this.settings.tbodyRowHeight}px)`
+			this.settings.data.length > 0
+				? `repeat(${this.settings.data.length}, ${this.settings.tbodyRowHeight}px)`
 				: ``;
 		const repeatTfoot =
 			this.footers.length > 0
@@ -98,7 +100,7 @@ class Table<TData extends Row> {
 		this.columns.map((col) => (col.width ? col.width : `150px`)).join(' ')
 	);
 	setAllData = (data: TData[]) => {
-		this.setData = data;
+		this.settings.data = data;
 	};
 	setAllSettings = (settings: Settings<TData>) => {
 		this.setSettings = settings;
@@ -106,17 +108,13 @@ class Table<TData extends Row> {
 }
 
 // ################################## BEGIN Export Table Context ###############################################################
-const SLC_TABLE_CONTEXT_KEY = Symbol('SLC_TABLE_CONTEXT_KEY');
-export function setTable<TData extends Row>(
-	data: TData[],
-	settings: Settings<TData>
-): Table<TData> {
-	const table = new Table(data, settings);
-	setContext(SLC_TABLE_CONTEXT_KEY, table);
+export function setTable<TData extends Row>(settings: Settings<TData>): Table<TData> {
+	const table = new Table<TData>(settings);
+	setContext(settings.id, table);
 	return table;
 }
-export function getTable<TData extends Row>() {
-	return getContext<ReturnType<typeof setTable<TData>>>(SLC_TABLE_CONTEXT_KEY);
+export function getTable<TData extends Row>(id: string) {
+	return getContext<ReturnType<typeof setTable<TData>>>(id);
 }
 // ################################## END Export Table Context #################################################################
 export type { Settings, Row };

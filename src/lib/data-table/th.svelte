@@ -1,17 +1,17 @@
 <script lang="ts" generics="TData extends Row">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { Column, Row } from './types';
+	import type { Column, Row, Settings } from './types';
 	import { type Snippet } from 'svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
-		data: TData[];
+		settings: Settings<TData>;
 		children: Snippet;
 		ci: number;
 		col: Column<TData>;
 		class?: string;
 	};
 
-	const { data, children, ci, col, class: classes, ...attributes }: Props = $props();
+	const { settings, children, ci, col, class: classes, ...attributes }: Props = $props();
 </script>
 
 <div
