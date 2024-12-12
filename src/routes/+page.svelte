@@ -1,12 +1,15 @@
 <script lang="ts">
 	import { TableShowCase } from '$lib/website/components/base/table-showcase';
 	import { Page, Main, MainContent } from '$lib/website/templates/base';
+	import { Tabs, Tab, TabContent } from '$lib/website/components/ui/tabs';
+	import { MarkdownContent } from '$lib/website/components/base/markdown-content';
+	import common from '$lib/website/utils/common';
 	import { BaseDataTableView, type Settings } from '$lib/data-table/views';
 
-	import { MarkdownContent } from '$lib/website/components/base/markdown-content';
 	import Giris, { metadata } from '$lib/website/contents/Giris.md';
+	import Code, { metadata as codeMetaData } from '$lib/website/contents/Code.md';
 
-	import common from '$lib/website/utils/common';
+	let selectedTab = $state('preview');
 
 	type DataType = {
 		order: number;
@@ -113,6 +116,28 @@
 			<MarkdownContent {metadata}>
 				<Giris />
 			</MarkdownContent>
+		</MainContent>
+		<MainContent>
+			<Tabs bind:value={selectedTab}>
+				{#snippet tabs()}
+					<Tab value="preview">Preview</Tab>
+					<Tab value="code">Code</Tab>
+				{/snippet}
+				{#snippet contents()}
+					<TabContent value="preview">
+						<TableShowCase>
+							<BaseDataTableView {data} {settings} />
+						</TableShowCase>
+					</TabContent>
+					<TabContent value="code">
+						<TableShowCase>
+							<MarkdownContent metadata={codeMetaData}>
+								<Code />
+							</MarkdownContent>
+						</TableShowCase>
+					</TabContent>
+				{/snippet}
+			</Tabs>
 		</MainContent>
 	</Main>
 </Page>

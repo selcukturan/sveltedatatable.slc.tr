@@ -33,5 +33,9 @@
 		"typescript": "^5.7.2",
 		"typescript-eslint": "^8.16.0",
 		"vite": "^6.0.2"
+	},
+	"dependencies": {
+		"@zag-js/svelte": "^0.78.2",
+		"@zag-js/tabs": "^0.78.2"
 	}
 }
