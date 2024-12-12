@@ -121,5 +121,14 @@
 			/>
 			<path d="M9 18c-4.51 2-5-2-7-2" />
 		</symbol>
+
+		<symbol id="copy" class="slc-icon" viewBox="0 0 24 24">
+			<rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+			<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+		</symbol>
+
+		<symbol id="check" class="slc-icon" viewBox="0 0 24 24">
+			<path d="M20 6 9 17l-5-5" />
+		</symbol>
 	</svg>
 </div>

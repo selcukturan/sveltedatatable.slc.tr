@@ -1,6 +1,4 @@
-export type RowValue = unknown | object | any[];
-export type Row = {
-	[key: string]: RowValue;
+export type Row = Record<string, unknown> & {
 	oi?: number; // original index
 };
 

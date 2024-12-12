@@ -1,6 +1,6 @@
 ---
-title: 'My First Post'
-date: '2023-10-01'
+title: My First Post
+date: 2023-10-01
 ---
 
 ```svelte

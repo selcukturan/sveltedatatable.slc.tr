@@ -124,15 +124,13 @@
 	style:height
 	style:width
 >
-	<div class="h-full w-full">
-		{#if children}
-			{@render children?.()}
-		{:else}
-			<div class="flex h-full w-full items-center justify-center">
-				<div>İçerik Yok</div>
-			</div>
-		{/if}
-	</div>
+	{#if children}
+		{@render children?.()}
+	{:else}
+		<div class="flex h-full w-full items-center justify-center">
+			<p>No content</p>
+		</div>
+	{/if}
 	<!-- Size Handle -->
 	<div
 		use:verticalHandleAction={(e) => verticalHandleResizeUpdate(e)}
@@ -144,13 +142,6 @@
 		class:horizonral-handle-position={true}
 		class="absolute z-30 inline-flex h-2 w-16 cursor-row-resize !touch-none select-none items-center justify-center rounded-full bg-secondary-400"
 	></div>
-
-	<div
-		class:horizonral-title-position={true}
-		class="absolute inline-flex select-none items-center justify-center rounded-sm bg-surface-300 px-2 pb-1 text-sm"
-	>
-		Showcase
-	</div>
 </div>
 
 <style lang="postcss">

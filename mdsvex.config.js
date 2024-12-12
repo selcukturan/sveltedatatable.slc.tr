@@ -8,7 +8,7 @@ const highlighter = await createHighlighter({
 });
 
 const config = defineConfig({
-    extensions: ['.md'],
+    extensions: ['.svx', '.md'],
     smartypants: { dashes: 'oldschool' },
     highlight: {
         highlighter: async (code, lang = 'text') => {
