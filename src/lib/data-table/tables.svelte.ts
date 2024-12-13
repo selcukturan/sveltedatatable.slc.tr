@@ -1,8 +1,8 @@
-import type { Settings, DefaultSettings, Row, FocucedCell, Footer } from './types';
+import type { Sources, DefaultSources, Row, FocucedCell, Footer } from './types';
 import { getContext, setContext } from 'svelte';
 
 class Table<TData extends Row> {
-	private readonly defaultSettings: DefaultSettings<TData> = {
+	private readonly defaultSources: DefaultSources<TData> = {
 		id: '',
 		data: [],
 		width: '100%',
@@ -19,18 +19,18 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Constructor ###############################################################
 	element!: HTMLDivElement;
-	setSettings: Settings<TData> = $state({ id: '', data: [], columns: [] }); // orjinal settings. ayarları değiştirirken bu değişken kullanılacak. `table.setSettings`
-	constructor(settings: Settings<TData>) {
-		this.setSettings = settings;
+	set: Sources<TData> = $state({ id: '', data: [], columns: [] }); // orjinal settings. ayarları değiştirirken bu değişken kullanılacak. `table.setSettings`
+	constructor(sources: Sources<TData>) {
+		this.set = sources;
 	}
 	// ################################## END Constructor ###############################################################
 
 	// ################################## BEGIN Properties ###############################################################
 	// derived settings. ayarları okurken bu değişken kullanılacak. `table.settings`
-	settings = $derived({ ...this.defaultSettings, ...this.setSettings });
+	get = $derived({ ...this.defaultSources, ...this.set });
 	// derived columns. kolon bilgileri okurken bu değişken kullanılacak. `table.columns`
 	columns = $derived(
-		this.settings.columns
+		this.get.columns
 			.map((col, index) => {
 				return {
 					...col,
@@ -41,7 +41,7 @@ class Table<TData extends Row> {
 	);
 	// derived footers. alt bilgi satırı bilgilerini okurken bu değişken kullanılacak. `table.footers`
 	footers = $derived.by(() => {
-		const footers = this.settings.footers;
+		const footers = this.get.footers;
 		const columns = this.columns;
 		return footers.map((footer) => {
 			const footerRow: Footer<TData> = {};
@@ -53,11 +53,11 @@ class Table<TData extends Row> {
 	});
 	// derived data. verileri okurken bu değişken kullanılacak. `table.data`
 	data = $derived.by(() => {
-		const rowHeight = this.settings.tbodyRowHeight;
-		const overscanThreshold = this.settings.overscanThreshold;
+		const rowHeight = this.get.tbodyRowHeight;
+		const overscanThreshold = this.get.overscanThreshold;
 		const clientHeight = this.clientHeight;
 		const scrollTop = this.scrollTop;
-		const dataLength = this.settings.data.length;
+		const dataLength = this.get.data.length;
 
 		const rowVisibleStartIndex = Math.floor(scrollTop / rowHeight);
 		const rowVisibleEndIndex = Math.min(
@@ -67,14 +67,12 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
 		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
 
-		return this.settings.data
-			.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)
-			.map((row, index) => {
-				return {
-					...row,
-					oi: rowOverscanStartIndex + index // original row index
-				};
-			});
+		return this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1).map((row, index) => {
+			return {
+				...row,
+				oi: rowOverscanStartIndex + index // original row index
+			};
+		});
 	});
 	// ################################## END Properties ###############################################################
 
@@ -85,36 +83,35 @@ class Table<TData extends Row> {
 	gridTemplateRows: string = $derived.by(() => {
 		const headerCount = 1;
 		const repeatThead =
-			headerCount >= 1 ? `repeat(${headerCount}, ${this.settings.theadRowHeight}px)` : ``;
+			headerCount >= 1 ? `repeat(${headerCount}, ${this.get.theadRowHeight}px)` : ``;
 		const repeatTbody =
-			this.settings.data.length > 0
-				? `repeat(${this.settings.data.length}, ${this.settings.tbodyRowHeight}px)`
+			this.get.data.length > 0
+				? `repeat(${this.get.data.length}, ${this.get.tbodyRowHeight}px)`
 				: ``;
 		const repeatTfoot =
-			this.footers.length > 0
-				? `repeat(${this.footers.length}, ${this.settings.tfootRowHeight}px)`
-				: ``;
+			this.footers.length > 0 ? `repeat(${this.footers.length}, ${this.get.tfootRowHeight}px)` : ``;
 		return `${repeatThead} ${repeatTbody} ${repeatTfoot}`;
 	});
 	gridTemplateColumns: string = $derived(
 		this.columns.map((col) => (col.width ? col.width : `150px`)).join(' ')
 	);
 	setAllData = (data: TData[]) => {
-		this.settings.data = data;
+		this.set.data = data;
 	};
-	setAllSettings = (settings: Settings<TData>) => {
-		this.setSettings = settings;
+	setAllSources = (sources: Sources<TData>) => {
+		this.set = sources;
 	};
 }
 
 // ################################## BEGIN Export Table Context ###############################################################
-export function setTable<TData extends Row>(settings: Settings<TData>): Table<TData> {
-	const table = new Table<TData>(settings);
-	setContext(settings.id, table);
+export function setTable<TData extends Row>(sources: Sources<TData>): Table<TData> {
+	sources.id = sources.id || `slc_${crypto.randomUUID()}`;
+	const table = new Table<TData>(sources);
+	setContext(sources.id, table);
 	return table;
 }
 export function getTable<TData extends Row>(id: string) {
 	return getContext<ReturnType<typeof setTable<TData>>>(id);
 }
 // ################################## END Export Table Context #################################################################
-export type { Settings, Row };
+export type { Sources, Row };

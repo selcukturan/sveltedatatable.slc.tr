@@ -1,11 +1,11 @@
 <script lang="ts" generics="TData extends Row">
 	import type { HTMLAttributes } from 'svelte/elements';
-	import type { Footer, Row, Column, Settings } from './types';
+	import type { Footer, Row, Column, Sources } from './types';
 	import type { Snippet } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
-		settings: Settings<TData>;
+		src: Sources<TData>;
 		children: Snippet;
 		fi: number;
 		foot: Footer<TData>;
@@ -13,10 +13,10 @@
 		ci: number;
 		class?: string;
 	};
-	const { settings, children, fi, foot, col, ci, class: classes, ...attributes }: Props = $props();
+	const { src, children, fi, foot, col, ci, class: classes, ...attributes }: Props = $props();
 
-	const table = getTable<TData>(settings.id);
-	const bottom = $derived(`${(table.footers.length - fi - 1) * table.settings.tfootRowHeight}px`);
+	const table = getTable<TData>(src.id);
+	const bottom = $derived(`${(table.footers.length - fi - 1) * table.get.tfootRowHeight}px`);
 </script>
 
 <div

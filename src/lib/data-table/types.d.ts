@@ -1,5 +1,4 @@
-export type RowValue = unknown | object | any[];
-
+export type RowValue = unknown;
 export type Row = Record<string, RowValue> & {
 	oi?: number; // original index
 };
@@ -32,8 +31,8 @@ export type Footer<TData> = {
 	[K in keyof TData]?: string;
 };
 
-export type Settings<TData> = {
-	id: string;
+export type Sources<TData> = {
+	id?: string;
 	data: TData[];
 	width?: string;
 	height?: string;
@@ -46,7 +45,7 @@ export type Settings<TData> = {
 	columns: Column<TData>[];
 	footers?: Footer<TData>[];
 };
-export type DefaultSettings<TData> = Required<Settings<TData>>;
+export type DefaultSources<TData> = Required<Sources<TData>>;
 
 export type FocucedCell<TData> = {
 	field: Field<TData>;

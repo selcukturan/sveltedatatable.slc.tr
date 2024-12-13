@@ -1,12 +1,12 @@
 <script lang="ts" generics="TData extends Row">
-	import type { Row, Footer, Settings } from './types';
+	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { tick } from 'svelte';
+	/* import { tick } from 'svelte'; */
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
-		settings: Settings<TData>;
+		src: Sources<TData>;
 		toolbar?: Snippet;
 		thead: Snippet;
 		tbody: Snippet<[TData, number]>;
@@ -17,7 +17,7 @@
 		containerClass?: string;
 	};
 	const {
-		settings,
+		src,
 		toolbar,
 		thead,
 		tbody,
@@ -29,22 +29,24 @@
 		...attributes
 	}: Props = $props();
 
-	const table = getTable<TData>(settings.id);
+	if (!src.id) throw new Error('Sources not found');
+	const table = getTable<TData>(src.id);
 	const headerCount = 1;
 
 	const scrollAction = (tableNode: HTMLDivElement) => {
 		let isScrolling: boolean = false;
 
-		const setScrollTop = async () => {
-			if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
+		const setScrollTop = /* async */ () => {
+			// if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
+			console.log(1);
 			const { scrollTop } = tableNode;
 			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
 
-			isScrolling = true;
+			// isScrolling = true;
 			table.lastScrollTop = scrollTop;
 			table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
-			await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
-			isScrolling = false;
+			// await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
+			// isScrolling = false;
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
@@ -60,15 +62,12 @@
 <div
 	class:slc-table-main={true}
 	class={containerClass}
-	style:width={table.settings.width}
-	style:height={table.settings.height}
+	style:width={table.get.width}
+	style:height={table.get.height}
 >
 	{@render toolbar?.()}
 	<div class:slc-table-container={true} class={tableContainerClass}>
-		<div
-			style:display={table.settings.data.length > 0 ? 'none' : 'flex'}
-			class:slc-table-no-data={true}
-		>
+		<div style:display={table.get.data.length > 0 ? 'none' : 'flex'} class:slc-table-no-data={true}>
 			No data to display
 		</div>
 		<div
@@ -80,7 +79,7 @@
 			class={tableClass}
 			style:grid-template-rows={table.gridTemplateRows}
 			style:grid-template-columns={table.gridTemplateColumns}
-			style:scroll-padding-block={`${headerCount * table.settings.theadRowHeight}px ${table.footers.length * table.settings.tfootRowHeight}px`}
+			style:scroll-padding-block={`${headerCount * table.get.theadRowHeight}px ${table.footers.length * table.get.tfootRowHeight}px`}
 			{...attributes}
 		>
 			{@render thead?.()}
@@ -89,7 +88,7 @@
 				{@render tbody?.(row, rowindex)}
 			{/each}
 
-			{#if table.settings.data.length > 0}
+			{#if table.get.data.length > 0}
 				{#each table.footers as foot, footerindex (footerindex)}
 					{@render tfoot?.(foot, footerindex)}
 				{/each}

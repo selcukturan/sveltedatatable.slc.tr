@@ -4,7 +4,7 @@
 	import { Tabs, Tab, TabContent } from '$lib/website/components/ui/tabs';
 	import { MarkdownContent } from '$lib/website/components/base/markdown-content';
 	import common from '$lib/website/utils/common';
-	import { BaseDataTableView, type Settings } from '$lib/data-table/views';
+	import { BaseDataTableView, type Sources } from '$lib/data-table/views';
 	import { setTable } from '$lib/data-table/tables.svelte';
 
 	import Giris, { metadata } from '$lib/website/contents/Giris.md';
@@ -12,7 +12,7 @@
 
 	let selectedTab = $state('preview');
 
-	type DataType = {
+	type ProducedGrapes = {
 		order: number;
 		producer: string;
 		province: string;
@@ -25,8 +25,7 @@
 		amount: number;
 	};
 
-	let settings: Settings<DataType> = $state({
-		id: 'data-table-1',
+	let sources: Sources<ProducedGrapes> = $state({
 		data: common.generateExampleData(10),
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
@@ -42,14 +41,31 @@
 		],
 		footers: [{ order: 'f1' }, { quantity: 'f2' }]
 	});
+	let sources2: Sources<ProducedGrapes> = $state({
+		data: common.generateExampleData(10),
+		columns: [
+			{ field: 'order', label: 'Order0', width: '75px' },
+			{ field: 'producer', label: 'Producer0', width: '150px' },
+			{ field: 'province', label: 'Province0', width: '90px' },
+			{ field: 'district', label: 'District0', width: '100px' },
+			{ field: 'village', label: 'Village0', width: '120px' },
+			{ field: 'grape', label: 'Grape0', width: '160px' },
+			{ field: 'grapeColor', label: 'Grape Color0', width: '110px', hidden: false },
+			{ field: 'quantity', label: 'Quantity0', align: 'right', width: '100px' },
+			{ field: 'price', label: 'Price0', align: 'right', width: '100px' },
+			{ field: 'amount', label: 'Amount0', align: 'right', width: '100px' }
+		],
+		footers: [{ order: 'f1' }, { quantity: 'f2' }]
+	});
 
-	const table = setTable<DataType>(settings);
+	const table = setTable<ProducedGrapes>(sources);
+	const table2 = setTable<ProducedGrapes>(sources2);
 
 	const setPageData = (count: number) => {
-		table.setSettings.data = common.generateExampleData(count);
+		table.setAllData(common.generateExampleData(count));
 	};
 	const setFirstRow = () => {
-		table.setSettings.data[0] = {
+		table.set.data[0] = {
 			order: 0,
 			producer: 'Mustahsil',
 			province: 'Tip',
@@ -63,8 +79,7 @@
 		};
 	};
 	const hiddenSecondColumn = () => {
-		if (typeof table.settings.columns === 'undefined') return;
-		table.settings.columns[1].hidden = !table.settings.columns[1].hidden;
+		table.set.columns[1].hidden = !table.get.columns[1].hidden;
 	};
 </script>
 
@@ -97,7 +112,7 @@
 				{#snippet contents()}
 					<TabContent value="preview">
 						<ShowCase>
-							<BaseDataTableView {settings} />
+							<BaseDataTableView sources={table.get} />
 						</ShowCase>
 					</TabContent>
 					<TabContent value="code">
@@ -124,8 +139,30 @@
 				<button onclick={() => hiddenSecondColumn()} class="bg-surface-200 p-1"
 					>hiddenSecondColumn</button
 				>
-				<p>Current Count:{table.settings.data.length}</p>
+				<p>Current Count:{table.get.data.length}</p>
 			</div>
+		</MainContent>
+		<MainContent>
+			<Tabs bind:value={selectedTab}>
+				{#snippet tabs()}
+					<Tab value="preview">Preview</Tab>
+					<Tab value="code">Code</Tab>
+				{/snippet}
+				{#snippet contents()}
+					<TabContent value="preview">
+						<ShowCase>
+							<BaseDataTableView sources={table2.get} />
+						</ShowCase>
+					</TabContent>
+					<TabContent value="code">
+						<ShowCase>
+							<MarkdownContent>
+								<Code />
+							</MarkdownContent>
+						</ShowCase>
+					</TabContent>
+				{/snippet}
+			</Tabs>
 		</MainContent>
 	</Main>
 </Page>
