@@ -48,22 +48,17 @@
 			table.lastScrollTop = scrollTop;
 			table.scrollTop = table.lastScrollTop;
 			table.test = 'Scrolling';
-			// Kaydırma işlemi devam ederken zamanlayıcıyı sıfırlayın
-			if (scrollTimeout) {
-				clearTimeout(scrollTimeout);
-			}
-			console.log(table.scrollTop);
+
 			// onScroll?.(event);
 			await tick();
 			table.scrollTop = table.lastScrollTop;
-			// Kaydırma işlemi sonlandığında çalışacak zamanlayıcıyı ayarlayın
-			scrollTimeout = window.setTimeout(() => {
-				console.log('Scroll ended');
-				table.test = 'Scroll ended';
-				table.scrollTop = table.lastScrollTop + 1; // Kaydırma işlemi sonlandığında yapılacak işlemler
-				// Kaydırma işlemi sonlandığında yapılacak işlemler
-			}, 200); // 200ms kaydırma işleminin sonlandığını belirlemek için yeterli bir süre olabilir
+
 			// isScrolling = false;
+			if (scrollTimeout) clearTimeout(scrollTimeout);
+			scrollTimeout = window.setTimeout(() => {
+				table.test = 'Scroll ended';
+				table.scrollTop = table.lastScrollTop + 1;
+			}, 2000);
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
