@@ -2,7 +2,7 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { tick } from 'svelte';
+	import { tick, flushSync } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -34,43 +34,26 @@
 	const headerCount = 1;
 
 	const scrollAction = (tableNode: HTMLDivElement) => {
-		let isScrolling: boolean = false;
+		// let isScrolling: boolean = false;
 
 		const setScrollTop = /* async */ () => {
+			console.log(0);
 			// if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
-			console.log(1);
 			const { scrollTop } = tableNode;
-			// if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
-
+			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
+			console.log(1);
 			// isScrolling = true;
-			// table.lastScrollTop = scrollTop;
+			table.lastScrollTop = scrollTop;
+			/* flushSync(() => {
+				table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
+			}); */
+			tick().then(() => {
+				table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
+			});
 			// await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
-			// table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
+
 			// await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
 			// isScrolling = false;
-
-			const rowHeight = table.get.tbodyRowHeight;
-			const overscanThreshold = table.get.overscanThreshold;
-			const clientHeight = table.clientHeight;
-			// const scrollTop = table.scrollTop;
-			const dataLength = table.get.data.length;
-
-			const rowVisibleStartIndex = Math.floor(scrollTop / rowHeight);
-			const rowVisibleEndIndex = Math.min(
-				dataLength - 1,
-				Math.floor((scrollTop + clientHeight) / rowHeight)
-			);
-			const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
-			const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
-
-			table.data = table.get.data
-				.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)
-				.map((row, index) => {
-					return {
-						...row,
-						oi: rowOverscanStartIndex + index // original row index
-					};
-				});
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
