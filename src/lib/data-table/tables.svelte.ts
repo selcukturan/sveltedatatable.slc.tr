@@ -54,7 +54,7 @@ class Table<TData extends Row> {
 	// derived data. verileri okurken bu değişken kullanılacak. `table.data`
 	rowOverscanStartIndex = $state(0);
 	rowOverscanEndIndex = $state(0);
-	data = $derived.by(() => {
+	data1 = $derived.by(() => {
 		/* const rowHeight = this.get.tbodyRowHeight;
 		const overscanThreshold = this.get.overscanThreshold;
 		const clientHeight = this.clientHeight;
@@ -78,6 +78,7 @@ class Table<TData extends Row> {
 				};
 			});
 	});
+	data: TData[] = $state([]);
 	// ################################## END Properties ###############################################################
 
 	scrollTop = $state(0);

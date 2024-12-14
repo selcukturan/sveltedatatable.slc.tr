@@ -60,8 +60,17 @@
 				dataLength - 1,
 				Math.floor((scrollTop + clientHeight) / rowHeight)
 			);
-			table.rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
-			table.rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
+			const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
+			const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
+
+			table.data = table.get.data
+				.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)
+				.map((row, index) => {
+					return {
+						...row,
+						oi: rowOverscanStartIndex + index // original row index
+					};
+				});
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
