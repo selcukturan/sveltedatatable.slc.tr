@@ -49,18 +49,19 @@
 			table.scrollTop = table.lastScrollTop;
 			table.test = 'Scrolling';
 
-			// onScroll?.(event);
-			await tick();
-			table.scrollTop = table.lastScrollTop;
-
-			// isScrolling = false;
 			if (scrollTimeout) clearTimeout(scrollTimeout);
 			scrollTimeout = window.setTimeout(() => {
-				flushSync();
 				table.test = 'Scroll ended';
-				table.scrollTop = table.lastScrollTop + 1;
 				flushSync();
+				table.scrollTop = table.lastScrollTop + 1;
 			}, 2000);
+
+			// onScroll?.(event);
+			flushSync(); // Bekleyen durum değişikliklerini ve bunun sonucunda ortaya çıkanları eşzamanlı olarak temizler.
+			table.scrollTop = table.lastScrollTop;
+			await tick(); // Bekleyen durum değişiklikleri uygulandıktan sonra çözümlenen bir söz döndürür
+
+			// isScrolling = false;
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
