@@ -38,7 +38,7 @@
 	const scrollAction = (tableNode: HTMLDivElement) => {
 		// let isScrolling: boolean = false;
 
-		const setScrollTop = () => {
+		const setScrollTop = async () => {
 			// console.log(0);
 			// if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
 			const { scrollTop } = tableNode;
@@ -47,25 +47,22 @@
 			// isScrolling = true;
 			table.lastScrollTop = scrollTop;
 			table.scrollTop = table.lastScrollTop;
-
+			table.test = 'Scrolling';
 			// Kaydırma işlemi devam ederken zamanlayıcıyı sıfırlayın
 			if (scrollTimeout) {
 				clearTimeout(scrollTimeout);
 			}
-
+			console.log(table.scrollTop);
+			// onScroll?.(event);
+			await tick();
+			table.scrollTop = table.lastScrollTop;
 			// Kaydırma işlemi sonlandığında çalışacak zamanlayıcıyı ayarlayın
 			scrollTimeout = window.setTimeout(() => {
 				console.log('Scroll ended');
-				table.scrollTop = table.lastScrollTop;
+				table.test = 'Scroll ended';
+				table.scrollTop = table.lastScrollTop + 1; // Kaydırma işlemi sonlandığında yapılacak işlemler
 				// Kaydırma işlemi sonlandığında yapılacak işlemler
 			}, 200); // 200ms kaydırma işleminin sonlandığını belirlemek için yeterli bir süre olabilir
-
-			tick().then(() => {
-				console.log(1);
-				table.scrollTop = table.lastScrollTop;
-			});
-			// onScroll?.(event);
-			// await tick();
 			// isScrolling = false;
 		};
 

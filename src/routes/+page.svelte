@@ -103,6 +103,7 @@
 				<p class=" text-lg font-semibold">TypeScript</p>
 			</div>
 		</div>
+		<div>{table.test}</div>
 		<MainContent>
 			<Tabs bind:value={selectedTab}>
 				{#snippet tabs()}

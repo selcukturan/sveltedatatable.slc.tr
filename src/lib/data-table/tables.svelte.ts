@@ -76,6 +76,7 @@ class Table<TData extends Row> {
 	});
 	// ################################## END Properties ###############################################################
 
+	test = $state('test');
 	scrollTop = $state(0);
 	lastScrollTop = 0;
 	clientHeight = $state(0);
