@@ -53,7 +53,7 @@ class Table<TData extends Row> {
 	});
 	// derived data. verileri okurken bu değişken kullanılacak. `table.data`
 	data = $derived.by(() => {
-		const rowHeight = this.get.tbodyRowHeight;
+		/* const rowHeight = this.get.tbodyRowHeight;
 		const overscanThreshold = this.get.overscanThreshold;
 		const clientHeight = this.clientHeight;
 		const scrollTop = this.scrollTop;
@@ -71,6 +71,13 @@ class Table<TData extends Row> {
 			return {
 				...row,
 				oi: rowOverscanStartIndex + index // original row index
+			};
+		}); */
+
+		return this.get.data.map((row, index) => {
+			return {
+				...row,
+				oi: index // original row index
 			};
 		});
 	});
