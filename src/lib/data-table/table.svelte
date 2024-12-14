@@ -56,8 +56,10 @@
 			// isScrolling = false;
 			if (scrollTimeout) clearTimeout(scrollTimeout);
 			scrollTimeout = window.setTimeout(() => {
+				flushSync();
 				table.test = 'Scroll ended';
 				table.scrollTop = table.lastScrollTop + 1;
+				flushSync();
 			}, 2000);
 		};
 
