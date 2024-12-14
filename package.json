@@ -35,6 +35,7 @@
 		"vite": "^6.0.2"
 	},
 	"dependencies": {
+		"@tanstack/virtual-core": "^3.10.9",
 		"@zag-js/svelte": "^0.78.2",
 		"@zag-js/tabs": "^0.78.2"
 	}

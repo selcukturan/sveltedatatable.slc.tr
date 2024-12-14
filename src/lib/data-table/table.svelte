@@ -33,26 +33,39 @@
 	const table = getTable<TData>(src.id);
 	const headerCount = 1;
 
+	let scrollTimeout: number | undefined;
+
 	const scrollAction = (tableNode: HTMLDivElement) => {
 		// let isScrolling: boolean = false;
 
-		const setScrollTop = /* async */ () => {
-			console.log(0);
+		const setScrollTop = () => {
+			// console.log(0);
 			// if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
 			const { scrollTop } = tableNode;
 			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
-			console.log(1);
+
 			// isScrolling = true;
 			table.lastScrollTop = scrollTop;
-			/* flushSync(() => {
-				table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
-			}); */
-			tick().then(() => {
-				table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
-			});
-			// await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
+			table.scrollTop = table.lastScrollTop;
 
-			// await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
+			// Kaydırma işlemi devam ederken zamanlayıcıyı sıfırlayın
+			if (scrollTimeout) {
+				clearTimeout(scrollTimeout);
+			}
+
+			// Kaydırma işlemi sonlandığında çalışacak zamanlayıcıyı ayarlayın
+			scrollTimeout = window.setTimeout(() => {
+				console.log('Scroll ended');
+				table.scrollTop = table.lastScrollTop;
+				// Kaydırma işlemi sonlandığında yapılacak işlemler
+			}, 200); // 200ms kaydırma işleminin sonlandığını belirlemek için yeterli bir süre olabilir
+
+			tick().then(() => {
+				console.log(1);
+				table.scrollTop = table.lastScrollTop;
+			});
+			// onScroll?.(event);
+			// await tick();
 			// isScrolling = false;
 		};
 
