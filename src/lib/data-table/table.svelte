@@ -34,30 +34,22 @@
 	const headerCount = 1;
 
 	const scrollAction = (tableNode: HTMLDivElement) => {
+		let isScrolling = false;
+
 		const setScrollTop = () => {
+			if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
 			const { scrollTop } = tableNode;
 			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
 
+			isScrolling = true;
 			table.lastScrollTop = scrollTop;
 
-			/* tick().then(() => {
-				console.log('tick');
-				table.scrollTop = table.lastScrollTop;
-			}); */
-
-			// flushSync(); // Bekleyen durum değişikliklerini ve bunun sonucunda ortaya çıkanları eşzamanlı olarak temizler.
-			/* flushSync(() => {
-				console.log('flushSync');
-				table.scrollTop = table.lastScrollTop;
-			}); */
-
-			flushSync();
-			table.scrollTop = table.lastScrollTop;
-			tick().then(() => {
-				console.log('tick');
+			flushSync(() => {
 				table.scrollTop = table.lastScrollTop;
 			});
-
+			tick().then(() => {
+				isScrolling = false;
+			});
 			// onScroll?.(event);
 		};
 
