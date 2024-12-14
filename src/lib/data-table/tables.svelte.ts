@@ -52,8 +52,10 @@ class Table<TData extends Row> {
 		});
 	});
 	// derived data. verileri okurken bu değişken kullanılacak. `table.data`
+	rowOverscanStartIndex = $state(0);
+	rowOverscanEndIndex = $state(0);
 	data = $derived.by(() => {
-		const rowHeight = this.get.tbodyRowHeight;
+		/* const rowHeight = this.get.tbodyRowHeight;
 		const overscanThreshold = this.get.overscanThreshold;
 		const clientHeight = this.clientHeight;
 		const scrollTop = this.scrollTop;
@@ -65,19 +67,18 @@ class Table<TData extends Row> {
 			Math.floor((scrollTop + clientHeight) / rowHeight)
 		);
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
-		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
+		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold); */
 
-		return this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1).map((row, index) => {
-			return {
-				...row,
-				oi: rowOverscanStartIndex + index // original row index
-			};
-		});
+		return this.get.data
+			.slice(this.rowOverscanStartIndex, this.rowOverscanEndIndex + 1)
+			.map((row, index) => {
+				return {
+					...row,
+					oi: this.rowOverscanStartIndex + index // original row index
+				};
+			});
 	});
 	// ################################## END Properties ###############################################################
-
-	rowOverscanStartIndex = $state(0);
-	rowOverscanEndIndex = $state(0);
 
 	scrollTop = $state(0);
 	lastScrollTop = 0;

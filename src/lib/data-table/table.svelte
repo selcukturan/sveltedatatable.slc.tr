@@ -40,14 +40,28 @@
 			// if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
 			console.log(1);
 			const { scrollTop } = tableNode;
-			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
+			// if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
 
 			// isScrolling = true;
-			table.lastScrollTop = scrollTop;
+			// table.lastScrollTop = scrollTop;
 			// await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
-			table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
+			// table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
 			// await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
 			// isScrolling = false;
+
+			const rowHeight = table.get.tbodyRowHeight;
+			const overscanThreshold = table.get.overscanThreshold;
+			const clientHeight = table.clientHeight;
+			// const scrollTop = table.scrollTop;
+			const dataLength = table.get.data.length;
+
+			const rowVisibleStartIndex = Math.floor(scrollTop / rowHeight);
+			const rowVisibleEndIndex = Math.min(
+				dataLength - 1,
+				Math.floor((scrollTop + clientHeight) / rowHeight)
+			);
+			table.rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
+			table.rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });

@@ -19,7 +19,7 @@
 			</div>
 		</div>
 		<div class="hidden">
-			<p>v.0.0.1</p>
+			<p>build.22</p>
 		</div>
 	</div>
 </footer>
