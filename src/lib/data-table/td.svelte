@@ -14,7 +14,7 @@
 		class?: string;
 	};
 	const { src, row, children, ri, ci, col, class: classes, ...attributes }: Props = $props();
-
+	if (!src.id) throw new Error('Sources not found');
 	const table = getTable<TData>(src.id);
 
 	const cell = `r${ri}c${ci}`;

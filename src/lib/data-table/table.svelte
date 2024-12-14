@@ -2,7 +2,7 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	/* import { tick } from 'svelte'; */
+	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -36,14 +36,15 @@
 	const scrollAction = (tableNode: HTMLDivElement) => {
 		let isScrolling: boolean = false;
 
-		const setScrollTop = /* async */ () => {
+		const setScrollTop = async () => {
 			// if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
-			console.log(1);
+			// console.log(1);
 			const { scrollTop } = tableNode;
 			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
 
 			// isScrolling = true;
 			table.lastScrollTop = scrollTop;
+			await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
 			table.scrollTop = table.lastScrollTop; // `table.scrollTop` değiştiğinde `table.data` yeniden hesaplanır.
 			// await tick(); // `table.scrollTop` state'i değiştiğinde, dom'da yapılacak tüm değişiklikleri bekler.
 			// isScrolling = false;

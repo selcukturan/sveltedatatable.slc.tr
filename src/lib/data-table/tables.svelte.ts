@@ -76,6 +76,9 @@ class Table<TData extends Row> {
 	});
 	// ################################## END Properties ###############################################################
 
+	rowOverscanStartIndex = $state(0);
+	rowOverscanEndIndex = $state(0);
+
 	scrollTop = $state(0);
 	lastScrollTop = 0;
 	clientHeight = $state(0);
