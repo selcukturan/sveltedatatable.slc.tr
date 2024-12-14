@@ -26,7 +26,7 @@
 	};
 
 	let sources: Sources<ProducedGrapes> = $state({
-		data: common.generateExampleData(1000),
+		data: common.generateExampleData(100),
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
 			{ field: 'producer', label: 'Producer', width: '150px' },

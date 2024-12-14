@@ -33,35 +33,32 @@
 	const table = getTable<TData>(src.id);
 	const headerCount = 1;
 
-	let scrollTimeout: number | undefined;
-
 	const scrollAction = (tableNode: HTMLDivElement) => {
-		// let isScrolling: boolean = false;
-
-		const setScrollTop = async () => {
-			// console.log(0);
-			// if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
+		const setScrollTop = () => {
 			const { scrollTop } = tableNode;
 			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
 
-			// isScrolling = true;
 			table.lastScrollTop = scrollTop;
-			table.scrollTop = table.lastScrollTop;
-			table.test = 'Scrolling';
 
-			if (scrollTimeout) clearTimeout(scrollTimeout);
-			scrollTimeout = window.setTimeout(() => {
-				table.test = 'Scroll ended';
-				flushSync();
-				table.scrollTop = table.lastScrollTop + 1;
-			}, 2000);
+			/* tick().then(() => {
+				console.log('tick');
+				table.scrollTop = table.lastScrollTop;
+			}); */
+
+			// flushSync(); // Bekleyen durum değişikliklerini ve bunun sonucunda ortaya çıkanları eşzamanlı olarak temizler.
+			/* flushSync(() => {
+				console.log('flushSync');
+				table.scrollTop = table.lastScrollTop;
+			}); */
+
+			flushSync();
+			table.scrollTop = table.lastScrollTop;
+			tick().then(() => {
+				console.log('tick');
+				table.scrollTop = table.lastScrollTop;
+			});
 
 			// onScroll?.(event);
-			flushSync(); // Bekleyen durum değişikliklerini ve bunun sonucunda ortaya çıkanları eşzamanlı olarak temizler.
-			table.scrollTop = table.lastScrollTop;
-			await tick(); // Bekleyen durum değişiklikleri uygulandıktan sonra çözümlenen bir söz döndürür
-
-			// isScrolling = false;
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
