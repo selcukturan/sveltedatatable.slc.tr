@@ -151,7 +151,4 @@
 	.horizonral-handle-position {
 		@apply bottom-0 left-1/2 -translate-x-1/2 translate-y-full;
 	}
-	.horizonral-title-position {
-		@apply left-16 top-0 -translate-x-1/2 -translate-y-full;
-	}
 </style>

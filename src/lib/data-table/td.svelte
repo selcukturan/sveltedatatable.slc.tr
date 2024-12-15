@@ -1,5 +1,5 @@
 <script lang="ts" generics="TData extends Row">
-	import type { Row, Column, Sources } from './types';
+	import type { Row, Column, Sources, Field } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { type Snippet } from 'svelte';
 	import { getTable } from './tables.svelte';
@@ -14,7 +14,7 @@
 		class?: string;
 	};
 	const { src, row, children, ri, ci, col, class: classes, ...attributes }: Props = $props();
-	if (!src.id) throw new Error('Sources not found');
+
 	const table = getTable<TData>(src.id);
 
 	const cell = `r${ri}c${ci}`;
@@ -26,9 +26,10 @@
 			table.focusedCell = undefined;
 
 			const { row, col, originalrowindex, originalcolindex, field } = cellNode.dataset;
+			const typedField = field as Field<TData>;
 
 			if (
-				typeof field === 'undefined' ||
+				typeof typedField === 'undefined' ||
 				typeof row === 'undefined' ||
 				typeof col === 'undefined' ||
 				typeof originalrowindex === 'undefined' ||
@@ -36,16 +37,15 @@
 			) {
 				return;
 			}
-
-			table.focusedCell = {
-				field,
+			table.setFocusedCell({
+				field: typedField,
 				rowIndex: +row,
 				colIndex: +col,
 				cell: `r${row}c${col}`,
 				originalRowIndex: +originalrowindex,
 				originalColIndex: +originalcolindex,
 				originalCell: `r${originalrowindex}c${originalcolindex}`
-			};
+			});
 		};
 
 		cellNode.addEventListener('focus', handleFocus);
@@ -74,7 +74,7 @@
 	data-originalrowindex={row.oi}
 	data-originalcolindex={col.oi}
 	data-originalcell={originalCell}
-	data-field={col?.field}
+	data-field={col.field}
 	spellcheck="false"
 	{...attributes}
 >

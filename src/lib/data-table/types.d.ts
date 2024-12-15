@@ -1,9 +1,9 @@
+export type RowKey = string;
 export type RowValue = unknown;
-export type Row = Record<string, RowValue> & {
-	oi?: number; // original index
+export type Row = Record<RowKey, RowValue> & {
+	oi?: number; // original row index
 };
-
-export type Field<TData> = keyof TData;
+export type Field<TData> = Extract<keyof TData, RowKey>;
 
 // 100px | 1.25fr | minmax(100px,1.25fr) | minmax(1.25fr,100px) | minmax(1fr,1.25fr) | minmax(100px,200px)
 export type Width =
@@ -24,16 +24,14 @@ export type Column<TData> = {
 	alignHeader?: 'left' | 'center' | 'right';
 	alignFooter?: 'left' | 'center' | 'right';
 	width?: Width;
-	oi?: number; // original index
+	oi?: number; // original column index
 };
 
-export type Footer<TData> = {
-	[K in keyof TData]?: string;
-};
+export type Footer<TData> = Partial<Record<Field<TData>, string>>;
 
 export type Sources<TData> = {
-	id?: string;
-	data: TData[];
+	id: string; // required
+	data?: TData[];
 	width?: string;
 	height?: string;
 	overscanThreshold?: number;
@@ -42,10 +40,10 @@ export type Sources<TData> = {
 	theadRowHeight?: number;
 	tbodyRowHeight?: number;
 	tfootRowHeight?: number;
-	columns: Column<TData>[];
+	columns: Column<TData>[]; // required
 	footers?: Footer<TData>[];
 };
-export type DefaultSources<TData> = Required<Sources<TData>>;
+export type RequiredSources<TData> = Required<Sources<TData>>;
 
 export type FocucedCell<TData> = {
 	field: Field<TData>;

@@ -3,7 +3,6 @@
 	import { Table, Th, Td, Tf, Trh, Trd, Trf } from '..';
 
 	const { sources: src }: { sources: Sources<TData> } = $props();
-	if (!src.id) throw new Error('Sources not found');
 	const table = getTable<TData>(src.id);
 </script>
 
@@ -32,12 +31,9 @@
 	{#snippet tfoot(foot, fi)}
 		<Trf {src} {fi}>
 			{#each table.columns as col, ci (col.oi)}
-				<!-- {@const footer = foot[col.field]} -->
+				{@const footer = foot[col.field]}
 				<Tf {src} {col} {ci} {foot} {fi} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
-					{table.get.data.reduce((acc, row) => {
-                        const value = row[col.field];
-                        return typeof value === 'number' ? acc + value : acc;
-                    }, 0)}
+					{footer}
 				</Tf>
 			{/each}
 		</Trf>

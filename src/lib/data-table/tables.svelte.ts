@@ -1,8 +1,8 @@
-import type { Sources, DefaultSources, Row, FocucedCell, Footer } from './types';
+import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field } from './types';
 import { getContext, setContext } from 'svelte';
 
 class Table<TData extends Row> {
-	private readonly defaultSources: DefaultSources<TData> = {
+	private readonly defaultSources: RequiredSources<TData> = {
 		id: '',
 		data: [],
 		width: '100%',
@@ -19,14 +19,14 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Constructor ###############################################################
 	element!: HTMLDivElement;
-	set: Sources<TData> = $state({ id: '', data: [], columns: [] }); // orjinal settings. ayarları değiştirirken bu değişken kullanılacak. `table.setSettings`
+	private set: Sources<TData> = $state({ id: '', columns: [] }); // orjinal sources. kaynaklar/sources değiştirilirken bu değişken kullanılacak. `table.set`
 	constructor(sources: Sources<TData>) {
 		this.set = sources;
 	}
 	// ################################## END Constructor ###############################################################
 
 	// ################################## BEGIN Properties ###############################################################
-	// derived settings. ayarları okurken bu değişken kullanılacak. `table.settings`
+	// derived sources. kaynaklar/sources okunurken bu değişken kullanılacak. `table.get`
 	get = $derived({ ...this.defaultSources, ...this.set });
 	// derived columns. kolon bilgileri okurken bu değişken kullanılacak. `table.columns`
 	columns = $derived(
@@ -78,7 +78,6 @@ class Table<TData extends Row> {
 
 	test = $state('test');
 	scrollTop = $state(0);
-	lastScrollTop = 0;
 	clientHeight = $state(0);
 	focusedCell?: FocucedCell<TData> = $state();
 	gridTemplateRows: string = $derived.by(() => {
@@ -102,17 +101,24 @@ class Table<TData extends Row> {
 	setAllSources = (sources: Sources<TData>) => {
 		this.set = sources;
 	};
+	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }) => {
+		// const footer = foot[field]; // sum, avg, count or footer content
+		return this.get.data.reduce((acc, row) => {
+			const value = row[field];
+			return typeof value === 'number' ? acc + value : acc;
+		}, 0);
+	};
+	setFocusedCell(cell: FocucedCell<TData>) {
+		this.focusedCell = cell;
+	}
 }
 
 // ################################## BEGIN Export Table Context ###############################################################
-export function setTable<TData extends Row>(sources: Sources<TData>): Table<TData> {
-	sources.id = sources.id || `slc_${crypto.randomUUID()}`;
-	const table = new Table<TData>(sources);
-	setContext(sources.id, table);
-	return table;
+export function createTable<TData extends Row>(sources: Sources<TData>) {
+	return setContext(sources.id, new Table<TData>(sources));
 }
 export function getTable<TData extends Row>(id: string) {
-	return getContext<ReturnType<typeof setTable<TData>>>(id);
+	return getContext<ReturnType<typeof createTable<TData>>>(id);
 }
 // ################################## END Export Table Context #################################################################
 export type { Sources, Row };

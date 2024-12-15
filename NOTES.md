@@ -1,4 +1,5 @@
 ```bash
+npm install -g npm-check
 npm-check -u
 ```
 

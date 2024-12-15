@@ -5,10 +5,8 @@
 	import { MarkdownContent } from '$lib/website/components/base/markdown-content';
 	import common from '$lib/website/utils/common';
 	import { BaseDataTableView, type Sources } from '$lib/data-table/views';
-	import { setTable } from '$lib/data-table/tables.svelte';
-
-	import Giris, { metadata } from '$lib/website/contents/Giris.md';
-	import Code, { metadata as codeMetaData } from '$lib/website/contents/Code.md';
+	import { createTable } from '$lib/data-table/tables.svelte';
+	import Code from '$lib/website/contents/Code.md';
 
 	let selectedTab = $state('preview');
 
@@ -25,7 +23,9 @@
 		amount: number;
 	};
 
-	let sources: Sources<ProducedGrapes> = $state({
+	// initial sources setup
+	let sources: Sources<ProducedGrapes> = {
+		id: `slc_${crypto.randomUUID()}`,
 		data: common.generateExampleData(100),
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
@@ -40,31 +40,17 @@
 			{ field: 'amount', label: 'Amount', align: 'right', width: '100px' }
 		],
 		footers: [{ order: 'f1' }, { quantity: 'f2' }]
-	});
-	let sources2: Sources<ProducedGrapes> = $state({
-		data: common.generateExampleData(10),
-		columns: [
-			{ field: 'order', label: 'Order0', width: '75px' },
-			{ field: 'producer', label: 'Producer0', width: '150px' },
-			{ field: 'province', label: 'Province0', width: '90px' },
-			{ field: 'district', label: 'District0', width: '100px' },
-			{ field: 'village', label: 'Village0', width: '120px' },
-			{ field: 'grape', label: 'Grape0', width: '160px' },
-			{ field: 'grapeColor', label: 'Grape Color0', width: '110px', hidden: false },
-			{ field: 'quantity', label: 'Quantity0', align: 'right', width: '100px' },
-			{ field: 'price', label: 'Price0', align: 'right', width: '100px' },
-			{ field: 'amount', label: 'Amount0', align: 'right', width: '100px' }
-		],
-		footers: [{ order: 'f1' }, { quantity: 'f2' }]
-	});
+	};
 
-	const table = setTable<ProducedGrapes>(sources);
-	const table2 = setTable<ProducedGrapes>(sources2);
+	const table = createTable<ProducedGrapes>(sources);
+	const table2 = createTable<ProducedGrapes>({ ...sources, id: `slc_${crypto.randomUUID()}` });
 
 	const setPageData = (count: number) => {
 		table.setAllData(common.generateExampleData(count));
 	};
 	const setFirstRow = () => {
+		/* if (!table.set.data) return;
+
 		table.set.data[0] = {
 			order: 0,
 			producer: 'Mustahsil',
@@ -76,10 +62,10 @@
 			quantity: 0,
 			price: 0,
 			amount: 0
-		};
+		}; */
 	};
-	const hiddenSecondColumn = () => {
-		table.set.columns[1].hidden = !table.get.columns[1].hidden;
+	const hideSecondColumn = () => {
+		/* table.set.columns[1].hidden = !table.get.columns[1].hidden; */
 	};
 </script>
 
@@ -137,7 +123,7 @@
 				<button onclick={() => setPageData(10000)} class="bg-surface-200 p-1">10000</button>
 				<button onclick={() => setPageData(100000)} class="bg-surface-200 p-1">100000</button>
 				<button onclick={() => setFirstRow()} class="bg-surface-200 p-1">setFirstRow</button>
-				<button onclick={() => hiddenSecondColumn()} class="bg-surface-200 p-1"
+				<button onclick={() => hideSecondColumn()} class="bg-surface-200 p-1"
 					>hiddenSecondColumn</button
 				>
 				<p>Current Count:{table.get.data.length}</p>

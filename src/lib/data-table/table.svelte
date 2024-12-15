@@ -2,7 +2,7 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { tick, flushSync } from 'svelte';
+	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -29,28 +29,24 @@
 		...attributes
 	}: Props = $props();
 
-	if (!src.id) throw new Error('Sources not found');
 	const table = getTable<TData>(src.id);
 	const headerCount = 1;
 
 	const scrollAction = (tableNode: HTMLDivElement) => {
 		let isScrolling = false;
+		let lastScrollTop: number | undefined = undefined;
 
-		const setScrollTop = () => {
-			if (isScrolling) return; // Eğer fonksiyon zaten çalışıyorsa, yeni çağrıları reddeder.
+		const setScrollTop = async () => {
+			if (isScrolling) return;
 			const { scrollTop } = tableNode;
-			if (scrollTop === table.lastScrollTop) return; // virtual scroll özelliği sadece dikey scroll'da çalışır.
+			if (typeof lastScrollTop === 'undefined') lastScrollTop = scrollTop;
+			if (scrollTop === lastScrollTop) return; // only vertical scroll
 
 			isScrolling = true;
-			table.lastScrollTop = scrollTop;
-
-			flushSync(() => {
-				table.scrollTop = table.lastScrollTop;
-			});
-			tick().then(() => {
-				isScrolling = false;
-			});
-			// onScroll?.(event);
+			lastScrollTop = scrollTop;
+			table.scrollTop = lastScrollTop;
+			await tick();
+			isScrolling = false;
 		};
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
