@@ -36,7 +36,7 @@
 					<span
 						class="absolute right-0 top-0 -translate-y-1/3 translate-x-2/3 select-none rounded-sm bg-quaternary-400 px-0.5 py-0.5 text-[0.625rem] font-semibold leading-none text-quaternary-token-950"
 					>
-						build.34
+						build.35
 					</span>
 				</a>
 			</div>
