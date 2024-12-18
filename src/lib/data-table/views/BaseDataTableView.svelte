@@ -8,7 +8,7 @@
 
 <!-- prettier-ignore -->
 <Table {src} class="bg-zinc-50 dark:bg-zinc-950" >
-	{#snippet thead()}
+	{#snippet thead() }
 		<Trh>
 			{#each table.columns as col, ci (col.oi)}
 				{@const header = col.label}

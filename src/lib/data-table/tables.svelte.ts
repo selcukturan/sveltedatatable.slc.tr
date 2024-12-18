@@ -101,12 +101,20 @@ class Table<TData extends Row> {
 	setAllSources = (sources: Sources<TData>) => {
 		this.set = sources;
 	};
-	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }) => {
-		// const footer = foot[field]; // sum, avg, count or footer content
-		return this.get.data.reduce((acc, row) => {
-			const value = row[field];
-			return typeof value === 'number' ? acc + value : acc;
-		}, 0);
+	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
+		const footer = foot[field]; // sum, avg, count or footer content
+		if (typeof footer === 'undefined') return '';
+
+		return footer === 'count'
+			? this.get.data.length
+			: footer === 'avg'
+				? 11
+				: footer === 'sum'
+					? this.get.data.reduce((acc, row) => {
+							const value = row[field];
+							return typeof value === 'number' ? acc + value : acc;
+						}, 0)
+					: footer;
 	};
 	setFocusedCell(cell: FocucedCell<TData>) {
 		this.focusedCell = cell;

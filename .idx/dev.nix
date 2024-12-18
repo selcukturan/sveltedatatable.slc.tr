@@ -30,18 +30,21 @@
     };
   };
   idx.extensions = [
+    "usernamehw.errorlens"
     "dbaeumer.vscode-eslint"
     "github.github-vscode-theme"
+    "eamodio.gitlens"
     "wix.vscode-import-cost"
+    "oderwat.indent-rainbow"
     "xabikos.javascriptsnippets"
     "zaaack.markdown-editor"
-    "pkief.material-icon-theme"
     "zhuangtongfa.material-theme"
     "codeandstuff.package-json-upgrade"
     "csstools.postcss"
     "esbenp.prettier-vscode"
-    "thebearingedge.vscode-sql-lit"
+    "yoavbls.pretty-ts-errors"
     "chanzhaoyu.svelte-5-snippets"
+    "pivaszbs.svelte-autoimport"
     "svelte.svelte-vscode"
     "bradlc.vscode-tailwindcss"
   ];  

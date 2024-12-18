@@ -39,7 +39,7 @@
 			{ field: 'price', label: 'Price', align: 'right', width: '100px' },
 			{ field: 'amount', label: 'Amount', align: 'right', width: '100px' }
 		],
-		footers: [{ order: 'f1' }, { quantity: 'f2' }]
+		footers: [{ order: 'f1' }, { quantity: 'sum' }]
 	};
 
 	const table = createTable<ProducedGrapes>(sources);

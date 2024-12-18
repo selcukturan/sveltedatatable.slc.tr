@@ -1,4 +1,65 @@
 {
-    "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true
+	"IDX.aI.enableInlineCompletion": true,
+	"IDX.aI.enableCodebaseIndexing": true,
+	/* IDX */
+	"terminal.integrated.localEchoLatencyThreshold": -1,
+	"terminal.integrated.localEchoEnabled": "off",
+	"workbench.editorAssociations": {
+		"*.md": "vscode.markdown.preview.editor"
+	},
+	"workbench.startupEditor": "none",
+	"editor.fontFamily": "JetBrains Mono, Menlo, Monaco, Courier New, monospace",
+	"editor.fontWeight": "normal",
+	"editor.fontSize": 14,
+	"editor.lineHeight": 0,
+	"editor.letterSpacing": 0,
+	"debug.console.fontSize": 12,
+	"window.commandCenter": false,
+	"workbench.preferredLightColorTheme": "Monospace Light",
+	"workbench.preferredDarkColorTheme": "GitHub Light",
+	"workbench.iconTheme": "monospace",
+	"window.autoDetectColorScheme": true,
+	"workbench.layoutControl.enabled": false,
+	"inlineChat.mode": "preview",
+	/* SLC */
+	"terminal.integrated.defaultProfile.windows": "Git Bash",
+	"window.title": "${rootName}${separator}${dirty}${activeEditorShort}${separator}${profileName}${separator}${appName}",
+	"workbench.editor.empty.hint": "hidden",
+	"svelte.enable-ts-plugin": true,
+	"git.enableSmartCommit": true,
+	"git.autofetch": true,
+	"files.autoSave": "off",
+	"gitlens.currentLine.enabled": false,
+	"explorer.compactFolders": false,
+	"workbench.tree.expandMode": "doubleClick",
+	"workbench.tree.indent": 17,
+	"workbench.editor.labelFormat": "short",
+	"eslint.format.enable": false,
+	"eslint.validate": ["javascript", "typescript"],
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"editor.mouseWheelZoom": true,
+	"editor.linkedEditing": true,
+	"editor.guides.bracketPairs": "active",
+	"editor.unicodeHighlight.includeComments": false,
+	"editor.unicodeHighlight.includeStrings": false,
+	"editor.unicodeHighlight.ambiguousCharacters": false,
+	"editor.minimap.enabled": false,
+	"editor.codeLens": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "never",
+		"source.fixAll.eslint": "explicit"
+	},
+	"[svelte]": {
+		"editor.defaultFormatter": "svelte.svelte-vscode"
+	},
+	"[css]": {
+		"editor.defaultFormatter": "vscode.css-language-features"
+	},
+	"[html]": {
+		"editor.defaultFormatter": "vscode.html-language-features"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features"
+	}
 }
