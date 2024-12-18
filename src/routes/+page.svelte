@@ -93,8 +93,8 @@
 		<MainContent>
 			<Tabs bind:value={selectedTab}>
 				{#snippet tabs()}
-					<Tab value="preview">Preview</Tab>
-					<Tab value="code">Code</Tab>
+					<Tab value="preview">Ön İzleme</Tab>
+					<Tab value="code">Kod</Tab>
 				{/snippet}
 				{#snippet contents()}
 					<TabContent value="preview">
@@ -132,8 +132,8 @@
 		<MainContent>
 			<Tabs bind:value={selectedTab}>
 				{#snippet tabs()}
-					<Tab value="preview">Preview</Tab>
-					<Tab value="code">Code</Tab>
+					<Tab value="preview">Ön İzleme</Tab>
+					<Tab value="code">Kod</Tab>
 				{/snippet}
 				{#snippet contents()}
 					<TabContent value="preview">

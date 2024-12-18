@@ -75,6 +75,7 @@
 			bind:this={table.element}
 			bind:clientHeight={table.clientHeight}
 			use:scrollAction
+			data-id={src.id}
 			class:slc-table={true}
 			class={tableClass}
 			style:grid-template-rows={table.gridTemplateRows}

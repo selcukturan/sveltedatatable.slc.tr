@@ -38,6 +38,7 @@
     "oderwat.indent-rainbow"
     "xabikos.javascriptsnippets"
     "zaaack.markdown-editor"
+    "pkief.material-icon-theme"
     "zhuangtongfa.material-theme"
     "codeandstuff.package-json-upgrade"
     "csstools.postcss"
