@@ -8,8 +8,6 @@ class Table<TData extends Row> {
 		width: '100%',
 		height: '100%',
 		overscanThreshold: 4,
-		selectionColumn: false,
-		actionColumn: false,
 		theadRowHeight: 35,
 		tbodyRowHeight: 35,
 		tfootRowHeight: 35,
@@ -77,13 +75,36 @@ class Table<TData extends Row> {
 	// ################################## END Properties ###############################################################
 
 	test = $state('test');
+	headerCount = $state(1);
 	scrollTop = $state(0);
+	clientWidth = $state(0);
 	clientHeight = $state(0);
+	offsetWidth = $state(0);
+	offsetHeight = $state(0);
+	contentRect = $state({
+		x: 0,
+		y: 0,
+		width: 0,
+		height: 0,
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0
+	});
+	horizontalScrollbarHeight = $derived(this.offsetHeight - this.clientHeight);
+	inlineSize = $derived(this.contentRect.width - this.offsetWidth + this.clientWidth); // table width without scrollbar and border
+	blockSize = $derived(this.contentRect.height - this.horizontalScrollbarHeight); // table height without scrollbar and border
+	scrollHeight = $derived(
+		this.headerCount * this.get.theadRowHeight +
+			this.get.data.length * this.get.tbodyRowHeight +
+			this.footers.length * this.get.tfootRowHeight +
+			this.horizontalScrollbarHeight
+	);
+
 	focusedCell?: FocucedCell<TData> = $state();
 	gridTemplateRows: string = $derived.by(() => {
-		const headerCount = 1;
 		const repeatThead =
-			headerCount >= 1 ? `repeat(${headerCount}, ${this.get.theadRowHeight}px)` : ``;
+			this.headerCount >= 1 ? `repeat(${this.headerCount}, ${this.get.theadRowHeight}px)` : ``;
 		const repeatTbody =
 			this.get.data.length > 0
 				? `repeat(${this.get.data.length}, ${this.get.tbodyRowHeight}px)`

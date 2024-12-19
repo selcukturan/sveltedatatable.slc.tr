@@ -1,14 +1,10 @@
 <script lang="ts">
-	import { ShowCase } from '$lib/website/components/base/showcase';
 	import { Page, Main, MainContent } from '$lib/website/templates/base';
-	import { Tabs, Tab, TabContent } from '$lib/website/components/ui/tabs';
-	import { MarkdownContent } from '$lib/website/components/base/markdown-content';
+	import { PreviewAndCode } from '$lib/website/templates/sections';
 	import common from '$lib/website/utils/common';
 	import { BaseDataTableView, type Sources } from '$lib/data-table/views';
 	import { createTable } from '$lib/data-table/tables.svelte';
 	import Code from '$lib/website/contents/Code.md';
-
-	let selectedTab = $state('preview');
 
 	type ProducedGrapes = {
 		order: number;
@@ -25,7 +21,7 @@
 
 	// initial sources setup
 	let sources: Sources<ProducedGrapes> = {
-		id: `slc_${crypto.randomUUID()}`,
+		id: 'table1',
 		data: common.generateExampleData(100),
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
@@ -43,7 +39,7 @@
 	};
 
 	const table = createTable<ProducedGrapes>(sources);
-	const table2 = createTable<ProducedGrapes>({ ...sources, id: `slc_${crypto.randomUUID()}` });
+	const table2 = createTable<ProducedGrapes>({ ...sources, id: 'table2' });
 
 	const setPageData = (count: number) => {
 		table.setAllData(common.generateExampleData(count));
@@ -91,26 +87,14 @@
 		</div>
 		<div>{table.test}</div>
 		<MainContent>
-			<Tabs bind:value={selectedTab}>
-				{#snippet tabs()}
-					<Tab value="preview">Ön İzleme</Tab>
-					<Tab value="code">Kod</Tab>
+			<PreviewAndCode>
+				{#snippet preview()}
+					<BaseDataTableView sources={table.get} />
 				{/snippet}
-				{#snippet contents()}
-					<TabContent value="preview">
-						<ShowCase>
-							<BaseDataTableView sources={table.get} />
-						</ShowCase>
-					</TabContent>
-					<TabContent value="code">
-						<ShowCase>
-							<MarkdownContent>
-								<Code />
-							</MarkdownContent>
-						</ShowCase>
-					</TabContent>
+				{#snippet code()}
+					<Code />
 				{/snippet}
-			</Tabs>
+			</PreviewAndCode>
 		</MainContent>
 		<MainContent>
 			<div>
@@ -130,26 +114,14 @@
 			</div>
 		</MainContent>
 		<MainContent>
-			<Tabs bind:value={selectedTab}>
-				{#snippet tabs()}
-					<Tab value="preview">Ön İzleme</Tab>
-					<Tab value="code">Kod</Tab>
+			<PreviewAndCode>
+				{#snippet preview()}
+					<BaseDataTableView sources={table2.get} />
 				{/snippet}
-				{#snippet contents()}
-					<TabContent value="preview">
-						<ShowCase>
-							<BaseDataTableView sources={table2.get} />
-						</ShowCase>
-					</TabContent>
-					<TabContent value="code">
-						<ShowCase>
-							<MarkdownContent>
-								<Code />
-							</MarkdownContent>
-						</ShowCase>
-					</TabContent>
+				{#snippet code()}
+					<Code />
 				{/snippet}
-			</Tabs>
+			</PreviewAndCode>
 		</MainContent>
 	</Main>
 </Page>

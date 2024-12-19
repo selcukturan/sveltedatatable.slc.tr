@@ -16,7 +16,7 @@
 	"debug.console.fontSize": 12,
 	"window.commandCenter": false,
 	"workbench.preferredLightColorTheme": "Monospace Light",
-	"workbench.preferredDarkColorTheme": "One Dark Pro Darker",
+	"workbench.preferredDarkColorTheme": "GitHub Light",
 	"workbench.iconTheme": "material-icon-theme",
 	"window.autoDetectColorScheme": true,
 	"workbench.layoutControl.enabled": false,

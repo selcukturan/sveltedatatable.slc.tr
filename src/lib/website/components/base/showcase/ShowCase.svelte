@@ -2,7 +2,7 @@
 	import { getGlobalContext } from '$lib/website/contexts/global.svelte';
 	import type { Snippet } from 'svelte';
 
-	let { children }: { children?: Snippet } = $props();
+	let { children, resizeable = false }: { children?: Snippet; resizeable?: boolean } = $props();
 
 	let globalContext = getGlobalContext();
 
@@ -132,16 +132,18 @@
 		</div>
 	{/if}
 	<!-- Size Handle -->
-	<div
-		use:verticalHandleAction={(e) => verticalHandleResizeUpdate(e)}
-		class:vertical-handle-position={true}
-		class="absolute z-30 inline-flex h-16 w-2 cursor-col-resize !touch-none select-none items-center justify-center rounded-full bg-secondary-400"
-	></div>
-	<div
-		use:horizontalHandleAction={(e) => horizontalHandleResizeUpdate(e)}
-		class:horizonral-handle-position={true}
-		class="absolute z-30 inline-flex h-2 w-16 cursor-row-resize !touch-none select-none items-center justify-center rounded-full bg-secondary-400"
-	></div>
+	{#if resizeable}
+		<div
+			use:verticalHandleAction={(e) => verticalHandleResizeUpdate(e)}
+			class:vertical-handle-position={true}
+			class="absolute z-30 inline-flex h-16 w-2 cursor-col-resize !touch-none select-none items-center justify-center rounded-full bg-secondary-400"
+		></div>
+		<div
+			use:horizontalHandleAction={(e) => horizontalHandleResizeUpdate(e)}
+			class:horizonral-handle-position={true}
+			class="absolute z-30 inline-flex h-2 w-16 cursor-row-resize !touch-none select-none items-center justify-center rounded-full bg-secondary-400"
+		></div>
+	{/if}
 </div>
 
 <style lang="postcss">

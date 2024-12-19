@@ -16,9 +16,9 @@
 
 <style lang="postcss">
 	[data-scope='tabs'][data-part='trigger'] {
-		@apply border-b-2 border-b-transparent px-4 py-2;
+		@apply border-b-2 border-b-transparent px-4 py-2 font-semibold;
 	}
 	[data-scope='tabs'][data-part='trigger'][data-selected] {
-		@apply border-b-tertiary-600 text-tertiary-600;
+		@apply border-b-tertiary-800 text-tertiary-800;
 	}
 </style>

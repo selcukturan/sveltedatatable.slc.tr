@@ -30,7 +30,6 @@
 	}: Props = $props();
 
 	const table = getTable<TData>(src.id);
-	const headerCount = 1;
 
 	const scrollAction = (tableNode: HTMLDivElement) => {
 		let isScrolling = false;
@@ -68,19 +67,27 @@
 	{@render toolbar?.()}
 	<div class:slc-table-container={true} class={tableContainerClass}>
 		<div style:display={table.get.data.length > 0 ? 'none' : 'flex'} class:slc-table-no-data={true}>
-			No data to display
+			Gösterilecek veri yok
 		</div>
 		<div
 			role="grid"
 			bind:this={table.element}
+			bind:clientWidth={table.clientWidth}
 			bind:clientHeight={table.clientHeight}
+			bind:offsetWidth={table.offsetWidth}
+			bind:offsetHeight={table.offsetHeight}
+			bind:contentRect={table.contentRect}
 			use:scrollAction
 			data-id={src.id}
 			class:slc-table={true}
 			class={tableClass}
 			style:grid-template-rows={table.gridTemplateRows}
 			style:grid-template-columns={table.gridTemplateColumns}
-			style:scroll-padding-block={`${headerCount * table.get.theadRowHeight}px ${table.footers.length * table.get.tfootRowHeight}px`}
+			style:scroll-padding-block={`${table.headerCount * table.get.theadRowHeight}px ${table.footers.length * table.get.tfootRowHeight}px`}
+			style:--slc-header-row-height={`${table.get.theadRowHeight}px`}
+			style:--slc-scroll-height={`${table.scrollHeight}px`}
+			aria-colcount={table.columns.length}
+			aria-rowcount={table.get.data.length + table.footers.length + table.headerCount}
 			{...attributes}
 		>
 			{@render thead?.()}

@@ -32,7 +32,7 @@
 		{/if}
 	</div>
 	<button
-		use:tooltip={{ text: copied ? 'Copied' : 'Copy', position: 'top' }}
+		use:tooltip={{ text: copied ? 'Kopyalandı' : 'Kopyala', position: 'top' }}
 		class="absolute right-0 top-0 mx-6 my-2 flex gap-1 rounded-sm bg-transparent px-2 py-1 text-surface-token-300 hover:bg-surface-token-400/40 active:bg-surface-token-400/50"
 		onclick={handleCopy}
 	>

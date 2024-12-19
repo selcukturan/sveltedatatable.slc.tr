@@ -35,8 +35,6 @@ export type Sources<TData> = {
 	width?: string;
 	height?: string;
 	overscanThreshold?: number;
-	selectionColumn?: boolean;
-	actionColumn?: boolean;
 	theadRowHeight?: number;
 	tbodyRowHeight?: number;
 	tfootRowHeight?: number;

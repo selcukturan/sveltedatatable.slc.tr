@@ -9,7 +9,7 @@
 <!-- prettier-ignore -->
 <Table {src} class="bg-zinc-50 dark:bg-zinc-950" >
 	{#snippet thead() }
-		<Trh>
+		<Trh {src} >
 			{#each table.columns as col, ci (col.oi)}
 				{@const header = col.label}
 				<Th {src} {col} {ci} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
@@ -19,7 +19,7 @@
 		</Trh>
 	{/snippet}
 	{#snippet tbody(row, ri)}
-		<Trd {row} {ri}>
+		<Trd {src} {row} {ri}>
 			{#each table.columns as col, ci (col.oi)}
 				{@const cell = row[col.field]}
 				<Td {src} {col} {ci} {row} {ri} class="border-zinc-200 dark:border-zinc-700">
