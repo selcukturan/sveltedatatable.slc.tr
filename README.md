@@ -1,18 +1,10 @@
-# sv
+# Svelte Data Table Component
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Created using Typescript in Svelte 5
 
-## Creating a project
+## Installation
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
+Copy the `src/lib/data-table` folder to use the component in your project
 
 ## Developing
 
@@ -25,14 +17,13 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Building
+## Official Project Website
 
-To create a production version of your app:
+> [`sveltedatatable.slc.tr`](https://sveltedatatable.slc.tr/)
 
-```bash
-npm run build
-```
+## Inspired projects and sources of inspiration
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- > [`react-data-grid`](https://adazzle.github.io/react-data-grid/#/CommonFeatures)
+- > [`TanStack Virtual`](https://tanstack.com/virtual/latest)
+- > [`Flexible data tables with CSS Grid`](https://adamlynch.com/flexible-data-tables-with-css-grid/)
+- > [`Data Table Design UX Patterns`](https://adamlynch.com/flexible-data-tables-with-css-grid/)
