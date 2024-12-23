@@ -63,10 +63,10 @@
 		border-right-width: 1px;
 		border-style: solid;
 	}
-	.slc-table-th:nth-last-child(1) {
+	/* .slc-table-th:nth-last-child(1) {
 		border-left-width: 1px;
 	}
 	.slc-table-th:nth-last-child(2) {
 		border-right-width: 0px;
-	}
+	} */
 </style>

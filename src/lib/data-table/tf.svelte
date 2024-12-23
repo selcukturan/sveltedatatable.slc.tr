@@ -70,10 +70,10 @@
 		outline: 2px solid transparent;
 		outline-offset: 2px;
 	}
-	.slc-table-tf:nth-last-child(1) {
+	/* .slc-table-tf:nth-last-child(1) {
 		border-left-width: 1px;
 	}
 	.slc-table-tf:nth-last-child(2) {
 		border-right-width: 0px;
-	}
+	} */
 </style>

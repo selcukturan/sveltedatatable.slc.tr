@@ -88,9 +88,9 @@
 					? 'flex-end'
 					: 'flex-start'}
 		>
-			<p style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+			<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 				{@render children?.()}
-			</p>
+			</span>
 		</div>
 		<div style="display: none; align-items: center;">x</div>
 	</div>
@@ -111,12 +111,12 @@
 		outline: 2px solid transparent;
 		outline-offset: 2px;
 	}
-	.slc-table-td:nth-last-child(1) {
+	/* .slc-table-td:nth-last-child(1) {
 		border-left-width: 1px;
 	}
 	.slc-table-td:nth-last-child(2) {
 		border-right-width: 0px;
-	}
+	} */
 	.slc-table-td-focusedCell {
 		outline-width: 2px;
 		outline-offset: -2px;

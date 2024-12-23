@@ -49,43 +49,21 @@ class Table<TData extends Row> {
 			return footerRow as Footer<TData>;
 		});
 	});
-	// derived data. verileri okurken bu değişken kullanılacak. `table.data`
-	data = $derived.by(() => {
-		const rowHeight = this.get.tbodyRowHeight;
-		const overscanThreshold = this.get.overscanThreshold;
-		const clientHeight = this.clientHeight;
-		const scrollTop = this.scrollTop;
-		const dataLength = this.get.data.length;
-
-		const rowVisibleStartIndex = Math.floor(scrollTop / rowHeight);
-		const rowVisibleEndIndex = Math.min(
-			dataLength - 1,
-			Math.floor((scrollTop + clientHeight) / rowHeight)
-		);
-		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
-		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
-
-		return this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1).map((row, index) => {
-			return {
-				...row,
-				oi: rowOverscanStartIndex + index // original row index
-			};
-		});
-	});
 	// ################################## END Properties ###############################################################
 
+	// ################################## BEGIN Variables ###############################################################
 	test = $state('test');
 	headerCount = $state(1);
-	scrollTop = $state(0);
-	clientWidth = $state(0);
-	clientHeight = $state(0);
-	offsetWidth = $state(0);
-	offsetHeight = $state(0);
+	scrollTop = $state(1);
+	clientWidth = $state(1);
+	clientHeight = $state(1);
+	offsetWidth = $state(1);
+	offsetHeight = $state(1);
 	contentRect = $state({
 		x: 0,
 		y: 0,
-		width: 0,
-		height: 0,
+		width: 1,
+		height: 1,
 		top: 0,
 		right: 0,
 		bottom: 0,
@@ -116,6 +94,37 @@ class Table<TData extends Row> {
 	gridTemplateColumns: string = $derived(
 		this.columns.map((col) => (col.width ? col.width : `150px`)).join(' ')
 	);
+	// ################################## END Variables ###############################################################
+
+	// ################################## BEGIN Vertical Virtual Data ##################################################
+	// derived data. verileri okurken bu değişken kullanılacak. `table.data`
+	data = $derived.by(() => {
+		const rowHeight = this.get.tbodyRowHeight;
+		const overscanThreshold = this.get.overscanThreshold;
+		const clientHeight =
+			this.blockSize /* table height */ -
+			this.headerCount * this.get.theadRowHeight /* headers row height */ -
+			this.footers.length * this.get.tfootRowHeight; /* footers row height */
+		const scrollTop = this.scrollTop;
+		const dataLength = this.get.data.length;
+
+		const rowVisibleStartIndex = Math.floor(scrollTop / rowHeight);
+		const rowVisibleEndIndex = Math.min(
+			dataLength - 1,
+			Math.floor((scrollTop + clientHeight) / rowHeight)
+		);
+		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
+		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
+
+		return this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1).map((row, index) => {
+			return {
+				...row,
+				oi: rowOverscanStartIndex + index // original row index
+			};
+		});
+	});
+	// ################################## END Vertical Virtual Data ####################################################
+
 	setAllData = (data: TData[]) => {
 		this.set.data = data;
 	};

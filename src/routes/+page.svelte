@@ -25,7 +25,7 @@
 		data: common.generateExampleData(100),
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
-			{ field: 'producer', label: 'Producer', width: '150px' },
+			{ field: 'producer', label: 'Producer', width: '50px' },
 			{ field: 'province', label: 'Province', width: '90px' },
 			{ field: 'district', label: 'District', width: '100px' },
 			{ field: 'village', label: 'Village', width: '120px' },
@@ -103,9 +103,10 @@
 				<button onclick={() => setPageData(5)} class="bg-surface-200 p-1">5</button>
 				<button onclick={() => setPageData(10)} class="bg-surface-200 p-1">10</button>
 				<button onclick={() => setPageData(100)} class="bg-surface-200 p-1">100</button>
-				<button onclick={() => setPageData(1000)} class="bg-surface-200 p-1">1000</button>
-				<button onclick={() => setPageData(10000)} class="bg-surface-200 p-1">10000</button>
-				<button onclick={() => setPageData(100000)} class="bg-surface-200 p-1">100000</button>
+				<button onclick={() => setPageData(1000)} class="bg-surface-200 p-1">1.000</button>
+				<button onclick={() => setPageData(10000)} class="bg-surface-200 p-1">10.000</button>
+				<button onclick={() => setPageData(100000)} class="bg-surface-200 p-1">100.000</button>
+				<button onclick={() => setPageData(1000000)} class="bg-surface-200 p-1">1.000.000</button>
 				<button onclick={() => setFirstRow()} class="bg-surface-200 p-1">setFirstRow</button>
 				<button onclick={() => hideSecondColumn()} class="bg-surface-200 p-1"
 					>hiddenSecondColumn</button
