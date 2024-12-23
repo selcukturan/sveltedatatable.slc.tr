@@ -131,6 +131,9 @@ class Table<TData extends Row> {
 	setAllSources = (sources: Sources<TData>) => {
 		this.set = sources;
 	};
+	setFocusedCell = (cell: FocucedCell<TData>) => {
+		this.focusedCell = cell;
+	};
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
 		const footer = foot[field]; // sum, avg, count or footer content
 		if (typeof footer === 'undefined') return '';
@@ -146,9 +149,6 @@ class Table<TData extends Row> {
 						}, 0)
 					: footer;
 	};
-	setFocusedCell(cell: FocucedCell<TData>) {
-		this.focusedCell = cell;
-	}
 }
 
 // ################################## BEGIN Export Table Context ###############################################################
