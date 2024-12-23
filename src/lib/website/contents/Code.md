@@ -4,46 +4,42 @@ date: 2023-10-01
 ---
 
 ```svelte
+<!-- BaseDataTableView.svelte -->
 <script lang="ts" generics="TData extends Row">
-	import { setTable, type Settings, type Row } from '../tables.svelte';
+	import { getTable, type Sources, type Row } from '../tables.svelte';
 	import { Table, Th, Td, Tf, Trh, Trd, Trf } from '..';
 
-	const { data, settings }: { data: TData[]; settings: Settings<TData> } = $props();
-	const table = setTable<TData>(data, settings);
-
-	$effect(() => {
-		table.setAllData(data);
-		table.setAllSettings(settings);
-	});
+	const { sources: src }: { sources: Sources<TData> } = $props();
+	const table = getTable<TData>(src.id);
 </script>
 
 <!-- prettier-ignore -->
-<Table {data}>
-	{#snippet thead()}
-		<Trh>
+<Table {src} class="bg-zinc-50 dark:bg-zinc-950" >
+	{#snippet thead() }
+		<Trh {src} >
 			{#each table.columns as col, ci (col.oi)}
 				{@const header = col.label}
-				<Th {data} {col} {ci}>
+				<Th {src} {col} {ci} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
 					{header}
 				</Th>
 			{/each}
 		</Trh>
 	{/snippet}
 	{#snippet tbody(row, ri)}
-		<Trd {row} {ri}>
+		<Trd {src} {row} {ri}>
 			{#each table.columns as col, ci (col.oi)}
 				{@const cell = row[col.field]}
-				<Td {col} {ci} {row} {ri}>
+				<Td {src} {col} {ci} {row} {ri} class="border-zinc-200 dark:border-zinc-700">
 					{cell}
 				</Td>
 			{/each}
 		</Trd>
 	{/snippet}
 	{#snippet tfoot(foot, fi)}
-		<Trf {data} {fi}>
+		<Trf {src} {fi}>
 			{#each table.columns as col, ci (col.oi)}
 				{@const footer = foot[col.field]}
-				<Tf {data} {col} {ci} {foot} {fi}>
+				<Tf {src} {col} {ci} {foot} {fi} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
 					{footer}
 				</Tf>
 			{/each}

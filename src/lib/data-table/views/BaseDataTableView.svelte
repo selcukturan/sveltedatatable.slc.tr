@@ -1,3 +1,4 @@
+<!-- BaseDataTableView.svelte -->
 <script lang="ts" generics="TData extends Row">
 	import { getTable, type Sources, type Row } from '../tables.svelte';
 	import { Table, Th, Td, Tf, Trh, Trd, Trf } from '..';
