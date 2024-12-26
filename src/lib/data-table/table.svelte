@@ -79,6 +79,7 @@
 			bind:contentRect={table.contentRect}
 			use:scrollAction
 			data-id={src.id}
+			data-scope="slc-table"
 			class:slc-table={true}
 			class={tableClass}
 			style:grid-template-rows={table.gridTemplateRows}

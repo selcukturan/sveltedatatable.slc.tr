@@ -9,7 +9,7 @@
     HELLO = "World";
   };
   idx.previews = {
-    enable = true;
+    enable = false;
     previews = {
       web = {
         manager = "web";
@@ -33,7 +33,6 @@
     "usernamehw.errorlens"
     "dbaeumer.vscode-eslint"
     "github.github-vscode-theme"
-    "eamodio.gitlens"
     "wix.vscode-import-cost"
     "oderwat.indent-rainbow"
     "xabikos.javascriptsnippets"
