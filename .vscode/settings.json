@@ -1,7 +1,4 @@
 {
-	"IDX.aI.enableInlineCompletion": true,
-	"IDX.aI.enableCodebaseIndexing": true,
-	/* IDX */
 	"terminal.integrated.localEchoLatencyThreshold": -1,
 	"terminal.integrated.localEchoEnabled": "off",
 	"workbench.editorAssociations": {
@@ -15,8 +12,8 @@
 	"editor.letterSpacing": 0,
 	"debug.console.fontSize": 12,
 	"window.commandCenter": false,
-	"workbench.preferredLightColorTheme": "Monospace Light",
-	"workbench.preferredDarkColorTheme": "GitHub Light",
+	"workbench.preferredLightColorTheme": "GitHub Light",
+	"workbench.preferredDarkColorTheme": "One Dark Pro",
 	"workbench.iconTheme": "material-icon-theme",
 	"window.autoDetectColorScheme": true,
 	"workbench.layoutControl.enabled": false,
@@ -29,7 +26,6 @@
 	"git.enableSmartCommit": true,
 	"git.autofetch": true,
 	"files.autoSave": "off",
-	"gitlens.currentLine.enabled": false,
 	"explorer.compactFolders": false,
 	"workbench.tree.expandMode": "doubleClick",
 	"workbench.tree.indent": 17,
