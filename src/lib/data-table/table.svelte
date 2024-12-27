@@ -33,18 +33,16 @@
 
 	const scrollAction = (tableNode: HTMLDivElement) => {
 		let isScrolling = false;
-		let lastScrollTop: number | undefined = undefined;
+		let lastScrollTop: number = 0;
 
 		const setScrollTop = async () => {
 			if (isScrolling) return;
 			const { scrollTop } = tableNode;
-			if (typeof lastScrollTop === 'undefined') lastScrollTop = scrollTop;
-			if (scrollTop === lastScrollTop) return; // only vertical scroll
-
+			if (scrollTop === lastScrollTop) return; // only vertical scroll vistualization
 			isScrolling = true;
 			lastScrollTop = scrollTop;
 			table.scrollTop = lastScrollTop;
-			await tick();
+			await tick(); // Bekleyen durum/state değişiklikleri uygulandıktan sonra çözümlenen bir söz döndürür
 			isScrolling = false;
 		};
 
@@ -123,6 +121,7 @@
 		width: 100%;
 		height: 100%;
 		overflow: auto;
+		border: 1px solid red;
 	}
 	.slc-table-no-data {
 		display: flex;
