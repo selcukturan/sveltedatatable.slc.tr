@@ -12,23 +12,13 @@
 			<div data-component="Logo" class="flex items-center justify-center bg-red-500">
 				<a href="/" class="relative flex bg-surface-100">
 					<div class="flex items-center border-b border-l border-t border-surface-200">
-						<img
-							class="object-fit inset-0 h-8 w-8 slc-image-select-none"
-							src="/images/logo/logo_512.png"
-							alt="SLC Web logo"
-						/>
+						<img class="object-fit inset-0 h-8 w-8 slc-image-select-none" src="/images/logo/logo_512.png" alt="SLC Web logo" />
 					</div>
 					<div class="flex flex-col">
-						<div
-							class="flex items-center justify-center border-l border-r border-t border-surface-200 bg-surface-200/40 px-1"
-						>
-							<p class="select-none text-nowrap text-sm font-bold leading-4 text-primary-800">
-								svelte
-							</p>
+						<div class="flex items-center justify-center border-l border-r border-t border-surface-200 bg-surface-200/40 px-1">
+							<p class="select-none text-nowrap text-sm font-bold leading-4 text-primary-800">svelte</p>
 						</div>
-						<div
-							class="flex items-center justify-center border-2 border-primary-token-500 bg-surface-300/40 px-1"
-						>
+						<div class="flex items-center justify-center border-2 border-primary-token-500 bg-surface-300/40 px-1">
 							<p class="select-none text-nowrap text-sm font-bold text-secondary-800">data table</p>
 						</div>
 					</div>
@@ -36,7 +26,7 @@
 					<span
 						class="absolute right-0 top-0 -translate-y-1/3 translate-x-2/3 select-none rounded-sm bg-quaternary-400 px-0.5 py-0.5 text-[0.625rem] font-semibold leading-none text-quaternary-token-950"
 					>
-						v0.0.1-build.42
+						v0.0.1-43
 					</span>
 				</a>
 			</div>

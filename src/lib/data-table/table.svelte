@@ -38,11 +38,11 @@
 		const setScrollTop = async () => {
 			if (isScrolling) return;
 			const { scrollTop } = tableNode;
-			if (scrollTop === lastScrollTop) return; // only vertical scroll vistualization
+			if (scrollTop === lastScrollTop) return; // only vertical scroll virtualization
 			isScrolling = true;
 			lastScrollTop = scrollTop;
 			table.scrollTop = lastScrollTop;
-			await tick(); // Bekleyen durum/state değişiklikleri uygulandıktan sonra çözümlenen bir söz döndürür
+			await tick(); // Bekleyen durum/state değişiklikleri uygulandıktan sonra çözümlenen bir söz/promise döndürür
 			isScrolling = false;
 		};
 
@@ -56,25 +56,15 @@
 	};
 </script>
 
-<div
-	class:slc-table-main={true}
-	class={containerClass}
-	style:width={table.get.width}
-	style:height={table.get.height}
->
+<div class:slc-table-main={true} class={containerClass} style:width={table.get.width} style:height={table.get.height}>
 	{@render toolbar?.()}
 	<div class:slc-table-container={true} class={tableContainerClass}>
-		<div style:display={table.get.data.length > 0 ? 'none' : 'flex'} class:slc-table-no-data={true}>
-			Gösterilecek veri yok
-		</div>
+		<div style:display={table.get.data.length > 0 ? 'none' : 'flex'} class:slc-table-no-data={true}>Gösterilecek veri yok</div>
 		<div
 			role="grid"
 			bind:this={table.element}
-			bind:clientWidth={table.clientWidth}
 			bind:clientHeight={table.clientHeight}
-			bind:offsetWidth={table.offsetWidth}
 			bind:offsetHeight={table.offsetHeight}
-			bind:contentRect={table.contentRect}
 			use:scrollAction
 			data-id={src.id}
 			data-scope="slc-table"
@@ -82,11 +72,11 @@
 			class={tableClass}
 			style:grid-template-rows={table.gridTemplateRows}
 			style:grid-template-columns={table.gridTemplateColumns}
-			style:scroll-padding-block={`${table.headerCount * table.get.theadRowHeight}px ${table.footers.length * table.get.tfootRowHeight}px`}
+			style:scroll-padding-block={`${table.headerRowsCount * table.get.theadRowHeight}px ${table.get.footers.length * table.get.tfootRowHeight}px`}
 			style:--slc-header-row-height={`${table.get.theadRowHeight}px`}
 			style:--slc-scroll-height={`${table.scrollHeight}px`}
 			aria-colcount={table.columns.length}
-			aria-rowcount={table.get.data.length + table.footers.length + table.headerCount}
+			aria-rowcount={table.get.data.length + table.get.footers.length + table.headerRowsCount}
 			{...attributes}
 		>
 			{@render thead?.()}
@@ -96,7 +86,7 @@
 			{/each}
 
 			{#if table.get.data.length > 0}
-				{#each table.footers as foot, footerindex (footerindex)}
+				{#each table.get.footers as foot, footerindex (footerindex)}
 					{@render tfoot?.(foot, footerindex)}
 				{/each}
 			{/if}

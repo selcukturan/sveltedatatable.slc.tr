@@ -15,7 +15,7 @@
 	const table = getTable<TData>(src.id);
 
 	const footerIndexToRow = 1;
-	const gridRowStart = $derived(table.get.data.length + table.headerCount + fi + footerIndexToRow);
+	const gridRowStart = $derived(table.get.data.length + table.headerRowsCount + fi + footerIndexToRow);
 </script>
 
 <div

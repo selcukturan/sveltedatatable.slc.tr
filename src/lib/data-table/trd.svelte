@@ -16,8 +16,7 @@
 	const table = getTable<TData>(src.id);
 
 	const indexToRow = 1;
-	const gridRowStart =
-		typeof row.oi === 'number' ? row.oi + table.headerCount + indexToRow : undefined;
+	const gridRowStart = typeof row.oi === 'number' ? row.oi + table.headerRowsCount + indexToRow : undefined;
 </script>
 
 <div

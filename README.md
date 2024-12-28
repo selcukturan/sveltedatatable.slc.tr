@@ -17,7 +17,7 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Official Project Website
+## Project Website
 
 > [`sveltedatatable.slc.tr`](https://sveltedatatable.slc.tr/)
 

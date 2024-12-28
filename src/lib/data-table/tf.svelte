@@ -16,7 +16,7 @@
 	const { src, children, fi, foot, col, ci, class: classes, ...attributes }: Props = $props();
 
 	const table = getTable<TData>(src.id);
-	const bottom = $derived(`${(table.footers.length - fi - 1) * table.get.tfootRowHeight}px`);
+	const bottom = $derived(`${(table.get.footers.length - fi - 1) * table.get.tfootRowHeight}px`);
 </script>
 
 <div
