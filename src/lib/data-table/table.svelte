@@ -111,7 +111,6 @@
 		width: 100%;
 		height: 100%;
 		overflow: auto;
-		border: 1px solid red;
 	}
 	.slc-table-no-data {
 		display: flex;

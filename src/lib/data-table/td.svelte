@@ -18,8 +18,7 @@
 	const table = getTable<TData>(src.id);
 
 	const cell = `r${ri}c${ci}`;
-	const originalCell =
-		typeof row.oi === 'number' && typeof col.oi === 'number' ? `r${row.oi}c${col.oi}` : '';
+	const originalCell = typeof row.oi === 'number' && typeof col.oi === 'number' ? `r${row.oi}c${col.oi}` : '';
 
 	const focusAction = (cellNode: HTMLDivElement) => {
 		const handleFocus = () => {
@@ -82,11 +81,7 @@
 		<div style="display: none; align-items: center;">x</div>
 		<div
 			style="display: flex; min-width: 0px; flex: 1 1 0%; align-items: center;"
-			style:justify-content={col.align === 'center'
-				? 'center'
-				: col.align === 'right'
-					? 'flex-end'
-					: 'flex-start'}
+			style:justify-content={col.align === 'center' ? 'center' : col.align === 'right' ? 'flex-end' : 'flex-start'}
 		>
 			<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 				{@render children?.()}

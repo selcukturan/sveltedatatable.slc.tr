@@ -13,7 +13,7 @@
 		<Trh {src}>
 			{#each table.columns as col, ci (col.oi)}
 				{@const header = col.label}
-				<Th {src} {col} {ci} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
+				<Th {src} {col} {ci} class="border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
 					{header}
 				</Th>
 			{/each}
@@ -33,7 +33,7 @@
 		<Trf {src} {fi}>
 			{#each table.columns as col, ci (col.oi)}
 				{@const footer = foot[col.field]}
-				<Tf {src} {col} {ci} {foot} {fi} class="border-zinc-300 bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800">
+				<Tf {src} {col} {ci} {foot} {fi} class="border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
 					{footer}
 				</Tf>
 			{/each}
