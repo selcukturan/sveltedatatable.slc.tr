@@ -4,6 +4,7 @@ type GlobalContextType = {
 	windowWidth?: number;
 	appName?: string;
 	currentScreen?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+	tableVersion?: string;
 	screens?: {
 		sm?: number;
 		md?: number;
@@ -17,6 +18,7 @@ class GlobalContext {
 		appName: 'SLC Svelte Virtual Data Table',
 		windowWidth: 1000,
 		currentScreen: 'lg',
+		tableVersion: 'v0.0.1-44',
 		screens: {
 			sm: 640, // tablet
 			md: 768, // tablet landscape

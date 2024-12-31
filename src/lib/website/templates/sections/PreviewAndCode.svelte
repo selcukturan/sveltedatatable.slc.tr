@@ -22,7 +22,7 @@
 		</TabContent>
 		<TabContent value="code">
 			<ShowCase>
-				<MarkdownContent>
+				<MarkdownContent copiable>
 					{@render code?.()}
 				</MarkdownContent>
 			</ShowCase>

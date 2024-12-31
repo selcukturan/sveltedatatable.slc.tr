@@ -3,7 +3,11 @@
 	import tooltip from '$lib/website/actions/tooltip';
 	import Icon from '../../icons/Icon.svelte';
 
-	let { children, metadata }: { children?: Snippet; metadata?: Record<string, unknown> } = $props();
+	let {
+		children,
+		metadata,
+		copiable = false
+	}: { children?: Snippet; metadata?: Record<string, unknown>; copiable?: boolean } = $props();
 
 	export const isBrowser = typeof document !== 'undefined';
 	let copied = $state(false);
@@ -31,11 +35,13 @@
 			</div>
 		{/if}
 	</div>
-	<button
-		use:tooltip={{ text: copied ? 'Kopyalandı' : 'Kopyala', position: 'top' }}
-		class="absolute right-0 top-0 mx-6 my-2 flex gap-1 rounded-sm bg-transparent px-2 py-1 text-surface-token-300 hover:bg-surface-token-400/40 active:bg-surface-token-400/50"
-		onclick={handleCopy}
-	>
-		<Icon id={copied ? 'check' : 'copy'} />
-	</button>
+	{#if copiable}
+		<button
+			use:tooltip={{ text: copied ? 'Kopyalandı' : 'Kopyala', position: 'top' }}
+			class="absolute right-0 top-0 mx-6 my-2 flex gap-1 rounded-sm bg-transparent px-2 py-1 text-surface-token-300 hover:bg-surface-token-400/40 active:bg-surface-token-400/50"
+			onclick={handleCopy}
+		>
+			<Icon id={copied ? 'check' : 'copy'} />
+		</button>
+	{/if}
 </div>

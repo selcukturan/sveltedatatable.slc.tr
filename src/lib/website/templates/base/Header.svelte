@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { ThemeToggle } from '$lib/website/components/base/theme-toggle';
 	import { Icon } from '$lib/website/components/icons';
+	import { getGlobalContext } from '$lib/website/contexts/global.svelte';
+
+	const globalContext = getGlobalContext();
 </script>
 
 <header
@@ -26,7 +29,7 @@
 					<span
 						class="absolute right-0 top-0 -translate-y-1/3 translate-x-2/3 select-none rounded-sm bg-quaternary-400 px-0.5 py-0.5 text-[0.625rem] font-semibold leading-none text-quaternary-token-950"
 					>
-						v0.0.1-43
+						{globalContext.data.tableVersion}
 					</span>
 				</a>
 			</div>
