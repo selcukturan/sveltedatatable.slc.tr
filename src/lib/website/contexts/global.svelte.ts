@@ -18,7 +18,7 @@ class GlobalContext {
 		appName: 'SLC Svelte Virtual Data Table',
 		windowWidth: 1000,
 		currentScreen: 'lg',
-		tableVersion: 'v0.0.1-44',
+		tableVersion: 'v0.0.1-45',
 		screens: {
 			sm: 640, // tablet
 			md: 768, // tablet landscape
