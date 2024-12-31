@@ -45,7 +45,6 @@
 <svelte:window bind:innerWidth={globalContext.data.windowWidth} />
 
 <Icons />
-<!-- <Icon id={`grape`} /> -->
 
 <Site>
 	<Header />

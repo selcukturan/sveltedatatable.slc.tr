@@ -90,6 +90,7 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
 		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
 
+		this.test = `rowVisibleStartIndex:${rowVisibleStartIndex} - rowVisibleEndIndex:${rowVisibleEndIndex} - rowOverscanStartIndex:${rowOverscanStartIndex} - rowOverscanEndIndex:${rowOverscanEndIndex}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
 		return slicedData.map((row, index) => {
 			return {
