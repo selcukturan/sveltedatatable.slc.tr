@@ -88,9 +88,9 @@ class Table<TData extends Row> {
 
 		const scrollTop = this.scrollTop;
 
+		if (offsetHeight === 0 && clientHeight === 0 && scrollTop === 0) return this.backupVirtualData;
 		if (offsetHeight === 0) return this.backupVirtualData;
 		if (clientHeight === 0) return this.backupVirtualData;
-		if (offsetHeight === 0 && clientHeight === 0 && scrollTop === 0) return this.backupVirtualData;
 
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
