@@ -36,6 +36,7 @@
 		let lastScrollTop: number = 0;
 
 		const setScrollTop = async () => {
+			table.test2 = `${table.clientHeight} - ${table.offsetHeight}`;
 			if (isScrolling) return;
 			const { scrollTop } = tableNode;
 			if (scrollTop === lastScrollTop) return; // only vertical scroll virtualization

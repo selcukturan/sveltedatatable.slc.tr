@@ -41,6 +41,7 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Variables ###############################################################
 	test = $state('test');
+	test2 = $state('test2');
 	headerRowsCount = $state(1);
 	scrollTop = $state(0);
 	clientHeight?: number = $state();
