@@ -41,12 +41,10 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Variables ###############################################################
 	test = $state('test');
-	initialOffsetHeight: number | undefined = undefined;
-	İnitialClientHeight: number | undefined = undefined;
 	headerRowsCount = $state(1);
 	scrollTop = $state(0);
-	clientHeight = $state(1);
-	offsetHeight = $state(1);
+	clientHeight?: number = $state();
+	offsetHeight?: number = $state();
 	contentRect = $state({ x: 0, y: 0, width: 0, height: 0, top: 0, right: 0, bottom: 0, left: 0 });
 	contentBoxSize = $state([
 		{
@@ -55,12 +53,17 @@ class Table<TData extends Row> {
 		}
 	]);
 
-	scrollHeight = $derived(
-		this.headerRowsCount * this.get.theadRowHeight + // headerRowsHeight
+	scrollHeight = $derived.by(() => {
+		const offsetHeight = this.offsetHeight || 0;
+		const clientHeight = this.clientHeight || 0;
+
+		return (
+			this.headerRowsCount * this.get.theadRowHeight + // headerRowsHeight
 			this.get.data.length * this.get.tbodyRowHeight + // dataRowsHeight
 			this.get.footers.length * this.get.tfootRowHeight + // footerRowsHeight
-			(this.offsetHeight - this.clientHeight) // horizontalScrollbarHeight
-	);
+			(offsetHeight - clientHeight) // horizontalScrollbarHeight
+		);
+	});
 
 	focusedCell?: FocucedCell<TData> = $state();
 	gridTemplateRows = $derived.by(() => {
@@ -72,21 +75,27 @@ class Table<TData extends Row> {
 	gridTemplateColumns = $derived(this.columns.map((col) => (col.width ? col.width : `150px`)).join(' '));
 	// ################################## END Variables ###############################################################
 
+	backupVirtualData: TData[] = [];
 	// ################################## BEGIN Vertical Virtual Data ##################################################
 	// derived data. Virtual veriler okurken bu değişken kullanılacak. `table.data`
-	data = $derived.by(() => {
-		if (typeof this.element === 'undefined') return []; // Henüz tablo elementi bind edilmedi. `bind:this={table.element}`
+	virtualData = $derived.by(() => {
+		if (typeof this.element === 'undefined') return this.backupVirtualData; // Henüz tablo elementi bind edilmedi. `bind:this={table.element}`
 
 		const offsetHeight = this.offsetHeight;
 		const clientHeight = this.clientHeight;
 
-		if (offsetHeight === 1 && clientHeight === 1) return []; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
+		if (typeof offsetHeight === 'undefined' || typeof clientHeight === 'undefined') return this.backupVirtualData; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
+
+		const scrollTop = this.scrollTop;
+
+		if (offsetHeight === 0) return this.backupVirtualData;
+		if (clientHeight === 0) return this.backupVirtualData;
+		if (offsetHeight === 0 && clientHeight === 0 && scrollTop === 0) return this.backupVirtualData;
 
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
 		const overscanThreshold = this.get.overscanThreshold;
-		const scrollTop = this.scrollTop;
 		const dataLength = this.get.data.length;
 
 		const horizontalScrollbarHeight = offsetHeight - clientHeight;
@@ -100,6 +109,7 @@ class Table<TData extends Row> {
 
 		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - offsetHeight:${offsetHeight} - clientHeight:${clientHeight} - scrollTop:${scrollTop} - contentRect:${JSON.stringify(this.contentRect)} - contentBoxSize:${this.contentBoxSize[0].blockSize}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
+		this.backupVirtualData = slicedData;
 		return slicedData.map((row, index) => {
 			return {
 				...row,

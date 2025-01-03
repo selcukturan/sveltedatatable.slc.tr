@@ -83,7 +83,7 @@
 		>
 			{@render thead?.()}
 
-			{#each table.data as row, rowindex (row.oi)}
+			{#each table.virtualData as row, rowindex (row.oi)}
 				{@render tbody?.(row, rowindex)}
 			{/each}
 
