@@ -41,7 +41,6 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Variables ###############################################################
 	test = $state('test');
-	test2 = $state('test2');
 	headerRowsCount = $state(1);
 	scrollTop?: number = $state();
 	clientHeight?: number = $state();
@@ -67,22 +66,15 @@ class Table<TData extends Row> {
 	gridTemplateColumns = $derived(this.columns.map((col) => (col.width ? col.width : `150px`)).join(' '));
 	// ################################## END Variables ###############################################################
 
-	backupVirtualData: TData[] = [];
 	// ################################## BEGIN Vertical Virtual Data ##################################################
-	// derived data. Virtual veriler okurken bu değişken kullanılacak. `table.data`
+	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
-		if (typeof this.element === 'undefined') return this.backupVirtualData; // Henüz tablo elementi bind edilmedi. `bind:this={table.element}`
-
+		if (typeof this.element === 'undefined') return []; // Henüz tablo elementi bind edilmedi. `bind:this={table.element}`
 		const offsetHeight = this.offsetHeight;
 		const clientHeight = this.clientHeight;
-		if (!offsetHeight || !clientHeight) return this.backupVirtualData; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
+		if (typeof offsetHeight === 'undefined' || typeof clientHeight === 'undefined') return []; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
 
 		const scrollTop = this.scrollTop || 0;
-
-		/* if (offsetHeight === 0 && clientHeight === 0 && scrollTop === 0) return this.backupVirtualData;
-		if (offsetHeight === 0) return this.backupVirtualData;
-		if (clientHeight === 0) return this.backupVirtualData; */
-
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
@@ -100,7 +92,6 @@ class Table<TData extends Row> {
 
 		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - offsetHeight:${offsetHeight} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
-		this.backupVirtualData = slicedData;
 		return slicedData.map((row, index) => {
 			return {
 				...row,

@@ -45,8 +45,6 @@
 	<Main>
 		<LandingPageLogo />
 		<TableTestVariable text={table.test} />
-		<br />
-		<TableTestVariable text={table.test2} />
 		<MainContent>
 			<PreviewAndCode>
 				{#snippet preview()}
