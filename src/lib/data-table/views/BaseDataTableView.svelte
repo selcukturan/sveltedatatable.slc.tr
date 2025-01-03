@@ -7,7 +7,6 @@
 	const table = getTable<TData>(src.id);
 </script>
 
-<!-- prettier-ignore -->
 <Table {src} class="bg-zinc-50 dark:bg-zinc-950">
 	{#snippet thead()}
 		<Trh {src}>

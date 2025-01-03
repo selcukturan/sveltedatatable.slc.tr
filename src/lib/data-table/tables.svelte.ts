@@ -7,7 +7,7 @@ class Table<TData extends Row> {
 		data: [],
 		width: '100%',
 		height: '100%',
-		overscanThreshold: 0,
+		overscanThreshold: 4,
 		theadRowHeight: 35,
 		tbodyRowHeight: 35,
 		tfootRowHeight: 35,
@@ -47,6 +47,14 @@ class Table<TData extends Row> {
 	scrollTop = $state(0);
 	clientHeight = $state(1);
 	offsetHeight = $state(1);
+	contentRect = $state({ x: 0, y: 0, width: 0, height: 0, top: 0, right: 0, bottom: 0, left: 0 });
+	contentBoxSize = $state([
+		{
+			inlineSize: 0,
+			blockSize: 0
+		}
+	]);
+
 	scrollHeight = $derived(
 		this.headerRowsCount * this.get.theadRowHeight + // headerRowsHeight
 			this.get.data.length * this.get.tbodyRowHeight + // dataRowsHeight
@@ -90,7 +98,7 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
 		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
 
-		this.test = `rowVisibleStartIndex:${rowVisibleStartIndex} - rowVisibleEndIndex:${rowVisibleEndIndex} - rowOverscanStartIndex:${rowOverscanStartIndex} - rowOverscanEndIndex:${rowOverscanEndIndex}`;
+		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - offsetHeight:${offsetHeight} - clientHeight:${clientHeight} - scrollTop:${scrollTop} - contentRect:${JSON.stringify(this.contentRect)} - contentBoxSize:${this.contentBoxSize[0].blockSize}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
 		return slicedData.map((row, index) => {
 			return {

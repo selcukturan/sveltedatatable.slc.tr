@@ -65,6 +65,8 @@
 			bind:this={table.element}
 			bind:clientHeight={table.clientHeight}
 			bind:offsetHeight={table.offsetHeight}
+			bind:contentRect={table.contentRect}
+			bind:contentBoxSize={table.contentBoxSize}
 			use:scrollAction
 			data-id={src.id}
 			data-scope="slc-table"
