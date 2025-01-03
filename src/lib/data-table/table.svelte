@@ -36,6 +36,7 @@
 		let lastScrollTop: number = 0;
 
 		const setScrollTop = async () => {
+			if (tableNode.offsetParent === null) return;
 			table.test2 = `${table.clientHeight} - ${table.offsetHeight}`;
 			if (isScrolling) return;
 			const { scrollTop } = tableNode;
