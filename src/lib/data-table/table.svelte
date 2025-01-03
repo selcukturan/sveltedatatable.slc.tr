@@ -37,7 +37,6 @@
 
 		const setScrollTop = async () => {
 			if (tableNode.offsetParent === null) return;
-			table.test2 = `${table.clientHeight} - ${table.offsetHeight}`;
 			if (isScrolling) return;
 			const { scrollTop } = tableNode;
 			if (scrollTop === lastScrollTop) return; // only vertical scroll virtualization
@@ -67,8 +66,6 @@
 			bind:this={table.element}
 			bind:clientHeight={table.clientHeight}
 			bind:offsetHeight={table.offsetHeight}
-			bind:contentRect={table.contentRect}
-			bind:contentBoxSize={table.contentBoxSize}
 			use:scrollAction
 			data-id={src.id}
 			data-scope="slc-table"

@@ -43,21 +43,12 @@ class Table<TData extends Row> {
 	test = $state('test');
 	test2 = $state('test2');
 	headerRowsCount = $state(1);
-	scrollTop = $state(0);
+	scrollTop?: number = $state();
 	clientHeight?: number = $state();
 	offsetHeight?: number = $state();
-	contentRect = $state({ x: 0, y: 0, width: 0, height: 0, top: 0, right: 0, bottom: 0, left: 0 });
-	contentBoxSize = $state([
-		{
-			inlineSize: 0,
-			blockSize: 0
-		}
-	]);
-
 	scrollHeight = $derived.by(() => {
 		const offsetHeight = this.offsetHeight || 0;
 		const clientHeight = this.clientHeight || 0;
-
 		return (
 			this.headerRowsCount * this.get.theadRowHeight + // headerRowsHeight
 			this.get.data.length * this.get.tbodyRowHeight + // dataRowsHeight
@@ -84,14 +75,13 @@ class Table<TData extends Row> {
 
 		const offsetHeight = this.offsetHeight;
 		const clientHeight = this.clientHeight;
+		if (!offsetHeight || !clientHeight) return this.backupVirtualData; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
 
-		if (typeof offsetHeight === 'undefined' || typeof clientHeight === 'undefined') return this.backupVirtualData; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
+		const scrollTop = this.scrollTop || 0;
 
-		const scrollTop = this.scrollTop;
-
-		if (offsetHeight === 0 && clientHeight === 0 && scrollTop === 0) return this.backupVirtualData;
+		/* if (offsetHeight === 0 && clientHeight === 0 && scrollTop === 0) return this.backupVirtualData;
 		if (offsetHeight === 0) return this.backupVirtualData;
-		if (clientHeight === 0) return this.backupVirtualData;
+		if (clientHeight === 0) return this.backupVirtualData; */
 
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
@@ -108,7 +98,7 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
 		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
 
-		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - offsetHeight:${offsetHeight} - clientHeight:${clientHeight} - scrollTop:${scrollTop} - contentRect:${JSON.stringify(this.contentRect)} - contentBoxSize:${this.contentBoxSize[0].blockSize}`;
+		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - offsetHeight:${offsetHeight} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
 		this.backupVirtualData = slicedData;
 		return slicedData.map((row, index) => {
