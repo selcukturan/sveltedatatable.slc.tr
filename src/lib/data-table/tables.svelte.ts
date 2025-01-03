@@ -67,12 +67,14 @@ class Table<TData extends Row> {
 	// ################################## END Variables ###############################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
+	private lastCurrentVirtaulData: TData[] = [];
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
 		if (typeof this.element === 'undefined') return []; // Henüz tablo elementi bind edilmedi. `bind:this={table.element}`
 		const offsetHeight = this.offsetHeight;
 		const clientHeight = this.clientHeight;
 		if (typeof offsetHeight === 'undefined' || typeof clientHeight === 'undefined') return []; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
+		if (offsetHeight === 0 || clientHeight === 0) return this.lastCurrentVirtaulData; // FIX:BUG.0001 - IOS cihazlarda tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
 
 		const scrollTop = this.scrollTop || 0;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
@@ -92,6 +94,7 @@ class Table<TData extends Row> {
 
 		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - offsetHeight:${offsetHeight} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
+		this.lastCurrentVirtaulData = slicedData;
 		return slicedData.map((row, index) => {
 			return {
 				...row,

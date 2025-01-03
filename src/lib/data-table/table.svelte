@@ -36,14 +36,14 @@
 		let lastScrollTop: number = 0;
 
 		const setScrollTop = async () => {
-			if (tableNode.offsetParent === null) return; // FIX:BUG.0001 - tablo dom'da görünür değilse scroll işlemi yapılmaz
+			if (tableNode.offsetParent === null) return; // FIX:BUG.0001 - tablo dom'da görünür değilse işlem yapılmaz
 			if (isScrolling) return;
 			const { scrollTop } = tableNode;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
 			table.scrollTop = lastScrollTop;
-			await tick(); // table.scrollTop state'i değiştiğinde dom güncellemelerini bekler
+			await tick(); // `table.scrollTop` state'i değiştiğinde gerçekleşeccek dom güncellemelerini bekler
 			isScrolling = false;
 		};
 
