@@ -23,9 +23,10 @@
 	let sources: Sources<ProducedGrapes> = {
 		id: 'table1',
 		data: common.generateExampleData(100),
+		enableVirtualization: false,
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
-			{ field: 'producer', label: 'Producer', width: '150px' },
+			{ field: 'producer', label: 'Producer', width: '150px', hidden: true },
 			{ field: 'province', label: 'Province', width: '90px' },
 			{ field: 'district', label: 'District', width: '100px' },
 			{ field: 'village', label: 'Village', width: '120px' },

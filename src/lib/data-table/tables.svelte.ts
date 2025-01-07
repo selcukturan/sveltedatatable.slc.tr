@@ -7,6 +7,7 @@ class Table<TData extends Row> {
 		data: [],
 		width: '100%',
 		height: '100%',
+		enableVirtualization: true,
 		overscanThreshold: 4,
 		theadRowHeight: 35,
 		tbodyRowHeight: 35,
@@ -17,7 +18,7 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Constructor ###############################################################
 	element?: HTMLDivElement = $state();
-	private set: Sources<TData> = $state({ id: '', columns: [] }); // orjinal sources. kaynaklar/sources değiştirilirken bu değişken kullanılacak. `table.set`
+	set: Sources<TData> = $state({ id: '', columns: [] }); // orjinal sources. kaynaklar/sources değiştirilirken bu değişken kullanılacak. `table.set`
 	constructor(sources: Sources<TData>) {
 		this.set = sources;
 	}
@@ -70,11 +71,13 @@ class Table<TData extends Row> {
 	private lastCurrentVirtaulData: TData[] = [];
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
+		if (this.get.enableVirtualization === false) return [];
 		if (typeof this.element === 'undefined') return []; // Henüz tablo elementi bind edilmedi. `bind:this={table.element}`
 		const offsetHeight = this.offsetHeight;
 		const clientHeight = this.clientHeight;
 		if (typeof offsetHeight === 'undefined' || typeof clientHeight === 'undefined') return []; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
-		if (offsetHeight === 0 || clientHeight === 0) return this.lastCurrentVirtaulData; // FIX:BUG.0001 - IOS cihazlarda tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
+
+		// if (offsetHeight === 0 || clientHeight === 0) return this.lastCurrentVirtaulData; // FIX:BUG.0001 - IOS cihazlarda tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
 
 		const scrollTop = this.scrollTop || 0;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;

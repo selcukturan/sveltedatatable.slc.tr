@@ -23,7 +23,8 @@
 	class:slc-table-trf={true}
 	class={classes}
 	style:--slc-grid-row-start={gridRowStart}
-	data-originalrowindex={fi}
+	aria-rowindex={gridRowStart}
+	data-originalfootindex={fi}
 	{...attributes}
 >
 	{@render children?.()}

@@ -19,6 +19,7 @@
 	class:slc-table-th={true}
 	class={classes}
 	style:grid-row-start="var(--slc-grid-row-start)"
+	aria-colindex={ci + 1}
 	data-col={ci}
 	data-originalcolindex={col.oi}
 	{...attributes}

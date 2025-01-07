@@ -34,6 +34,7 @@ export type Sources<TData> = {
 	data?: TData[];
 	width?: string;
 	height?: string;
+	enableVirtualization?: boolean;
 	overscanThreshold?: number;
 	theadRowHeight?: number;
 	tbodyRowHeight?: number;

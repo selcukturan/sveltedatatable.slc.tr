@@ -31,12 +31,14 @@
 
 	const table = getTable<TData>(src.id);
 
-	const scrollAction = (tableNode: HTMLDivElement) => {
+	const virtualScrollAction = (tableNode: HTMLDivElement) => {
+		if (table.get.enableVirtualization === false) return;
+
 		let isScrolling = false;
 		let lastScrollTop: number = 0;
 
 		const setScrollTop = async () => {
-			if (tableNode.offsetParent === null) return; // FIX:BUG.0001 - tablo dom'da görünür değilse işlem yapılmaz
+			// if (tableNode.offsetParent === null) return; // FIX:BUG.0001 - tablo dom'da görünür değilse işlem yapılmaz
 			if (isScrolling) return;
 			const { scrollTop } = tableNode;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
@@ -66,7 +68,7 @@
 			bind:this={table.element}
 			bind:clientHeight={table.clientHeight}
 			bind:offsetHeight={table.offsetHeight}
-			use:scrollAction
+			use:virtualScrollAction
 			data-id={src.id}
 			data-scope="slc-table"
 			class:slc-table={true}
@@ -82,9 +84,15 @@
 		>
 			{@render thead?.()}
 
-			{#each table.virtualData as row, rowindex (row.oi)}
-				{@render tbody?.(row, rowindex)}
-			{/each}
+			{#if table.get.enableVirtualization === true}
+				{#each table.virtualData as row, rowindex (row.oi)}
+					{@render tbody?.(row, rowindex)}
+				{/each}
+			{:else}
+				{#each table.get.data as row, rowindex (rowindex)}
+					{@render tbody?.(row, rowindex)}
+				{/each}
+			{/if}
 
 			{#if table.get.data.length > 0}
 				{#each table.get.footers as foot, footerindex (footerindex)}

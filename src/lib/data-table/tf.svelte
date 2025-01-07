@@ -25,6 +25,7 @@
 	class={classes}
 	style:grid-row-start="var(--slc-grid-row-start)"
 	style:bottom
+	aria-colindex={ci + 1}
 	data-foot={fi}
 	data-col={ci}
 	data-originalcolindex={col.oi}

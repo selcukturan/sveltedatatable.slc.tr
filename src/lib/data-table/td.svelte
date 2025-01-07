@@ -17,8 +17,10 @@
 
 	const table = getTable<TData>(src.id);
 
-	const cell = `r${ri}c${ci}`;
-	const originalCell = typeof row.oi === 'number' && typeof col.oi === 'number' ? `r${row.oi}c${col.oi}` : '';
+	const originalrowindex = $derived(table.get.enableVirtualization === false ? ri : typeof row.oi === 'number' ? row.oi : 0);
+	const originalcolindex = typeof col.oi === 'number' ? col.oi : 0;
+	const originalCell = $derived(`${originalrowindex}_${originalcolindex}`); // rowindex_colindex
+	const cell = `${ri}_${ci}`; // rowindex_colindex
 
 	const focusAction = (cellNode: HTMLDivElement) => {
 		const handleFocus = () => {
@@ -40,10 +42,10 @@
 				field: typedField,
 				rowIndex: +row,
 				colIndex: +col,
-				cell: `r${row}c${col}`,
+				cell: `${row}_${col}`, // rowindex_colindex
 				originalRowIndex: +originalrowindex,
 				originalColIndex: +originalcolindex,
-				originalCell: `r${originalrowindex}c${originalcolindex}`
+				originalCell: `${originalrowindex}_${originalcolindex}` // rowindex_colindex
 			});
 		};
 
@@ -66,12 +68,12 @@
 	class:slc-table-td-focusedCell={table?.focusedCell?.originalCell === originalCell ? true : false}
 	tabindex={table?.focusedCell?.originalCell === originalCell ? 0 : -1}
 	aria-selected={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
-	aria-colindex={ci}
+	aria-colindex={ci + 1}
 	data-col={ci}
 	data-row={ri}
 	data-cell={cell}
-	data-originalrowindex={row.oi}
-	data-originalcolindex={col.oi}
+	data-originalrowindex={originalrowindex}
+	data-originalcolindex={originalcolindex}
 	data-originalcell={originalCell}
 	data-field={col.field}
 	spellcheck="false"
