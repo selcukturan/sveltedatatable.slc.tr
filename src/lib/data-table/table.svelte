@@ -38,9 +38,9 @@
 		let lastScrollTop: number = 0;
 
 		const setScrollTop = async () => {
-			// if (tableNode.offsetParent === null) return; // FIX:BUG.0001 - tablo dom'da görünür değilse işlem yapılmaz
 			if (isScrolling) return;
-			const { scrollTop } = tableNode;
+			const { scrollTop, offsetHeight } = tableNode;
+			if (offsetHeight === 0) return; // tablo dom'da görünür değilse işlem yapılmaz. yada `if (tableNode.offsetParent === null) return;` kullanılabilir.
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
