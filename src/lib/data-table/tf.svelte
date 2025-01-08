@@ -17,18 +17,20 @@
 
 	const table = getTable<TData>(src.id);
 	const bottom = $derived(`${(table.get.footers.length - fi - 1) * table.get.tfootRowHeight}px`);
+	const footerIndexToRow = 1;
+	const gridRowStart = $derived(table.get.data.length + table.headerRowsCount + fi + footerIndexToRow);
 </script>
 
 <div
 	role="gridcell"
 	class:slc-table-tf={true}
 	class={classes}
-	style:grid-row-start="var(--slc-grid-row-start)"
+	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
+	style:grid-column={`${ci + 1} / ${ci + 2}`}
 	style:bottom
 	aria-colindex={ci + 1}
 	data-foot={fi}
 	data-col={ci}
-	data-originalcolindex={col.oi}
 	{...attributes}
 >
 	<div style="display: flex; height: 100%; width: 100%; justify-content: space-between;">

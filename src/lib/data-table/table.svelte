@@ -35,7 +35,7 @@
 		if (table.get.enableVirtualization === false) return;
 
 		let isScrolling = false;
-		let lastScrollTop: number = 0;
+		let lastScrollTop = 0;
 
 		const setScrollTop = async () => {
 			if (isScrolling) return;

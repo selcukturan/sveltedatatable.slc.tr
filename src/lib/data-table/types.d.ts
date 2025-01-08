@@ -45,11 +45,11 @@ export type Sources<TData> = {
 export type RequiredSources<TData> = Required<Sources<TData>>;
 
 export type FocucedCell<TData> = {
-	field: Field<TData>;
-	rowIndex: number;
-	colIndex: number;
-	cell: string;
-	originalRowIndex: number;
-	originalColIndex: number;
-	originalCell: string;
+	field?: Field<TData>;
+	rowIndex?: number;
+	colIndex?: number;
+	cell?: string;
+	originalRowIndex?: number;
+	originalColIndex?: number;
+	originalCell?: string;
 };

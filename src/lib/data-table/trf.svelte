@@ -15,18 +15,10 @@
 	const table = getTable<TData>(src.id);
 
 	const footerIndexToRow = 1;
-	const gridRowStart = $derived(table.get.data.length + table.headerRowsCount + fi + footerIndexToRow);
+	const ariaRowIndex = $derived(table.get.data.length + table.headerRowsCount + fi + footerIndexToRow);
 </script>
 
-<div
-	role="row"
-	class:slc-table-trf={true}
-	class={classes}
-	style:--slc-grid-row-start={gridRowStart}
-	aria-rowindex={gridRowStart}
-	data-originalfootindex={fi}
-	{...attributes}
->
+<div role="row" class:slc-table-trf={true} class={classes} aria-rowindex={ariaRowIndex} data-originalfootindex={fi} {...attributes}>
 	{@render children?.()}
 </div>
 

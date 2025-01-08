@@ -78,9 +78,8 @@ class Table<TData extends Row> {
 
 		let offsetHeight = this.offsetHeight;
 		let clientHeight = this.clientHeight;
-		// tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
-		if (offsetHeight === 0) offsetHeight = this.lastCurrentOffsetHeight;
-		if (clientHeight === 0) clientHeight = this.lastCurrentClientHeight;
+		if (offsetHeight === 0) offsetHeight = this.lastCurrentOffsetHeight; // tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
+		if (clientHeight === 0) clientHeight = this.lastCurrentClientHeight; // tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
 
 		if (typeof offsetHeight === 'undefined' || typeof clientHeight === 'undefined') return []; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
 
@@ -119,9 +118,6 @@ class Table<TData extends Row> {
 	};
 	setAllSources = (sources: Sources<TData>) => {
 		this.set = sources;
-	};
-	setFocusedCell = (cell: FocucedCell<TData>) => {
-		this.focusedCell = cell;
 	};
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
 		const footer = foot[field]; // sum, avg, count or footer content

@@ -14,14 +14,7 @@
 	const table = getTable<TData>(src.id);
 </script>
 
-<div
-	role="row"
-	class:slc-table-trh={true}
-	class={classes}
-	style:--slc-grid-row-start={table.headerRowsCount}
-	aria-rowindex={table.headerRowsCount}
-	{...attributes}
->
+<div role="row" class:slc-table-trh={true} class={classes} aria-rowindex={table.headerRowsCount} {...attributes}>
 	{@render children?.()}
 </div>
 

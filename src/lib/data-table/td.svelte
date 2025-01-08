@@ -17,36 +17,21 @@
 
 	const table = getTable<TData>(src.id);
 
-	const originalrowindex = $derived(table.get.enableVirtualization === false ? ri : typeof row.oi === 'number' ? row.oi : 0);
-	const originalcolindex = typeof col.oi === 'number' ? col.oi : 0;
-	const originalCell = $derived(`${originalrowindex}_${originalcolindex}`); // rowindex_colindex
-	const cell = `${ri}_${ci}`; // rowindex_colindex
+	const row_oi = $derived(table.get.enableVirtualization === false ? ri : row.oi);
+	const originalCell = $derived(`${row_oi}_${col.oi}`);
+	const indexToRow = 1;
+	const gridRowStart = $derived(typeof row_oi === 'number' ? row_oi + table.headerRowsCount + indexToRow : 0);
 
 	const focusAction = (cellNode: HTMLDivElement) => {
 		const handleFocus = () => {
-			table.focusedCell = undefined;
-
-			const { row, col, originalrowindex, originalcolindex, field } = cellNode.dataset;
-			const typedField = field as Field<TData>;
-
-			if (
-				typeof typedField === 'undefined' ||
-				typeof row === 'undefined' ||
-				typeof col === 'undefined' ||
-				typeof originalrowindex === 'undefined' ||
-				typeof originalcolindex === 'undefined'
-			) {
-				return;
-			}
-			table.setFocusedCell({
-				field: typedField,
-				rowIndex: +row,
-				colIndex: +col,
-				cell: `${row}_${col}`, // rowindex_colindex
-				originalRowIndex: +originalrowindex,
-				originalColIndex: +originalcolindex,
-				originalCell: `${originalrowindex}_${originalcolindex}` // rowindex_colindex
-			});
+			table.focusedCell = {
+				field: table.columns[ci].field,
+				rowIndex: ri,
+				colIndex: ci,
+				originalRowIndex: row_oi,
+				originalColIndex: col.oi,
+				originalCell: originalCell
+			};
 		};
 
 		cellNode.addEventListener('focus', handleFocus);
@@ -62,20 +47,14 @@
 <div
 	role="gridcell"
 	use:focusAction
-	style:grid-row-start="var(--slc-grid-row-start)"
+	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
+	style:grid-column={`${ci + 1} / ${ci + 2}`}
 	class:slc-table-td={true}
 	class={classes}
 	class:slc-table-td-focusedCell={table?.focusedCell?.originalCell === originalCell ? true : false}
 	tabindex={table?.focusedCell?.originalCell === originalCell ? 0 : -1}
 	aria-selected={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
 	aria-colindex={ci + 1}
-	data-col={ci}
-	data-row={ri}
-	data-cell={cell}
-	data-originalrowindex={originalrowindex}
-	data-originalcolindex={originalcolindex}
-	data-originalcell={originalCell}
-	data-field={col.field}
 	spellcheck="false"
 	{...attributes}
 >

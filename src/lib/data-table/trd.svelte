@@ -15,20 +15,12 @@
 
 	const table = getTable<TData>(src.id);
 
-	const originalrowindex = $derived(table.get.enableVirtualization === false ? ri : typeof row.oi === 'number' ? row.oi : 0);
+	const row_oi = $derived(table.get.enableVirtualization === false ? ri : row.oi);
 	const indexToRow = 1;
-	const gridRowStart = $derived(originalrowindex + table.headerRowsCount + indexToRow);
+	const ariaRowIndex = $derived(typeof row_oi === 'number' ? row_oi + table.headerRowsCount + indexToRow : undefined);
 </script>
 
-<div
-	role="row"
-	class:slc-table-trd={true}
-	class={classes}
-	style:--slc-grid-row-start={gridRowStart}
-	aria-rowindex={gridRowStart}
-	data-originalrowindex={originalrowindex}
-	{...attributes}
->
+<div role="row" class:slc-table-trd={true} class={classes} aria-rowindex={ariaRowIndex} {...attributes}>
 	{@render children?.()}
 </div>
 

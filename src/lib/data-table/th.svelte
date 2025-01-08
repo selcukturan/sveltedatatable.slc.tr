@@ -2,6 +2,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Column, Row, Sources } from './types';
 	import { type Snippet } from 'svelte';
+	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
 		src: Sources<TData>;
@@ -12,16 +13,18 @@
 	};
 
 	const { src, children, ci, col, class: classes, ...attributes }: Props = $props();
+
+	const table = getTable<TData>(src.id);
 </script>
 
 <div
 	role="columnheader"
 	class:slc-table-th={true}
 	class={classes}
-	style:grid-row-start="var(--slc-grid-row-start)"
+	style:grid-row={`${table.headerRowsCount} / ${table.headerRowsCount + 1}`}
+	style:grid-column={`${ci + 1} / ${ci + 2}`}
 	aria-colindex={ci + 1}
 	data-col={ci}
-	data-originalcolindex={col.oi}
 	{...attributes}
 >
 	<div style="display: flex; height: 100%; width: 100%; justify-content: space-between;">
