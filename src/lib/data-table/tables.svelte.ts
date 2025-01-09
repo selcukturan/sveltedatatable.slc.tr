@@ -2,29 +2,44 @@ import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field } from '
 import { getContext, setContext } from 'svelte';
 
 class Table<TData extends Row> {
+	// ################################## BEGIN Default Sources ############################################################
 	private readonly defaultSources: RequiredSources<TData> = {
 		id: '',
 		data: [],
 		width: '100%',
 		height: '100%',
 		enableVirtualization: true,
-		overscanThreshold: 4,
 		theadRowHeight: 35,
 		tbodyRowHeight: 35,
 		tfootRowHeight: 35,
 		columns: [],
 		footers: []
 	};
+	// ################################## END Default Sources ##############################################################
 
-	// ################################## BEGIN Constructor ###############################################################
+	// ################################## BEGIN Set Sources ################################################################
+	set_sources = (value: Sources<TData>) => (this.set = value);
+	set_id = (value: RequiredSources<TData>['id']) => (this.set.id = value);
+	set_data = (value: RequiredSources<TData>['data']) => (this.set.data = value);
+	set_width = (value: RequiredSources<TData>['width']) => (this.set.width = value);
+	set_height = (value: RequiredSources<TData>['height']) => (this.set.height = value);
+	set_enableVirtualization = (value: RequiredSources<TData>['enableVirtualization']) => (this.set.enableVirtualization = value);
+	set_theadRowHeight = (value: RequiredSources<TData>['theadRowHeight']) => (this.set.theadRowHeight = value);
+	set_tbodyRowHeight = (value: RequiredSources<TData>['tbodyRowHeight']) => (this.set.tbodyRowHeight = value);
+	set_tfootRowHeight = (value: RequiredSources<TData>['tfootRowHeight']) => (this.set.tfootRowHeight = value);
+	set_columns = (value: RequiredSources<TData>['columns']) => (this.set.columns = value);
+	set_footers = (value: RequiredSources<TData>['footers']) => (this.set.footers = value);
+	// ################################## END Set Sources ##################################################################
+
+	// ################################## BEGIN Constructor ################################################################
 	element?: HTMLDivElement = $state();
-	set: Sources<TData> = $state({ id: '', columns: [] }); // orjinal sources. kaynaklar/sources değiştirilirken bu değişken kullanılacak. `table.set`
+	private set: Sources<TData> = $state({ id: '', columns: [] }); // orjinal sources. kaynaklar/sources değiştirilirken bu değişken kullanılacak. `table.set`
 	constructor(sources: Sources<TData>) {
-		this.set = sources;
+		this.set_sources(sources);
 	}
-	// ################################## END Constructor ###############################################################
+	// ################################## END Constructor #################################################################
 
-	// ################################## BEGIN Properties ###############################################################
+	// ################################## BEGIN Properties ################################################################
 	// derived sources. kaynaklar/sources okunurken bu değişken kullanılacak. `table.get`
 	get = $derived({ ...this.defaultSources, ...this.set });
 	// derived columns. kolon bilgileri okunurken bu değişken kullanılacak. `table.columns`
@@ -40,23 +55,14 @@ class Table<TData extends Row> {
 	);
 	// ################################## END Properties ###############################################################
 
-	// ################################## BEGIN Variables ###############################################################
+	// ################################## BEGIN Variables ##############################################################
 	test = $state('test');
 	headerRowsCount = $state(1);
 	scrollTop?: number = $state();
 	clientHeight?: number = $state();
-	offsetHeight?: number = $state();
-	scrollHeight = $derived.by(() => {
-		const offsetHeight = this.offsetHeight || 0;
-		const clientHeight = this.clientHeight || 0;
-		return (
-			this.headerRowsCount * this.get.theadRowHeight + // headerRowsHeight
-			this.get.data.length * this.get.tbodyRowHeight + // dataRowsHeight
-			this.get.footers.length * this.get.tfootRowHeight + // footerRowsHeight
-			(offsetHeight - clientHeight) // horizontalScrollbarHeight
-		);
-	});
-
+	overscanThreshold = 0;
+	lastCurrentRowOverscanStartIndex?: number = $state();
+	lastCurrentRowOverscanEndIndex?: number = $state();
 	focusedCell?: FocucedCell<TData> = $state();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
@@ -65,45 +71,42 @@ class Table<TData extends Row> {
 		return `${repeatThead} ${repeatTbody} ${repeatTfoot}`;
 	});
 	gridTemplateColumns = $derived(this.columns.map((col) => (col.width ? col.width : `150px`)).join(' '));
-	// ################################## END Variables ###############################################################
+	// ################################## END Variables ################################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
-	private lastCurrentOffsetHeight?: number;
-	private lastCurrentClientHeight?: number;
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
 		if (this.get.enableVirtualization === false) return [];
 
 		if (typeof this.element === 'undefined') return []; // Henüz tablo elementi bind edilmedi. `bind:this={table.element}`
 
-		let offsetHeight = this.offsetHeight;
-		let clientHeight = this.clientHeight;
-		if (offsetHeight === 0) offsetHeight = this.lastCurrentOffsetHeight; // tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
-		if (clientHeight === 0) clientHeight = this.lastCurrentClientHeight; // tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
-
-		if (typeof offsetHeight === 'undefined' || typeof clientHeight === 'undefined') return []; // Henüz tablo height değerleri bind edilmedi. `bind:clientHeight={table.clientHeight}` ve `bind:offsetHeight={table.offsetHeight}`
-
-		this.lastCurrentOffsetHeight = offsetHeight;
-		this.lastCurrentClientHeight = clientHeight;
+		const clientHeight = this.clientHeight;
+		if (typeof clientHeight === 'undefined') return []; // Henüz ilk tablo clientHeight değeri atanmadı.
 
 		const scrollTop = this.scrollTop || 0;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
-		const overscanThreshold = this.get.overscanThreshold;
+		const overscanThreshold = this.overscanThreshold;
 		const dataLength = this.get.data.length;
 
-		const horizontalScrollbarHeight = offsetHeight - clientHeight;
-		const tableHeight = offsetHeight - horizontalScrollbarHeight;
-		const currentHeight = tableHeight - headerRowsHeight - footerRowsHeight;
+		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({
+			scrollTop,
+			clientHeight,
+			headerRowsHeight,
+			footerRowsHeight,
+			dataRowHeight,
+			overscanThreshold,
+			dataLength
+		});
+		if (typeof rowOverscanStartIndex === 'undefined' || typeof rowOverscanEndIndex === 'undefined') return [];
 
-		const rowVisibleStartIndex = Math.floor(scrollTop / dataRowHeight);
-		const rowVisibleEndIndex = Math.min(dataLength - 1, Math.floor((scrollTop + currentHeight) / dataRowHeight));
-		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
-		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
-
-		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - offsetHeight:${offsetHeight} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
+		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
+
+		this.lastCurrentRowOverscanStartIndex = rowOverscanStartIndex;
+		this.lastCurrentRowOverscanEndIndex = rowOverscanEndIndex;
+
 		return slicedData.map((row, index) => {
 			return {
 				...row,
@@ -113,12 +116,6 @@ class Table<TData extends Row> {
 	});
 	// ################################## END Vertical Virtual Data ####################################################
 
-	setAllData = (data: TData[]) => {
-		this.set.data = data;
-	};
-	setAllSources = (sources: Sources<TData>) => {
-		this.set = sources;
-	};
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
 		const footer = foot[field]; // sum, avg, count or footer content
 		if (typeof footer === 'undefined') return '';
@@ -136,6 +133,50 @@ class Table<TData extends Row> {
 							return typeof value === 'number' ? acc + value : acc;
 						}, 0)
 					: footer;
+	};
+
+	findVirtualRowIndex = ({
+		scrollTop,
+		clientHeight,
+		headerRowsHeight,
+		footerRowsHeight,
+		dataRowHeight,
+		overscanThreshold,
+		dataLength
+	}: {
+		scrollTop?: number;
+		clientHeight?: number;
+		headerRowsHeight?: number;
+		footerRowsHeight?: number;
+		dataRowHeight?: number;
+		overscanThreshold?: number;
+		dataLength?: number;
+	}) => {
+		if (typeof this.element === 'undefined') {
+			return {
+				rowVisibleStartIndex: undefined,
+				rowVisibleEndIndex: undefined,
+				rowOverscanStartIndex: undefined,
+				rowOverscanEndIndex: undefined
+			};
+		}
+
+		const xScrollTop = scrollTop || this.element.scrollTop;
+		const xClientHeight = clientHeight || this.element.clientHeight;
+		const xHeaderRowsHeight = headerRowsHeight || this.headerRowsCount * this.get.theadRowHeight;
+		const xFooterRowsHeight = footerRowsHeight || this.get.footers.length * this.get.tfootRowHeight;
+		const xDataRowHeight = dataRowHeight || this.get.tbodyRowHeight;
+		const xOverscanThreshold = overscanThreshold || this.overscanThreshold;
+		const xDataLength = dataLength || this.get.data.length;
+
+		const currentHeight = xClientHeight - xHeaderRowsHeight - xFooterRowsHeight;
+
+		const rowVisibleStartIndex = Math.floor(xScrollTop / xDataRowHeight);
+		const rowVisibleEndIndex = Math.min(xDataLength - 1, Math.floor((xScrollTop + currentHeight) / xDataRowHeight));
+		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - xOverscanThreshold);
+		const rowOverscanEndIndex = Math.min(xDataLength - 1, rowVisibleEndIndex + xOverscanThreshold);
+
+		return { rowVisibleStartIndex, rowVisibleEndIndex, rowOverscanStartIndex, rowOverscanEndIndex };
 	};
 }
 

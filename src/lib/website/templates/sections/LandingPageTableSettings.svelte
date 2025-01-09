@@ -20,7 +20,7 @@
 	const table = getTable<ProducedGrapes>(src.id);
 
 	const setPageData = (count: number) => {
-		table.setAllData(common.generateExampleData(count));
+		table.set_data(common.generateExampleData(count));
 	};
 </script>
 

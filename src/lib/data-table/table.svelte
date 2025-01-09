@@ -2,6 +2,7 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
+	import { onMount } from 'svelte';
 	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
@@ -30,12 +31,12 @@
 	}: Props = $props();
 
 	const table = getTable<TData>(src.id);
+	let lastScrollTop = 0;
 
 	const virtualScrollAction = (tableNode: HTMLDivElement) => {
 		if (table.get.enableVirtualization === false) return;
 
 		let isScrolling = false;
-		let lastScrollTop = 0;
 
 		const setScrollTop = async () => {
 			if (isScrolling) return;
@@ -44,8 +45,17 @@
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
-			table.scrollTop = lastScrollTop;
-			await tick(); // `table.scrollTop` state'i değiştiğinde gerçekleşeccek dom güncellemelerini bekler
+
+			const { rowOverscanStartIndex, rowOverscanEndIndex } = table.findVirtualRowIndex({});
+			// || yerine && kullanılabilir. bir miktar performans elde edilir. overscanThreshold değeri 0'dan büyük olmalıdır.
+			if (
+				rowOverscanStartIndex !== table.lastCurrentRowOverscanStartIndex &&
+				rowOverscanEndIndex !== table.lastCurrentRowOverscanEndIndex
+			) {
+				table.scrollTop = lastScrollTop; // trigger virtualization
+				await tick();
+			}
+
 			isScrolling = false;
 		};
 
@@ -57,6 +67,39 @@
 			}
 		};
 	};
+
+	onMount(() => {
+		if (table.get.enableVirtualization === false) return;
+
+		const observer = new ResizeObserver(async (entries) => {
+			for (let entry of entries) {
+				const target = entry.target as HTMLDivElement;
+				const newClientHeight = target.clientHeight;
+
+				if (newClientHeight === 0) return; // tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
+
+				// Sadece yükseklik değiştiğinde işlem yapılır
+				if (newClientHeight !== table.clientHeight) {
+					const { rowOverscanStartIndex, rowOverscanEndIndex } = table.findVirtualRowIndex({});
+					if (
+						rowOverscanStartIndex !== table.lastCurrentRowOverscanStartIndex ||
+						rowOverscanEndIndex !== table.lastCurrentRowOverscanEndIndex
+					) {
+						table.clientHeight = newClientHeight; // trigger virtualization
+						lastScrollTop = target.scrollTop;
+						table.scrollTop = lastScrollTop; // trigger virtualization
+						await tick();
+					}
+				}
+			}
+		});
+
+		if (table.element) observer.observe(table.element);
+
+		return () => {
+			if (table.element) observer.unobserve(table.element);
+		};
+	});
 </script>
 
 <div class:slc-table-main={true} class={containerClass} style:width={table.get.width} style:height={table.get.height}>
@@ -66,8 +109,6 @@
 		<div
 			role="grid"
 			bind:this={table.element}
-			bind:clientHeight={table.clientHeight}
-			bind:offsetHeight={table.offsetHeight}
 			use:virtualScrollAction
 			data-id={src.id}
 			data-scope="slc-table"
@@ -76,8 +117,6 @@
 			style:grid-template-rows={table.gridTemplateRows}
 			style:grid-template-columns={table.gridTemplateColumns}
 			style:scroll-padding-block={`${table.headerRowsCount * table.get.theadRowHeight}px ${table.get.footers.length * table.get.tfootRowHeight}px`}
-			style:--slc-header-row-height={`${table.get.theadRowHeight}px`}
-			style:--slc-scroll-height={`${table.scrollHeight}px`}
 			aria-colcount={table.columns.length}
 			aria-rowcount={table.get.data.length + table.get.footers.length + table.headerRowsCount}
 			{...attributes}
