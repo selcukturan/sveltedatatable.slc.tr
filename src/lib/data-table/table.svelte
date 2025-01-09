@@ -31,8 +31,8 @@
 	}: Props = $props();
 
 	const table = getTable<TData>(src.id);
-	let lastScrollTop = 0;
 
+	let lastScrollTop = 0;
 	const virtualScrollAction = (tableNode: HTMLDivElement) => {
 		if (table.get.enableVirtualization === false) return;
 
@@ -47,9 +47,8 @@
 			lastScrollTop = scrollTop;
 
 			const { rowOverscanStartIndex, rowOverscanEndIndex } = table.findVirtualRowIndex({});
-			// || yerine && kullanılabilir. bir miktar performans elde edilir. overscanThreshold değeri 0'dan büyük olmalıdır.
 			if (
-				rowOverscanStartIndex !== table.lastCurrentRowOverscanStartIndex &&
+				rowOverscanStartIndex !== table.lastCurrentRowOverscanStartIndex ||
 				rowOverscanEndIndex !== table.lastCurrentRowOverscanEndIndex
 			) {
 				table.scrollTop = lastScrollTop; // trigger virtualization
@@ -80,16 +79,10 @@
 
 				// Sadece yükseklik değiştiğinde işlem yapılır
 				if (newClientHeight !== table.clientHeight) {
-					const { rowOverscanStartIndex, rowOverscanEndIndex } = table.findVirtualRowIndex({});
-					if (
-						rowOverscanStartIndex !== table.lastCurrentRowOverscanStartIndex ||
-						rowOverscanEndIndex !== table.lastCurrentRowOverscanEndIndex
-					) {
-						table.clientHeight = newClientHeight; // trigger virtualization
-						lastScrollTop = target.scrollTop;
-						table.scrollTop = lastScrollTop; // trigger virtualization
-						await tick();
-					}
+					table.clientHeight = newClientHeight; // trigger virtualization
+					lastScrollTop = target.scrollTop;
+					table.scrollTop = lastScrollTop; // trigger virtualization
+					await tick();
 				}
 			}
 		});
