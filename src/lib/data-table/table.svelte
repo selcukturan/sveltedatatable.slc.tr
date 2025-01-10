@@ -48,8 +48,8 @@
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
-			await tick();
 			table.scrollTop = lastScrollTop; // trigger virtualization
+			await tick();
 			isScrolling = false;
 
 			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
