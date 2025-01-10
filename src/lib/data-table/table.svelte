@@ -2,6 +2,7 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
+	import { onMount } from 'svelte';
 	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
@@ -38,12 +39,12 @@
 		let lastScrollTop = 0;
 
 		const setScrollTop = async () => {
-			if (tableNode.offsetParent === null) return;
 			if (isScrolling) return;
 
 			const runTime = Date.now();
 
-			const { scrollTop } = tableNode;
+			const { scrollTop, clientHeight } = tableNode;
+			if (clientHeight === 0) return;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
@@ -73,20 +74,15 @@
 		};
 	};
 
-	/* onMount(() => {
+	onMount(() => {
 		if (table.get.enableVirtualization === false) return;
-
 		const observer = new ResizeObserver(async (entries) => {
 			for (let entry of entries) {
-				const target = entry.target as HTMLDivElement;
-				const newClientHeight = target.clientHeight;
-
-				// if (newClientHeight === 0) return;
-
-				// Sadece yükseklik değiştiğinde işlem yapılır
+				const newClientHeight = entry.contentRect.height;
+				if (newClientHeight === 0) return;
 				if (newClientHeight !== table.clientHeight) {
-					await tick();
 					table.clientHeight = newClientHeight; // trigger virtualization
+					await tick();
 				}
 			}
 		});
@@ -94,7 +90,7 @@
 		return () => {
 			if (table.element) observer.unobserve(table.element);
 		};
-	}); */
+	});
 </script>
 
 <div class:slc-table-main={true} class={containerClass} style:width={table.get.width} style:height={table.get.height}>
@@ -105,7 +101,6 @@
 			role="grid"
 			bind:this={table.element}
 			use:virtualScrollAction
-			bind:clientHeight={table.clientHeight}
 			data-id={src.id}
 			data-scope="slc-table"
 			class:slc-table={true}
