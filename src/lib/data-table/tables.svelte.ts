@@ -72,7 +72,7 @@ class Table<TData extends Row> {
 	// ################################## END Variables ################################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
-	lastCurrentClientHeight = 0;
+	private lastCurrentVirtaulData: TData[] = [];
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
 		if (this.get.enableVirtualization === false) return [];
@@ -81,6 +81,7 @@ class Table<TData extends Row> {
 
 		const clientHeight = this.clientHeight;
 		if (typeof clientHeight === 'undefined') return []; // Henüz ilk tablo clientHeight değeri atanmadı.
+		if (clientHeight === 0) return this.lastCurrentVirtaulData;
 
 		const scrollTop = this.scrollTop || 0;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
@@ -89,25 +90,23 @@ class Table<TData extends Row> {
 		const overscanThreshold = this.overscanThreshold;
 		const dataLength = this.get.data.length;
 
-		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({
-			scrollTop,
-			clientHeight,
-			headerRowsHeight,
-			footerRowsHeight,
-			dataRowHeight,
-			overscanThreshold,
-			dataLength
-		});
-		if (typeof rowOverscanStartIndex === 'undefined' || typeof rowOverscanEndIndex === 'undefined') return [];
+		const currentHeight = clientHeight - headerRowsHeight - footerRowsHeight;
+
+		const rowVisibleStartIndex = Math.floor(scrollTop / dataRowHeight);
+		const rowVisibleEndIndex = Math.min(dataLength - 1, Math.floor((scrollTop + currentHeight) / dataRowHeight));
+		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
+		const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
 
 		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
-		return slicedData.map((row, index) => {
+		const processedData = slicedData.map((row, index) => {
 			return {
 				...row,
 				oi: rowOverscanStartIndex + index // original row index
 			};
 		});
+		this.lastCurrentVirtaulData = processedData;
+		return processedData;
 	});
 	// ################################## END Vertical Virtual Data ####################################################
 

@@ -2,7 +2,6 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	/* import { onMount } from 'svelte'; */
 	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
@@ -39,12 +38,12 @@
 		let lastScrollTop = 0;
 
 		const setScrollTop = async () => {
+			if (tableNode.offsetParent === null) return;
 			if (isScrolling) return;
 
 			const runTime = Date.now();
 
-			const { scrollTop, clientHeight } = tableNode;
-			if (clientHeight === 0) return;
+			const { scrollTop } = tableNode;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
@@ -56,7 +55,7 @@
 			const resultFpsPercentage = runEndTime / 16;
 			console.info(
 				`%c⏱ ${runEndTime} ms`,
-				`font-size: .6rem;
+				`font-size: 1rem;
                 font-weight: bold;
                 color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
 				'setScrollTop'
