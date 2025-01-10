@@ -72,6 +72,7 @@ class Table<TData extends Row> {
 	// ################################## END Variables ################################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
+	private lastCurrentVirtaulData: TData[] = [];
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
 		if (this.get.enableVirtualization === false) return [];
@@ -80,6 +81,7 @@ class Table<TData extends Row> {
 
 		const clientHeight = this.clientHeight;
 		if (typeof clientHeight === 'undefined') return []; // Henüz ilk tablo clientHeight değeri atanmadı.
+		if (clientHeight === 0) return this.lastCurrentVirtaulData;
 
 		const scrollTop = this.scrollTop || 0;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
@@ -101,6 +103,7 @@ class Table<TData extends Row> {
 
 		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
+		this.lastCurrentVirtaulData = slicedData;
 		return slicedData.map((row, index) => {
 			return {
 				...row,
