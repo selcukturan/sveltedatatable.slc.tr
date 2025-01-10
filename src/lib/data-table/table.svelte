@@ -44,7 +44,7 @@
 			const runTime = Date.now();
 
 			const { scrollTop, clientHeight } = tableNode;
-			if (clientHeight === 0) return; // tablo dom'da görünür değilse işlem yapılmaz. yada `if (tableNode.offsetParent === null) return;` kullanılabilir.
+			if (clientHeight === 0) return;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
@@ -63,13 +63,13 @@
 			);
 		};
 
-		const throttledFunction = table.throttle(setScrollTop, 50);
+		const throttledSetScrollTop = table.throttle(setScrollTop, 50);
 
-		tableNode.addEventListener('scroll', throttledFunction, { passive: true });
+		tableNode.addEventListener('scroll', throttledSetScrollTop, { passive: true });
 
 		return {
 			destroy() {
-				tableNode.removeEventListener('scroll', throttledFunction);
+				tableNode.removeEventListener('scroll', throttledSetScrollTop);
 			}
 		};
 	};
@@ -82,6 +82,8 @@
 				const target = entry.target as HTMLDivElement;
 				const newClientHeight = target.clientHeight;
 
+				// if (newClientHeight === 0) return;
+
 				// Sadece yükseklik değiştiğinde işlem yapılır
 				if (newClientHeight !== table.clientHeight) {
 					await tick();
@@ -89,9 +91,7 @@
 				}
 			}
 		});
-
 		if (table.element) observer.observe(table.element);
-
 		return () => {
 			if (table.element) observer.unobserve(table.element);
 		};
