@@ -2,7 +2,7 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { onMount } from 'svelte';
+	/* import { onMount } from 'svelte'; */
 	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
@@ -63,18 +63,18 @@
 			);
 		};
 
-		const throttledSetScrollTop = table.throttle(setScrollTop, 50);
+		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
 
-		tableNode.addEventListener('scroll', throttledSetScrollTop, { passive: true });
+		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
 
 		return {
 			destroy() {
-				tableNode.removeEventListener('scroll', throttledSetScrollTop);
+				tableNode.removeEventListener('scroll', setScrollTop);
 			}
 		};
 	};
 
-	onMount(() => {
+	/* onMount(() => {
 		if (table.get.enableVirtualization === false) return;
 
 		const observer = new ResizeObserver(async (entries) => {
@@ -95,7 +95,7 @@
 		return () => {
 			if (table.element) observer.unobserve(table.element);
 		};
-	});
+	}); */
 </script>
 
 <div class:slc-table-main={true} class={containerClass} style:width={table.get.width} style:height={table.get.height}>
@@ -106,6 +106,7 @@
 			role="grid"
 			bind:this={table.element}
 			use:virtualScrollAction
+			bind:clientHeight={table.clientHeight}
 			data-id={src.id}
 			data-scope="slc-table"
 			class:slc-table={true}

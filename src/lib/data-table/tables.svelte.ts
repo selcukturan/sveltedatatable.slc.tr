@@ -82,10 +82,7 @@ class Table<TData extends Row> {
 		const clientHeight = this.clientHeight;
 		if (typeof clientHeight === 'undefined') return []; // Henüz ilk tablo clientHeight değeri atanmadı.
 
-		const scrollTop = this.lastCurrentClientHeight === 0 ? this.element.scrollTop : this.scrollTop || 0;
-
-		this.lastCurrentClientHeight = clientHeight;
-
+		const scrollTop = this.scrollTop || 0;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
