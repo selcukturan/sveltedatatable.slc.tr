@@ -66,13 +66,13 @@
 			);
 		};
 
-		const throttledFunction = table.throttle(setScrollTop, 50);
+		// const throttledFunction = table.throttle(setScrollTop, 50);
 
-		tableNode.addEventListener('scroll', throttledFunction, { passive: true });
+		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
 
 		return {
 			destroy() {
-				tableNode.removeEventListener('scroll', throttledFunction);
+				tableNode.removeEventListener('scroll', setScrollTop);
 			}
 		};
 	};
