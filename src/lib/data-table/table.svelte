@@ -40,29 +40,36 @@
 
 		const setScrollTop = async () => {
 			if (isScrolling) return;
+
+			/* const runTime = Date.now(); */
+
 			const { scrollTop, offsetHeight } = tableNode;
 			if (offsetHeight === 0) return; // tablo dom'da görünür değilse işlem yapılmaz. yada `if (tableNode.offsetParent === null) return;` kullanılabilir.
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
-
-			const { rowOverscanStartIndex, rowOverscanEndIndex } = table.findVirtualRowIndex({});
-			if (
-				rowOverscanStartIndex !== table.lastCurrentRowOverscanStartIndex ||
-				rowOverscanEndIndex !== table.lastCurrentRowOverscanEndIndex
-			) {
-				table.scrollTop = lastScrollTop; // trigger virtualization
-				await tick();
-			}
-
+			await tick();
+			table.scrollTop = lastScrollTop; // trigger virtualization
 			isScrolling = false;
+
+			/* const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
+			const resultFpsPercentage = runEndTime / 16; */
+			/* console.info(
+				`%c⏱ ${runEndTime} ms`,
+				`font-size: .6rem;
+                font-weight: bold;
+                color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
+				'setScrollTop'
+			); */
 		};
 
-		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
+		const throttledFunction = table.throttle(setScrollTop, 50);
+
+		tableNode.addEventListener('scroll', throttledFunction, { passive: true });
 
 		return {
 			destroy() {
-				tableNode.removeEventListener('scroll', setScrollTop);
+				tableNode.removeEventListener('scroll', throttledFunction);
 			}
 		};
 	};
@@ -79,10 +86,8 @@
 
 				// Sadece yükseklik değiştiğinde işlem yapılır
 				if (newClientHeight !== table.clientHeight) {
-					table.clientHeight = newClientHeight; // trigger virtualization
-					lastScrollTop = target.scrollTop;
-					table.scrollTop = lastScrollTop; // trigger virtualization
 					await tick();
+					table.clientHeight = newClientHeight; // trigger virtualization
 				}
 			}
 		});

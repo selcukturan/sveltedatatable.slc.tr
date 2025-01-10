@@ -61,8 +61,6 @@ class Table<TData extends Row> {
 	scrollTop?: number = $state();
 	clientHeight?: number = $state();
 	overscanThreshold = 0;
-	lastCurrentRowOverscanStartIndex?: number = $state();
-	lastCurrentRowOverscanEndIndex?: number = $state();
 	focusedCell?: FocucedCell<TData> = $state();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
@@ -103,10 +101,6 @@ class Table<TData extends Row> {
 
 		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
-
-		this.lastCurrentRowOverscanStartIndex = rowOverscanStartIndex;
-		this.lastCurrentRowOverscanEndIndex = rowOverscanEndIndex;
-
 		return slicedData.map((row, index) => {
 			return {
 				...row,
@@ -177,6 +171,29 @@ class Table<TData extends Row> {
 		const rowOverscanEndIndex = Math.min(xDataLength - 1, rowVisibleEndIndex + xOverscanThreshold);
 
 		return { rowVisibleStartIndex, rowVisibleEndIndex, rowOverscanStartIndex, rowOverscanEndIndex };
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+	throttle = (func: Function, delay: number) => {
+		let timeoutId: number;
+		let lastExecTime = 0;
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		return function (this: any, ...args: Array<any>) {
+			const currentTime = Date.now();
+			const elapsedTime = currentTime - lastExecTime;
+
+			if (elapsedTime > delay) {
+				func.apply(this, args);
+				lastExecTime = currentTime;
+			} else {
+				clearTimeout(timeoutId); // Önceki zaman aşımını temizle
+				timeoutId = setTimeout(() => {
+					func.apply(this, args);
+					lastExecTime = Date.now();
+				}, delay - elapsedTime);
+			}
+		};
 	};
 }
 
