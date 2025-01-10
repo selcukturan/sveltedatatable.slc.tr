@@ -176,21 +176,21 @@ class Table<TData extends Row> {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 	throttle = (func: Function, delay: number) => {
 		let timeoutId: number;
-		let lastExecTime = 0;
+		let lastRunTime = 0;
 
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return function (this: any, ...args: Array<any>) {
-			const currentTime = Date.now();
-			const elapsedTime = currentTime - lastExecTime;
+			const currentTime = Date.now(); // şu anki zaman
+			const elapsedTime = currentTime - lastRunTime; // geçen zaman
 
 			if (elapsedTime > delay) {
 				func.apply(this, args);
-				lastExecTime = currentTime;
+				lastRunTime = currentTime;
 			} else {
-				clearTimeout(timeoutId); // Önceki zaman aşımını temizle
+				clearTimeout(timeoutId);
 				timeoutId = setTimeout(() => {
 					func.apply(this, args);
-					lastExecTime = Date.now();
+					lastRunTime = Date.now();
 				}, delay - elapsedTime);
 			}
 		};

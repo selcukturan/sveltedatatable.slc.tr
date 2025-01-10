@@ -32,19 +32,22 @@
 
 	const table = getTable<TData>(src.id);
 
-	let lastScrollTop = 0;
 	const virtualScrollAction = (tableNode: HTMLDivElement) => {
 		if (table.get.enableVirtualization === false) return;
 
 		let isScrolling = false;
+		let lastScrollTop = 0;
 
 		const setScrollTop = async () => {
 			if (isScrolling) return;
 
-			/* const runTime = Date.now(); */
+			const runTime = Date.now();
 
-			const { scrollTop, offsetHeight } = tableNode;
-			if (offsetHeight === 0) return; // tablo dom'da görünür değilse işlem yapılmaz. yada `if (tableNode.offsetParent === null) return;` kullanılabilir.
+			const { scrollTop, clientHeight } = tableNode;
+			if (clientHeight === 0) {
+				table.clientHeight = undefined;
+				return;
+			} // tablo dom'da görünür değilse işlem yapılmaz. yada `if (tableNode.offsetParent === null) return;` kullanılabilir.
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
 			lastScrollTop = scrollTop;
@@ -52,15 +55,15 @@
 			table.scrollTop = lastScrollTop; // trigger virtualization
 			isScrolling = false;
 
-			/* const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
-			const resultFpsPercentage = runEndTime / 16; */
-			/* console.info(
+			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
+			const resultFpsPercentage = runEndTime / 16;
+			console.info(
 				`%c⏱ ${runEndTime} ms`,
 				`font-size: .6rem;
                 font-weight: bold;
                 color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
 				'setScrollTop'
-			); */
+			);
 		};
 
 		const throttledFunction = table.throttle(setScrollTop, 50);
@@ -82,7 +85,10 @@
 				const target = entry.target as HTMLDivElement;
 				const newClientHeight = target.clientHeight;
 
-				if (newClientHeight === 0) return; // tablo görünür olmadığında değerler sıfırlanıyor. sıfır olamaz.
+				if (newClientHeight === 0) {
+					table.clientHeight = undefined;
+					return;
+				}
 
 				// Sadece yükseklik değiştiğinde işlem yapılır
 				if (newClientHeight !== table.clientHeight) {
