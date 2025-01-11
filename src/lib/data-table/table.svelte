@@ -82,9 +82,11 @@
 
 		const setScrollTop = async () => {
 			if (isScrolling) return;
+			if (!tableNode) return;
 
 			const { scrollTop, clientHeight } = tableNode;
-			// if (clientHeight === 0) return;
+			if (tableNode.offsetParent === null) return;
+			console.log(tableNode.textContent);
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			const runTime = Date.now();
 			isScrolling = true;
