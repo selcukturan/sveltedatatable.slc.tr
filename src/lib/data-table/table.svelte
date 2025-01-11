@@ -36,19 +36,16 @@
 		if (table.get.enableVirtualization === false) return;
 
 		let isScrolling = false;
-		let lastScrollTop = 0;
 
 		const setScrollTop = async () => {
 			if (isScrolling) return;
-
 			const { scrollTop, clientHeight } = tableNode;
 			if (clientHeight === 0) return;
-			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
-			const runTime = Date.now();
 			isScrolling = true;
-			lastScrollTop = scrollTop;
 
-			table.virtualDataTrigger = `scroll_${lastScrollTop}`;
+			const runTime = Date.now();
+
+			table.virtualDataTrigger = `scroll_${scrollTop}`;
 			await tick();
 
 			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
@@ -63,13 +60,13 @@
 			isScrolling = false;
 		};
 
-		const throttledSetScrollTop = table.throttle(setScrollTop, 16);
+		// const throttledSetScrollTop = table.throttle(setScrollTop, 16);
 
-		tableNode.addEventListener('scroll', throttledSetScrollTop, { passive: true });
+		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
 
 		return {
 			destroy() {
-				tableNode.removeEventListener('scroll', throttledSetScrollTop);
+				tableNode.removeEventListener('scroll', setScrollTop);
 			}
 		};
 	};
@@ -80,10 +77,8 @@
 			for (let entry of entries) {
 				const newClientHeight = entry.contentRect.height;
 				if (newClientHeight === 0) return;
-				if (newClientHeight !== table.clientHeight) {
-					table.virtualDataTrigger = `height_${newClientHeight}`;
-					await tick();
-				}
+				table.virtualDataTrigger = `height_${newClientHeight}`;
+				await tick();
 			}
 		});
 		if (table.element) observer.observe(table.element);

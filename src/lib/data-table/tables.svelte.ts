@@ -59,9 +59,6 @@ class Table<TData extends Row> {
 	test = $state('test');
 	headerRowsCount = $state(1);
 	virtualDataTrigger?: string = $state();
-	scrollTop?: number = $state();
-	clientHeight?: number = $state();
-	overscanThreshold = 0;
 	focusedCell?: FocucedCell<TData> = $state();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
@@ -83,7 +80,7 @@ class Table<TData extends Row> {
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
-		const overscanThreshold = this.overscanThreshold;
+		const overscanThreshold = 0;
 		const dataLength = this.get.data.length;
 
 		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({
@@ -156,7 +153,7 @@ class Table<TData extends Row> {
 		const xHeaderRowsHeight = headerRowsHeight || this.headerRowsCount * this.get.theadRowHeight;
 		const xFooterRowsHeight = footerRowsHeight || this.get.footers.length * this.get.tfootRowHeight;
 		const xDataRowHeight = dataRowHeight || this.get.tbodyRowHeight;
-		const xOverscanThreshold = overscanThreshold || this.overscanThreshold;
+		const xOverscanThreshold = overscanThreshold || 4;
 		const xDataLength = dataLength || this.get.data.length;
 
 		const currentHeight = xClientHeight - xHeaderRowsHeight - xFooterRowsHeight;
