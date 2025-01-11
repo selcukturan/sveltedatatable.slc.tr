@@ -74,6 +74,70 @@
 		};
 	};
 
+	const virtualScrollAction1 = (tableNode: HTMLDivElement) => {
+		if (table.get.enableVirtualization === false) return;
+
+		let isScrolling = false;
+		let lastScrollTop = 0;
+
+		const setScrollTop = async () => {
+			// if (isScrolling) return;
+
+			const runTime = Date.now();
+
+			const { scrollTop, clientHeight } = tableNode;
+			const headerRowsHeight = table.headerRowsCount * table.get.theadRowHeight;
+			const footerRowsHeight = table.get.footers.length * table.get.tfootRowHeight;
+			const dataRowHeight = table.get.tbodyRowHeight;
+			const overscanThreshold = table.overscanThreshold;
+			const dataLength = table.get.data.length;
+
+			const currentHeight = clientHeight - headerRowsHeight - footerRowsHeight;
+
+			const rowVisibleStartIndex = Math.floor(scrollTop / dataRowHeight);
+			const rowVisibleEndIndex = Math.min(dataLength - 1, Math.floor((scrollTop + currentHeight) / dataRowHeight));
+			const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
+			const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
+
+			table.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
+			const slicedData = $state.snapshot(table.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
+			const processedData = slicedData.map((row, index) => {
+				return {
+					...row,
+					oi: rowOverscanStartIndex + index // original row index
+				};
+			});
+			table.virtualData1 = processedData;
+			//return processedData;
+			/* if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
+			isScrolling = true;
+			lastScrollTop = scrollTop;
+			table.scrollTop = lastScrollTop; // trigger virtualization
+			await tick();
+			isScrolling = false; */
+
+			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
+			const resultFpsPercentage = runEndTime / 16;
+			/* console.info(
+				`%c⏱ ${runEndTime} ms`,
+				`font-size: 1rem;
+                font-weight: bold;
+                color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
+				'setScrollTop'
+			); */
+		};
+
+		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
+
+		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
+
+		return {
+			destroy() {
+				tableNode.removeEventListener('scroll', setScrollTop);
+			}
+		};
+	};
+
 	onMount(() => {
 		if (table.get.enableVirtualization === false) return;
 		const observer = new ResizeObserver(async (entries) => {
@@ -100,7 +164,7 @@
 		<div
 			role="grid"
 			bind:this={table.element}
-			use:virtualScrollAction
+			use:virtualScrollAction1
 			data-id={src.id}
 			data-scope="slc-table"
 			class:slc-table={true}
@@ -115,7 +179,7 @@
 			{@render thead?.()}
 
 			{#if table.get.enableVirtualization === true}
-				{#each table.virtualData as row, rowindex (row.oi)}
+				{#each table.virtualData1 as row, rowindex (row.oi)}
 					{@render tbody?.(row, rowindex)}
 				{/each}
 			{:else}

@@ -107,6 +107,7 @@ class Table<TData extends Row> {
 		});
 		return processedData;
 	});
+	virtualData1: TData[] = $state([]);
 	// ################################## END Vertical Virtual Data ####################################################
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
