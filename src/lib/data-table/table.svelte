@@ -3,7 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
-	import { tick, flushSync } from 'svelte';
+	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -78,18 +78,19 @@
 		if (table.get.enableVirtualization === false) return;
 
 		let isScrolling = false;
-		let lastScrollTop = 0;
+		let lastCurrentScrollTop = 0;
 
-		const setScrollTop = async (e: Event) => {
+		const setScrollTop = async () => {
 			if (isScrolling) return;
-			if (!tableNode) return;
 
 			const { scrollTop, clientHeight, offsetParent } = tableNode;
-			// if (offsetParent === null) return;
-			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
-			const runTime = Date.now();
+			if (offsetParent === null) return;
+			if (scrollTop === lastCurrentScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
+
 			isScrolling = true;
-			lastScrollTop = scrollTop;
+			lastCurrentScrollTop = scrollTop;
+
+			const runTime = Date.now();
 
 			const headerRowsHeight = table.headerRowsCount * table.get.theadRowHeight;
 			const footerRowsHeight = table.get.footers.length * table.get.tfootRowHeight;
@@ -112,19 +113,8 @@
 					oi: rowOverscanStartIndex + index // original row index
 				};
 			});
-			// await tick();
-			// flushSync();
 			table.virtualData1 = processedData;
-			// flushSync();
 			await tick();
-
-			//return processedData;
-			/* if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
-			isScrolling = true;
-			lastScrollTop = scrollTop;
-			table.scrollTop = lastScrollTop; // trigger virtualization
-			await tick();
-			isScrolling = false; */
 
 			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
 			const resultFpsPercentage = runEndTime / 16;
