@@ -78,17 +78,17 @@
 		if (table.get.enableVirtualization === false) return;
 
 		let isScrolling = false;
-		let lastCurrentScrollTop = 0;
+		let lastScrollTop = 0;
 
 		const setScrollTop = async (e: Event) => {
-			if (isScrolling) return;
-			const target = e.target as HTMLDivElement;
+			if (!tableNode || isScrolling) return;
+			const { scrollTop, clientHeight } = tableNode;
+			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 
-			const { scrollTop, clientHeight } = target;
-			if (scrollTop === lastCurrentScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
-			const runTime = Date.now();
 			isScrolling = true;
-			lastCurrentScrollTop = scrollTop;
+			lastScrollTop = scrollTop;
+
+			const runTime = Date.now();
 
 			const headerRowsHeight = table.headerRowsCount * table.get.theadRowHeight;
 			const footerRowsHeight = table.get.footers.length * table.get.tfootRowHeight;
@@ -111,19 +111,9 @@
 					oi: rowOverscanStartIndex + index // original row index
 				};
 			});
-			// await tick();
-			// flushSync();
-			table.virtualData1 = processedData;
-			// flushSync();
-			await tick();
 
-			//return processedData;
-			/* if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
-			isScrolling = true;
-			lastScrollTop = scrollTop;
-			table.scrollTop = lastScrollTop; // trigger virtualization
+			table.virtualData1 = processedData;
 			await tick();
-			isScrolling = false; */
 
 			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
 			const resultFpsPercentage = runEndTime / 16;
@@ -138,9 +128,7 @@
 		};
 
 		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
-
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
-
 		return {
 			destroy() {
 				tableNode.removeEventListener('scroll', setScrollTop);
