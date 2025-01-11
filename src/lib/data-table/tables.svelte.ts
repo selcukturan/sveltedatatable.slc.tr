@@ -75,14 +75,11 @@ class Table<TData extends Row> {
 	// ################################## BEGIN Vertical Virtual Data ##################################################
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
-		if (this.get.enableVirtualization === false) return [];
-		if (typeof this.element === 'undefined') return []; // Henüz tablo elementi bind edilmedi. `bind:this={table.element}`
+		if (typeof this.element === 'undefined' || this.get.enableVirtualization === false) return [];
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		this.virtualDataTrigger;
 
-		const clientHeight = this.element.clientHeight;
-		const scrollTop = this.element.scrollTop;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
@@ -90,8 +87,6 @@ class Table<TData extends Row> {
 		const dataLength = this.get.data.length;
 
 		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({
-			scrollTop,
-			clientHeight,
 			headerRowsHeight,
 			footerRowsHeight,
 			dataRowHeight,
@@ -100,7 +95,6 @@ class Table<TData extends Row> {
 		});
 		if (typeof rowOverscanStartIndex === 'undefined' || typeof rowOverscanEndIndex === 'undefined') return [];
 
-		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${clientHeight} - ${this.virtualDataTrigger}`;
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
 		const processedData = slicedData.map((row, index) => {
 			return {
@@ -110,7 +104,6 @@ class Table<TData extends Row> {
 		});
 		return processedData;
 	});
-	virtualData1: TData[] = $state.raw([]);
 	// ################################## END Vertical Virtual Data ####################################################
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
@@ -173,6 +166,7 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - xOverscanThreshold);
 		const rowOverscanEndIndex = Math.min(xDataLength - 1, rowVisibleEndIndex + xOverscanThreshold);
 
+		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${xClientHeight} - scrollTop:${xScrollTop}`;
 		return { rowVisibleStartIndex, rowVisibleEndIndex, rowOverscanStartIndex, rowOverscanEndIndex };
 	};
 

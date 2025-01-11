@@ -3,7 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
-	import { tick } from 'svelte';
+	import { tick, flushSync } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -42,12 +42,12 @@
 			if (isScrolling) return;
 
 			const { scrollTop, clientHeight } = tableNode;
-			if (clientHeight === 0) return;
+			// if (clientHeight === 0) return;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			const runTime = Date.now();
 			isScrolling = true;
 			lastScrollTop = scrollTop;
-			// table.scrollTop = lastScrollTop; // trigger virtualization
+
 			table.virtualDataTrigger = `scroll_${lastScrollTop}`;
 			await tick();
 
@@ -63,77 +63,13 @@
 			isScrolling = false;
 		};
 
-		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
+		const throttledSetScrollTop = table.throttle(setScrollTop, 16);
 
-		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
+		tableNode.addEventListener('scroll', throttledSetScrollTop, { passive: true });
 
 		return {
 			destroy() {
-				tableNode.removeEventListener('scroll', setScrollTop);
-			}
-		};
-	};
-
-	const virtualScrollAction1 = (tableNode: HTMLDivElement) => {
-		if (table.get.enableVirtualization === false) return;
-
-		let isScrolling = false;
-		let lastCurrentScrollTop = 0;
-
-		const setScrollTop = async () => {
-			if (isScrolling) return;
-
-			const { scrollTop, clientHeight, offsetParent } = tableNode;
-			if (offsetParent === null) return;
-			if (scrollTop === lastCurrentScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
-
-			isScrolling = true;
-			lastCurrentScrollTop = scrollTop;
-
-			const runTime = Date.now();
-
-			const headerRowsHeight = table.headerRowsCount * table.get.theadRowHeight;
-			const footerRowsHeight = table.get.footers.length * table.get.tfootRowHeight;
-			const dataRowHeight = table.get.tbodyRowHeight;
-			const overscanThreshold = table.overscanThreshold;
-			const dataLength = table.get.data.length;
-
-			const currentHeight = clientHeight - headerRowsHeight - footerRowsHeight;
-
-			const rowVisibleStartIndex = Math.floor(scrollTop / dataRowHeight);
-			const rowVisibleEndIndex = Math.min(dataLength - 1, Math.floor((scrollTop + currentHeight) / dataRowHeight));
-			const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - overscanThreshold);
-			const rowOverscanEndIndex = Math.min(dataLength - 1, rowVisibleEndIndex + overscanThreshold);
-
-			table.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${clientHeight} - scrollTop:${scrollTop}`;
-			const slicedData = $state.snapshot(table.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
-			const processedData = slicedData.map((row, index) => {
-				return {
-					...row,
-					oi: rowOverscanStartIndex + index // original row index
-				};
-			});
-			table.virtualData1 = processedData;
-			await tick();
-
-			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
-			const resultFpsPercentage = runEndTime / 16;
-			console.info(
-				`%c⏱ ${runEndTime} ms`,
-				`font-size: 1rem;
-                font-weight: bold;
-                color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
-				'setScrollTop'
-			);
-			isScrolling = false;
-		};
-
-		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
-
-		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
-		return {
-			destroy() {
-				tableNode.removeEventListener('scroll', setScrollTop);
+				tableNode.removeEventListener('scroll', throttledSetScrollTop);
 			}
 		};
 	};
