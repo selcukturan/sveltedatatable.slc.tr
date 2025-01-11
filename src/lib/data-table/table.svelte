@@ -41,26 +41,26 @@
 		const setScrollTop = async () => {
 			if (isScrolling) return;
 
-			const runTime = Date.now();
-
 			const { scrollTop, clientHeight } = tableNode;
 			if (clientHeight === 0) return;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
+			const runTime = Date.now();
 			isScrolling = true;
 			lastScrollTop = scrollTop;
-			table.scrollTop = lastScrollTop; // trigger virtualization
+			// table.scrollTop = lastScrollTop; // trigger virtualization
+			table.virtualDataTrigger = `scroll_${lastScrollTop}`;
 			await tick();
-			isScrolling = false;
 
 			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
 			const resultFpsPercentage = runEndTime / 16;
 			console.info(
-				`%c⏱ ${runEndTime} ms`,
+				`%c⏱ ${runEndTime} msx`,
 				`font-size: 1rem;
                 font-weight: bold;
                 color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
 				'setScrollTop'
 			);
+			isScrolling = false;
 		};
 
 		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
@@ -145,7 +145,8 @@
 				const newClientHeight = entry.contentRect.height;
 				if (newClientHeight === 0) return;
 				if (newClientHeight !== table.clientHeight) {
-					table.clientHeight = newClientHeight; // trigger virtualization
+					// table.clientHeight = newClientHeight; // trigger virtualization
+					table.virtualDataTrigger = `height_${newClientHeight}`;
 					await tick();
 				}
 			}
@@ -164,7 +165,7 @@
 		<div
 			role="grid"
 			bind:this={table.element}
-			use:virtualScrollAction1
+			use:virtualScrollAction
 			data-id={src.id}
 			data-scope="slc-table"
 			class:slc-table={true}
@@ -179,7 +180,7 @@
 			{@render thead?.()}
 
 			{#if table.get.enableVirtualization === true}
-				{#each table.virtualData1 as row, rowindex (row.oi)}
+				{#each table.virtualData as row, rowindex (row.oi)}
 					{@render tbody?.(row, rowindex)}
 				{/each}
 			{:else}
