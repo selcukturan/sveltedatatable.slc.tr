@@ -3,7 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
-	import { tick, flushSync } from 'svelte';
+	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -42,7 +42,7 @@
 			if (isScrolling) return;
 
 			const { scrollTop, clientHeight } = tableNode;
-			// if (clientHeight === 0) return;
+			if (clientHeight === 0) return;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			const runTime = Date.now();
 			isScrolling = true;
@@ -81,7 +81,6 @@
 				const newClientHeight = entry.contentRect.height;
 				if (newClientHeight === 0) return;
 				if (newClientHeight !== table.clientHeight) {
-					// table.clientHeight = newClientHeight; // trigger virtualization
 					table.virtualDataTrigger = `height_${newClientHeight}`;
 					await tick();
 				}
