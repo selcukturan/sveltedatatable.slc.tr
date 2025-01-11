@@ -108,6 +108,7 @@
 				};
 			});
 			table.virtualData1 = processedData;
+			await tick();
 			//return processedData;
 			/* if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
@@ -118,13 +119,13 @@
 
 			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
 			const resultFpsPercentage = runEndTime / 16;
-			/* console.info(
+			console.info(
 				`%c⏱ ${runEndTime} ms`,
 				`font-size: 1rem;
                 font-weight: bold;
                 color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
 				'setScrollTop'
-			); */
+			);
 		};
 
 		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
