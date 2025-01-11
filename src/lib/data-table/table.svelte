@@ -85,7 +85,7 @@
 			if (!tableNode) return;
 
 			const { scrollTop, clientHeight, offsetParent } = tableNode;
-			if (offsetParent === null) return;
+			// if (offsetParent === null) return;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			const runTime = Date.now();
 			isScrolling = true;
