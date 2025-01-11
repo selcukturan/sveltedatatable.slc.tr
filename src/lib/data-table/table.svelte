@@ -78,19 +78,17 @@
 		if (table.get.enableVirtualization === false) return;
 
 		let isScrolling = false;
-		let lastScrollTop = 0;
+		let lastCurrentScrollTop = 0;
 
-		const setScrollTop = async () => {
+		const setScrollTop = async (e: Event) => {
 			if (isScrolling) return;
-			if (!tableNode) return;
+			const target = e.target as HTMLDivElement;
 
-			const { scrollTop, clientHeight } = tableNode;
-			if (tableNode.offsetParent === null) return;
-			console.log(tableNode.textContent);
-			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
+			const { scrollTop, clientHeight } = target;
+			if (scrollTop === lastCurrentScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			const runTime = Date.now();
 			isScrolling = true;
-			lastScrollTop = scrollTop;
+			lastCurrentScrollTop = scrollTop;
 
 			const headerRowsHeight = table.headerRowsCount * table.get.theadRowHeight;
 			const footerRowsHeight = table.get.footers.length * table.get.tfootRowHeight;
@@ -139,13 +137,13 @@
 			isScrolling = false;
 		};
 
-		const throttledSetScrollTop = table.throttle(setScrollTop, 50);
+		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
 
-		tableNode.addEventListener('scroll', throttledSetScrollTop, { passive: true });
+		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
 
 		return {
 			destroy() {
-				tableNode.removeEventListener('scroll', throttledSetScrollTop);
+				tableNode.removeEventListener('scroll', setScrollTop);
 			}
 		};
 	};
