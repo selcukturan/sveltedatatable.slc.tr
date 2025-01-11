@@ -3,7 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
-	import { tick } from 'svelte';
+	import { tick, flushSync } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -81,11 +81,15 @@
 		let lastScrollTop = 0;
 
 		const setScrollTop = async () => {
-			// if (isScrolling) return;
-
-			const runTime = Date.now();
+			if (isScrolling) return;
 
 			const { scrollTop, clientHeight } = tableNode;
+			if (clientHeight === 0) return;
+			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
+			const runTime = Date.now();
+			isScrolling = true;
+			lastScrollTop = scrollTop;
+
 			const headerRowsHeight = table.headerRowsCount * table.get.theadRowHeight;
 			const footerRowsHeight = table.get.footers.length * table.get.tfootRowHeight;
 			const dataRowHeight = table.get.tbodyRowHeight;
@@ -107,8 +111,12 @@
 					oi: rowOverscanStartIndex + index // original row index
 				};
 			});
+			// await tick();
+			// flushSync();
 			table.virtualData1 = processedData;
+			// flushSync();
 			await tick();
+
 			//return processedData;
 			/* if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			isScrolling = true;
@@ -126,6 +134,7 @@
                 color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
 				'setScrollTop'
 			);
+			isScrolling = false;
 		};
 
 		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
