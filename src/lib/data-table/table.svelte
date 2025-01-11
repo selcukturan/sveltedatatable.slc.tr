@@ -84,7 +84,7 @@
 			if (isScrolling) return;
 
 			const { scrollTop, clientHeight } = tableNode;
-			if (clientHeight === 0) return;
+			// if (clientHeight === 0) return;
 			if (scrollTop === lastScrollTop) return; // sadece dikey scroll işleminde sanallaştırma yapılır
 			const runTime = Date.now();
 			isScrolling = true;
@@ -137,13 +137,13 @@
 			isScrolling = false;
 		};
 
-		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
+		const throttledSetScrollTop = table.throttle(setScrollTop, 50);
 
-		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
+		tableNode.addEventListener('scroll', throttledSetScrollTop, { passive: true });
 
 		return {
 			destroy() {
-				tableNode.removeEventListener('scroll', setScrollTop);
+				tableNode.removeEventListener('scroll', throttledSetScrollTop);
 			}
 		};
 	};
