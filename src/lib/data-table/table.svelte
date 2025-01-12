@@ -17,50 +17,26 @@
 		tableContainerClass?: string;
 		containerClass?: string;
 	};
-	const {
-		src,
-		toolbar,
-		thead,
-		tbody,
-		tfoot,
-		statusbar,
-		class: tableClass,
-		tableContainerClass,
-		containerClass,
-		...attributes
-	}: Props = $props();
+	const { src, toolbar, thead, tbody, tfoot, statusbar, class: tableClass, tableContainerClass, containerClass, ...attributes }: Props = $props();
 
 	const table = getTable<TData>(src.id);
 
 	const virtualScrollAction = (tableNode: HTMLDivElement) => {
 		if (table.get.enableVirtualization === false) return;
 
-		let isScrolling = false;
+		let calculatingVirtualData = false;
 
 		const setScrollTop = async () => {
-			if (isScrolling) return;
+			if (calculatingVirtualData) return;
+
 			const { scrollTop, clientHeight } = tableNode;
 			if (clientHeight === 0) return;
-			isScrolling = true;
 
-			const runTime = Date.now();
-
+			calculatingVirtualData = true;
 			table.virtualDataTrigger = `scroll_${scrollTop}`;
 			await tick();
-
-			const runEndTime = Math.round((Date.now() - runTime) * 100) / 100;
-			const resultFpsPercentage = runEndTime / 16;
-			console.info(
-				`%c⏱ ${runEndTime} msx`,
-				`font-size: 1rem;
-                font-weight: bold;
-                color: hsl(${Math.max(0, Math.min(120 - 120 * resultFpsPercentage, 120))}deg 100% 31%);`,
-				'setScrollTop'
-			);
-			isScrolling = false;
+			calculatingVirtualData = false;
 		};
-
-		// const throttledSetScrollTop = table.throttle(setScrollTop, 16);
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
 
@@ -73,15 +49,18 @@
 
 	onMount(() => {
 		if (table.get.enableVirtualization === false) return;
+
 		const observer = new ResizeObserver(async (entries) => {
 			for (let entry of entries) {
-				const newClientHeight = entry.contentRect.height;
-				if (newClientHeight === 0) return;
-				table.virtualDataTrigger = `height_${newClientHeight}`;
+				const clientHeight = entry.contentRect.height;
+				if (clientHeight === 0) return;
+				table.virtualDataTrigger = `height_${clientHeight}`;
 				await tick();
 			}
 		});
+
 		if (table.element) observer.observe(table.element);
+
 		return () => {
 			if (table.element) observer.unobserve(table.element);
 		};

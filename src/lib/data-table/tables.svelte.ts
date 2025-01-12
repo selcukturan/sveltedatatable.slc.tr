@@ -72,24 +72,17 @@ class Table<TData extends Row> {
 	// ################################## BEGIN Vertical Virtual Data ##################################################
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
-		if (typeof this.element === 'undefined' || this.get.enableVirtualization === false) return [];
-
-		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
-		this.virtualDataTrigger;
+		if (this.get.enableVirtualization === false) return [];
+		if (typeof this.element === 'undefined') return [];
+		if (typeof this.virtualDataTrigger === 'undefined') return [];
 
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
-		const overscanThreshold = 0;
+		const overscanThreshold = 4;
 		const dataLength = this.get.data.length;
 
-		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({
-			headerRowsHeight,
-			footerRowsHeight,
-			dataRowHeight,
-			overscanThreshold,
-			dataLength
-		});
+		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({ headerRowsHeight, footerRowsHeight, dataRowHeight, overscanThreshold, dataLength });
 		if (typeof rowOverscanStartIndex === 'undefined' || typeof rowOverscanEndIndex === 'undefined') return [];
 
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
@@ -148,13 +141,13 @@ class Table<TData extends Row> {
 			};
 		}
 
-		const xScrollTop = scrollTop || this.element.scrollTop;
-		const xClientHeight = clientHeight || this.element.clientHeight;
-		const xHeaderRowsHeight = headerRowsHeight || this.headerRowsCount * this.get.theadRowHeight;
-		const xFooterRowsHeight = footerRowsHeight || this.get.footers.length * this.get.tfootRowHeight;
-		const xDataRowHeight = dataRowHeight || this.get.tbodyRowHeight;
-		const xOverscanThreshold = overscanThreshold || 4;
-		const xDataLength = dataLength || this.get.data.length;
+		const xScrollTop = scrollTop ?? this.element.scrollTop;
+		const xClientHeight = clientHeight ?? this.element.clientHeight;
+		const xHeaderRowsHeight = headerRowsHeight ?? this.headerRowsCount * this.get.theadRowHeight;
+		const xFooterRowsHeight = footerRowsHeight ?? this.get.footers.length * this.get.tfootRowHeight;
+		const xDataRowHeight = dataRowHeight ?? this.get.tbodyRowHeight;
+		const xOverscanThreshold = overscanThreshold ?? 4;
+		const xDataLength = dataLength ?? this.get.data.length;
 
 		const currentHeight = xClientHeight - xHeaderRowsHeight - xFooterRowsHeight;
 
@@ -163,31 +156,7 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - xOverscanThreshold);
 		const rowOverscanEndIndex = Math.min(xDataLength - 1, rowVisibleEndIndex + xOverscanThreshold);
 
-		this.test = `startIndex:${rowOverscanStartIndex} - endIndex:${rowOverscanEndIndex} - clientHeight:${xClientHeight} - scrollTop:${xScrollTop}`;
 		return { rowVisibleStartIndex, rowVisibleEndIndex, rowOverscanStartIndex, rowOverscanEndIndex };
-	};
-
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-	throttle = (func: Function, delay: number) => {
-		let timeoutId: number;
-		let lastRunTime = 0;
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return function (this: any, ...args: Array<any>) {
-			const currentTime = Date.now(); // şu anki zaman
-			const elapsedTime = currentTime - lastRunTime; // geçen zaman
-
-			if (elapsedTime > delay) {
-				func.apply(this, args);
-				lastRunTime = currentTime;
-			} else {
-				clearTimeout(timeoutId);
-				timeoutId = setTimeout(() => {
-					func.apply(this, args);
-					lastRunTime = Date.now();
-				}, delay - elapsedTime);
-			}
-		};
 	};
 }
 
