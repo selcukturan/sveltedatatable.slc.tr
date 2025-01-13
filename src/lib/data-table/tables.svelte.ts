@@ -66,7 +66,7 @@ class Table<TData extends Row> {
 		const repeatTfoot = this.get.footers.length > 0 ? `repeat(${this.get.footers.length}, ${this.get.tfootRowHeight}px)` : ``;
 		return `${repeatThead} ${repeatTbody} ${repeatTfoot}`;
 	});
-	gridTemplateColumns = $derived(this.columns.map((col) => (col.width ? col.width : `150px`)).join(' '));
+	gridTemplateColumns = $derived(this.columns.map((col) => col.width ?? `150px`).join(' '));
 	// ################################## END Variables ################################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
@@ -86,12 +86,22 @@ class Table<TData extends Row> {
 		if (typeof rowOverscanStartIndex === 'undefined' || typeof rowOverscanEndIndex === 'undefined') return [];
 
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
-		const processedData = slicedData.map((row, index) => {
-			return {
-				...row,
-				oi: rowOverscanStartIndex + index // original row index
-			};
+		const processedData: TData[] = slicedData.map((row, index) => {
+			return { ...row, oi: rowOverscanStartIndex + index }; // oi = original row index
 		});
+
+		const focusedCellRowIndex = this?.focusedCell?.originalRowIndex;
+		if (typeof focusedCellRowIndex === 'number') {
+			const isAboveOverscanStart = focusedCellRowIndex < rowOverscanStartIndex ? true : false;
+			const isBelowOverscanEnd = focusedCellRowIndex > rowOverscanEndIndex + 1 ? true : false;
+			if (isAboveOverscanStart || isBelowOverscanEnd) {
+				const focusedCellRow: TData = $state.snapshot(this.get.data[focusedCellRowIndex]) as TData;
+				focusedCellRow.oi = focusedCellRowIndex;
+				if (isAboveOverscanStart) processedData.unshift(focusedCellRow);
+				if (isBelowOverscanEnd) processedData.push(focusedCellRow);
+			}
+		}
+
 		return processedData;
 	});
 	// ################################## END Vertical Virtual Data ####################################################

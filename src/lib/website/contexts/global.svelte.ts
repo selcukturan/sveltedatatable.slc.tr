@@ -18,7 +18,7 @@ class GlobalContext {
 		appName: 'SLC Svelte Virtual Data Table',
 		windowWidth: 1000,
 		currentScreen: 'lg',
-		tableVersion: 'v0.0.1-82',
+		tableVersion: 'v0.0.1-83',
 		screens: {
 			sm: 640, // tablet
 			md: 768, // tablet landscape
@@ -31,9 +31,7 @@ class GlobalContext {
 const GLOBAL_CTX = Symbol('WEBSITE_GLOBAL_CTX');
 
 export const setGlobalContext = () => {
-	const globalContext = new GlobalContext();
-	setContext(GLOBAL_CTX, globalContext);
-	return globalContext;
+	return setContext(GLOBAL_CTX, new GlobalContext());
 };
 
 export const getGlobalContext = () => {
