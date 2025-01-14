@@ -60,7 +60,7 @@ class Table<TData extends Row> {
 	test = $state('test');
 	headerRowsCount = $state(1);
 	virtualDataTrigger?: string = $state();
-	focusedCell?: FocucedCell = $state();
+	focusedCell?: FocucedCell = $state.raw();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
 		const repeatTbody = this.get.data.length > 0 ? `repeat(${this.get.data.length}, ${this.get.tbodyRowHeight}px)` : ``;
@@ -94,7 +94,7 @@ class Table<TData extends Row> {
 		const focusedCellRowIndex = this.focusedCell?.rowIndex;
 		if (typeof focusedCellRowIndex === 'number' && focusedCellRowIndex < dataLength) {
 			const isAboveOverscanStart = focusedCellRowIndex < rowOverscanStartIndex ? true : false;
-			const isBelowOverscanEnd = focusedCellRowIndex > rowOverscanEndIndex + 1 ? true : false;
+			const isBelowOverscanEnd = focusedCellRowIndex >= rowOverscanEndIndex + 1 ? true : false;
 			if (isAboveOverscanStart || isBelowOverscanEnd) {
 				const focusedCellRow: TData = $state.snapshot(this.get.data[focusedCellRowIndex]) as TData;
 				focusedCellRow.oi = focusedCellRowIndex;
@@ -110,6 +110,11 @@ class Table<TData extends Row> {
 	setFocusedCell = async (focucedCell?: FocucedCell) => {
 		this.focusedCell = focucedCell;
 		await tick();
+		const nextFocusedCellNode = this.element?.querySelector('[tabindex="0"]') as HTMLDivElement | null | undefined;
+		if (nextFocusedCellNode) {
+			nextFocusedCellNode.focus({ preventScroll: true });
+			nextFocusedCellNode.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+		}
 	};
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
@@ -173,6 +178,29 @@ class Table<TData extends Row> {
 		const rowOverscanEndIndex = Math.min(xDataLength - 1, rowVisibleEndIndex + xOverscanThreshold);
 
 		return { rowVisibleStartIndex, rowVisibleEndIndex, rowOverscanStartIndex, rowOverscanEndIndex };
+	};
+
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+	throttle = (func: Function, delay: number) => {
+		let timeoutId: number;
+		let lastRunTime = 0;
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		return function (this: any, ...args: Array<any>) {
+			const currentTime = Date.now(); // şu anki zaman
+			const elapsedTime = currentTime - lastRunTime; // geçen zaman
+
+			if (elapsedTime > delay) {
+				func.apply(this, args);
+				lastRunTime = currentTime;
+			} else {
+				clearTimeout(timeoutId);
+				timeoutId = setTimeout(() => {
+					func.apply(this, args);
+					lastRunTime = Date.now();
+				}, delay - elapsedTime);
+			}
+		};
 	};
 }
 

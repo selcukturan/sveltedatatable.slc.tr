@@ -2,7 +2,7 @@
 	import type { Row, Column, Sources, FocucedCell } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { type Snippet } from 'svelte';
-
+	import { tick, flushSync } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -23,23 +23,24 @@
 	const indexToRow = 1;
 	const gridRowStart = $derived(typeof row_oi === 'number' ? row_oi + table.headerRowsCount + indexToRow : 0);
 
-	const focusAction = (cellNode: HTMLDivElement) => {
-		const handleFocus = async () => {
+	const mouseAction = (cellNode: HTMLDivElement) => {
+		const handleMouseDown = async () => {
 			if (typeof row_oi === 'undefined') return;
 			await table.setFocusedCell({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}` });
 		};
 
-		cellNode.addEventListener('focus', handleFocus);
+		cellNode.addEventListener('mousedown', handleMouseDown);
 
 		return {
 			destroy() {
-				cellNode.removeEventListener('focus', handleFocus);
+				cellNode.removeEventListener('mousedown', handleMouseDown);
 			}
 		};
 	};
 
-	const keydownAction = (cellNode: HTMLDivElement) => {
+	const keyboardAction = (cellNode: HTMLDivElement) => {
 		const handleKeydown = async (e: KeyboardEvent) => {
+			// console.log('object');
 			const focusedCell = table.focusedCell;
 			const focusedRowIndex = focusedCell?.rowIndex;
 			const focusedColIndex = focusedCell?.colIndex;
@@ -56,16 +57,15 @@
 			// const elementToFocus = cell.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]') ?? cell;
 			// elementToFocus.focus({ preventScroll: true });
 
-			let cellToFocus: FocucedCell | undefined = undefined;
+			let nextFocusedCell: FocucedCell | undefined = undefined;
 			if (key === 'ArrowUp') {
-				// nextCell = table.element?.querySelector(`[data-cell="r${+row - 1}c${col}"]`);
-				cellToFocus = { rowIndex: focusedRowIndex - 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex - 1}_${focusedColIndex}` };
+				nextFocusedCell = { rowIndex: focusedRowIndex - 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex - 1}_${focusedColIndex}` };
 			} else if (key === 'ArrowDown' || key === 'Enter') {
-				cellToFocus = { rowIndex: focusedRowIndex + 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex + 1}_${focusedColIndex}` };
+				nextFocusedCell = { rowIndex: focusedRowIndex + 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex + 1}_${focusedColIndex}` };
 			} else if (key === 'ArrowLeft' || (e.shiftKey && key === 'Tab')) {
-				cellToFocus = { rowIndex: focusedRowIndex, colIndex: focusedColIndex - 1, originalCell: `${focusedRowIndex}_${focusedColIndex - 1}` };
+				nextFocusedCell = { rowIndex: focusedRowIndex, colIndex: focusedColIndex - 1, originalCell: `${focusedRowIndex}_${focusedColIndex - 1}` };
 			} else if (key === 'ArrowRight' || (!e.shiftKey && key === 'Tab')) {
-				cellToFocus = { rowIndex: focusedRowIndex, colIndex: focusedColIndex + 1, originalCell: `${focusedRowIndex}_${focusedColIndex + 1}` };
+				nextFocusedCell = { rowIndex: focusedRowIndex, colIndex: focusedColIndex + 1, originalCell: `${focusedRowIndex}_${focusedColIndex + 1}` };
 			} else if (key === 'F2') {
 				/* e.preventDefault();
 				table.createCellInput({ rowIndex, colIndex, originalCell }); */
@@ -78,12 +78,12 @@
 				table.createCellInput({ rowIndex, colIndex, originalCell }); */
 			}
 
-			if (typeof cellToFocus !== 'undefined') {
+			if (typeof nextFocusedCell?.rowIndex !== 'undefined' && typeof nextFocusedCell?.colIndex !== 'undefined' && typeof table.element !== 'undefined') {
 				e.preventDefault();
-				const nextCell = table.element?.querySelector(`[data-cell="${cellToFocus.originalCell}"]`) as HTMLDivElement;
-				if (nextCell) {
-					nextCell.focus({ preventScroll: true });
-					nextCell.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+				const dataRowLength = table.get.data.length;
+				const dataColLength = table.columns.length;
+				if (nextFocusedCell.colIndex >= 0 && nextFocusedCell.colIndex < dataColLength && nextFocusedCell.rowIndex >= 0 && nextFocusedCell.rowIndex < dataRowLength) {
+					await table.setFocusedCell(nextFocusedCell);
 				}
 			}
 		};
@@ -100,11 +100,10 @@
 
 <div
 	role="gridcell"
-	use:focusAction
-	use:keydownAction
+	use:mouseAction
+	use:keyboardAction
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={`${ci + 1} / ${ci + 2}`}
-	data-cell={originalCell}
 	class:slc-table-td={true}
 	class={classes}
 	tabindex={table?.focusedCell?.originalCell === originalCell ? 0 : -1}

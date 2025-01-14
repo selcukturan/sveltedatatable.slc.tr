@@ -38,6 +38,8 @@
 			calculatingVirtualData = false;
 		};
 
+		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
+
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
 
 		return {
