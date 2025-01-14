@@ -24,9 +24,9 @@
 	const gridRowStart = $derived(typeof row_oi === 'number' ? row_oi + table.headerRowsCount + indexToRow : 0);
 
 	const focusAction = (cellNode: HTMLDivElement) => {
-		const handleFocus = () => {
+		const handleFocus = async () => {
 			if (typeof row_oi === 'undefined') return;
-			table.setFocusedCell({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}` });
+			await table.setFocusedCell({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}` });
 		};
 
 		cellNode.addEventListener('focus', handleFocus);
@@ -80,7 +80,11 @@
 
 			if (typeof cellToFocus !== 'undefined') {
 				e.preventDefault();
-				table.setFocusedCell(cellToFocus);
+				const nextCell = table.element?.querySelector(`[data-cell="${cellToFocus.originalCell}"]`) as HTMLDivElement;
+				if (nextCell) {
+					nextCell.focus({ preventScroll: true });
+					nextCell.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+				}
 			}
 		};
 
@@ -100,6 +104,7 @@
 	use:keydownAction
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={`${ci + 1} / ${ci + 2}`}
+	data-cell={originalCell}
 	class:slc-table-td={true}
 	class={classes}
 	tabindex={table?.focusedCell?.originalCell === originalCell ? 0 : -1}

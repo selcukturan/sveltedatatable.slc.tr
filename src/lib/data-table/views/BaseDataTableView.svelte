@@ -5,7 +5,8 @@
 
 	const { sources: src }: { sources: Sources<TData> } = $props();
 	const table = getTable<TData>(src.id);
-	$inspect(table.focusedCell);
+	$inspect(table.virtualData);
+	// $inspect(table.focusedCell);
 </script>
 
 <Table {src} class="bg-zinc-50 dark:bg-zinc-950">

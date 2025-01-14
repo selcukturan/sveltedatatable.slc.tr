@@ -91,7 +91,7 @@ class Table<TData extends Row> {
 			return { ...row, oi: rowOverscanStartIndex + index }; // oi = original row index
 		});
 
-		const focusedCellRowIndex = this?.focusedCell?.rowIndex;
+		const focusedCellRowIndex = this.focusedCell?.rowIndex;
 		if (typeof focusedCellRowIndex === 'number' && focusedCellRowIndex < dataLength) {
 			const isAboveOverscanStart = focusedCellRowIndex < rowOverscanStartIndex ? true : false;
 			const isBelowOverscanEnd = focusedCellRowIndex > rowOverscanEndIndex + 1 ? true : false;
