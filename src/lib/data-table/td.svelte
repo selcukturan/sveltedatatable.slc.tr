@@ -1,7 +1,8 @@
 <script lang="ts" generics="TData extends Row">
-	import type { Row, Column, Sources, Field } from './types';
+	import type { Row, Column, Sources, FocucedCell } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { type Snippet } from 'svelte';
+
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -18,20 +19,14 @@
 	const table = getTable<TData>(src.id);
 
 	const row_oi = $derived(table.get.enableVirtualization === false ? ri : row.oi);
-	const originalCell = $derived(`${row_oi}_${col.oi}`);
+	const originalCell = $derived(`${row_oi}_${ci}`);
 	const indexToRow = 1;
 	const gridRowStart = $derived(typeof row_oi === 'number' ? row_oi + table.headerRowsCount + indexToRow : 0);
 
 	const focusAction = (cellNode: HTMLDivElement) => {
 		const handleFocus = () => {
-			table.focusedCell = {
-				field: table.columns[ci].field,
-				rowIndex: ri,
-				colIndex: ci,
-				originalRowIndex: row_oi,
-				originalColIndex: col.oi,
-				originalCell: originalCell
-			};
+			if (typeof row_oi === 'undefined') return;
+			table.setFocusedCell({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}` });
 		};
 
 		cellNode.addEventListener('focus', handleFocus);
@@ -42,16 +37,71 @@
 			}
 		};
 	};
+
+	const keydownAction = (cellNode: HTMLDivElement) => {
+		const handleKeydown = async (e: KeyboardEvent) => {
+			const focusedCell = table.focusedCell;
+			const focusedRowIndex = focusedCell?.rowIndex;
+			const focusedColIndex = focusedCell?.colIndex;
+			if (typeof focusedRowIndex === 'undefined' || typeof focusedColIndex === 'undefined') return;
+
+			const { key } = e;
+
+			const typableNumber = '1234567890';
+			const typableLower = 'abcdefghijklmnopqrstuvwxyz';
+			const typableUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			const typableOther = " =-`[\\]';,./ğüşıöçĞÜŞİÖÇ";
+
+			// Kullanılabilir olduğunda hücrenin kendisi yerine hücre içeriğine odaklanma
+			// const elementToFocus = cell.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]') ?? cell;
+			// elementToFocus.focus({ preventScroll: true });
+
+			let cellToFocus: FocucedCell | undefined = undefined;
+			if (key === 'ArrowUp') {
+				// nextCell = table.element?.querySelector(`[data-cell="r${+row - 1}c${col}"]`);
+				cellToFocus = { rowIndex: focusedRowIndex - 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex - 1}_${focusedColIndex}` };
+			} else if (key === 'ArrowDown' || key === 'Enter') {
+				cellToFocus = { rowIndex: focusedRowIndex + 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex + 1}_${focusedColIndex}` };
+			} else if (key === 'ArrowLeft' || (e.shiftKey && key === 'Tab')) {
+				cellToFocus = { rowIndex: focusedRowIndex, colIndex: focusedColIndex - 1, originalCell: `${focusedRowIndex}_${focusedColIndex - 1}` };
+			} else if (key === 'ArrowRight' || (!e.shiftKey && key === 'Tab')) {
+				cellToFocus = { rowIndex: focusedRowIndex, colIndex: focusedColIndex + 1, originalCell: `${focusedRowIndex}_${focusedColIndex + 1}` };
+			} else if (key === 'F2') {
+				/* e.preventDefault();
+				table.createCellInput({ rowIndex, colIndex, originalCell }); */
+			} else if ((e.ctrlKey || e.metaKey) && (key === 'c' || key === 'C')) {
+				/* Ctrl + C = Kopyala */
+			} else if ((e.ctrlKey || e.metaKey) && (key === 'v' || key === 'V')) {
+				/* Ctrl + V = Yapistir */
+			} else if (!e.ctrlKey && !e.metaKey && (typableNumber.includes(key) || typableLower.includes(key) || typableUpper.includes(key) || typableOther.includes(key))) {
+				/* e.preventDefault();
+				table.createCellInput({ rowIndex, colIndex, originalCell }); */
+			}
+
+			if (typeof cellToFocus !== 'undefined') {
+				e.preventDefault();
+				table.setFocusedCell(cellToFocus);
+			}
+		};
+
+		cellNode.addEventListener('keydown', handleKeydown);
+
+		return {
+			destroy() {
+				cellNode.removeEventListener('keydown', handleKeydown);
+			}
+		};
+	};
 </script>
 
 <div
 	role="gridcell"
 	use:focusAction
+	use:keydownAction
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={`${ci + 1} / ${ci + 2}`}
 	class:slc-table-td={true}
 	class={classes}
-	class:slc-table-td-focusedCell={table?.focusedCell?.originalCell === originalCell ? true : false}
 	tabindex={table?.focusedCell?.originalCell === originalCell ? 0 : -1}
 	aria-selected={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
 	aria-colindex={ci + 1}
@@ -93,7 +143,7 @@
 	.slc-table-td:nth-last-child(2) {
 		border-right-width: 0px;
 	} */
-	.slc-table-td-focusedCell {
+	[aria-selected='true'] {
 		outline-width: 2px;
 		outline-offset: -2px;
 		outline-color: #f59e0b;

@@ -1,5 +1,6 @@
 import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field } from './types';
 import { getContext, setContext } from 'svelte';
+import { tick } from 'svelte';
 
 class Table<TData extends Row> {
 	// ################################## BEGIN Default Sources ############################################################
@@ -59,7 +60,7 @@ class Table<TData extends Row> {
 	test = $state('test');
 	headerRowsCount = $state(1);
 	virtualDataTrigger?: string = $state();
-	focusedCell?: FocucedCell<TData> = $state();
+	focusedCell?: FocucedCell = $state();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
 		const repeatTbody = this.get.data.length > 0 ? `repeat(${this.get.data.length}, ${this.get.tbodyRowHeight}px)` : ``;
@@ -90,7 +91,7 @@ class Table<TData extends Row> {
 			return { ...row, oi: rowOverscanStartIndex + index }; // oi = original row index
 		});
 
-		const focusedCellRowIndex = this?.focusedCell?.originalRowIndex;
+		const focusedCellRowIndex = this?.focusedCell?.rowIndex;
 		if (typeof focusedCellRowIndex === 'number' && focusedCellRowIndex < dataLength) {
 			const isAboveOverscanStart = focusedCellRowIndex < rowOverscanStartIndex ? true : false;
 			const isBelowOverscanEnd = focusedCellRowIndex > rowOverscanEndIndex + 1 ? true : false;
@@ -105,6 +106,11 @@ class Table<TData extends Row> {
 		return processedData;
 	});
 	// ################################## END Vertical Virtual Data ####################################################
+
+	setFocusedCell = async (focucedCell?: FocucedCell) => {
+		this.focusedCell = focucedCell;
+		await tick();
+	};
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
 		const footer = foot[field]; // sum, avg, count or footer content
