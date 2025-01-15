@@ -107,11 +107,21 @@ class Table<TData extends Row> {
 	});
 	// ################################## END Vertical Virtual Data ####################################################
 
+	setVirtualDataTrigger = async (virtualDataTrigger: string) => {
+		// console.time('setVirtualData');
+		// flushSync(); // Bekleyen durum/state değişikliklerini ve bunun sonucunda ortaya çıkanları eşzamanlı olarak temizler.
+		this.virtualDataTrigger = virtualDataTrigger;
+		await tick();
+		// console.timeEnd('setVirtualData');
+	};
+
 	setFocusedCell = async (focucedCell?: FocucedCell) => {
+		// flushSync();
 		this.focusedCell = focucedCell;
 		await tick();
 		const nextFocusedCellNode = this.element?.querySelector('[tabindex="0"]') as HTMLDivElement | null | undefined;
 		if (nextFocusedCellNode) {
+			// nextFocusedCellNode.focus();
 			nextFocusedCellNode.focus({ preventScroll: true });
 			nextFocusedCellNode.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 		}

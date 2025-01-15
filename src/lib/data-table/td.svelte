@@ -2,7 +2,6 @@
 	import type { Row, Column, Sources, FocucedCell } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { type Snippet } from 'svelte';
-	import { tick, flushSync } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -40,7 +39,6 @@
 
 	const keyboardAction = (cellNode: HTMLDivElement) => {
 		const handleKeydown = async (e: KeyboardEvent) => {
-			// console.log('object');
 			const focusedCell = table.focusedCell;
 			const focusedRowIndex = focusedCell?.rowIndex;
 			const focusedColIndex = focusedCell?.colIndex;
@@ -138,8 +136,7 @@
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */
-		outline: 2px solid transparent;
-		outline-offset: 2px;
+		outline: none;
 	}
 	/* .slc-table-td:nth-last-child(1) {
 		border-left-width: 1px;
@@ -148,8 +145,7 @@
 		border-right-width: 0px;
 	} */
 	[aria-selected='true'] {
-		outline-width: 2px;
+		outline: 2px solid #f59e0b;
 		outline-offset: -2px;
-		outline-color: #f59e0b;
 	}
 </style>

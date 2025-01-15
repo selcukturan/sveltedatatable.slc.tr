@@ -3,7 +3,6 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
-	import { tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -33,8 +32,7 @@
 			if (clientHeight === 0) return;
 
 			calculatingVirtualData = true;
-			table.virtualDataTrigger = `scroll_${scrollTop}`;
-			await tick();
+			await table.setVirtualDataTrigger(`scroll_${scrollTop}`);
 			calculatingVirtualData = false;
 		};
 
@@ -56,8 +54,7 @@
 			for (let entry of entries) {
 				const clientHeight = entry.contentRect.height;
 				if (clientHeight === 0) return;
-				table.virtualDataTrigger = `height_${clientHeight}`;
-				await tick();
+				await table.setVirtualDataTrigger(`height_${clientHeight}`);
 			}
 		});
 
@@ -78,7 +75,6 @@
 			bind:this={table.element}
 			use:virtualScrollAction
 			data-id={src.id}
-			data-scope="slc-table"
 			class:slc-table={true}
 			class={tableClass}
 			style:grid-template-rows={table.gridTemplateRows}
@@ -125,6 +121,9 @@
 		display: grid;
 		width: 100%;
 		height: 100%;
+		contain: content; /* contain özelliği, bir elementin içeriksel sınırlarını belirler ve tarayıcıların bu sınırlar içinde optimizasyon yapmasına olanak tanır. content: Elementin içeriği, boyut, düzen ve stil açısından izole edilir. */
+		content-visibility: auto; /* auto: Tarayıcı, elementin içeriğini yalnızca görünür olduğunda render eder. Bu, performans optimizasyonları yapmasına olanak tanır. */
+		box-sizing: border-box;
 		overflow: auto;
 	}
 	.slc-table-no-data {
