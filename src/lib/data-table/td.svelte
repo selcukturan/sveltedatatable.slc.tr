@@ -22,17 +22,19 @@
 	const indexToRow = 1;
 	const gridRowStart = $derived(typeof row_oi === 'number' ? row_oi + table.headerRowsCount + indexToRow : 0);
 
-	const mouseAction = (cellNode: HTMLDivElement) => {
-		const handleMouseDown = async () => {
+	const clickAction = (cellNode: HTMLDivElement) => {
+		const handleClick = async () => {
 			if (typeof row_oi === 'undefined') return;
-			await table.setFocusedCell({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}` });
+			await table.setFocusedCellState({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}` });
+			// await table.setVirtualDataDerivedTrigger(`click_${row_oi}_${ci}`);
+			table.focusCellNode();
 		};
 
-		cellNode.addEventListener('mousedown', handleMouseDown);
+		cellNode.addEventListener('click', handleClick);
 
 		return {
 			destroy() {
-				cellNode.removeEventListener('mousedown', handleMouseDown);
+				cellNode.removeEventListener('click', handleClick);
 			}
 		};
 	};
@@ -50,10 +52,6 @@
 			const typableLower = 'abcdefghijklmnopqrstuvwxyz';
 			const typableUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 			const typableOther = " =-`[\\]';,./ğüşıöçĞÜŞİÖÇ";
-
-			// Kullanılabilir olduğunda hücrenin kendisi yerine hücre içeriğine odaklanma
-			// const elementToFocus = cell.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]') ?? cell;
-			// elementToFocus.focus({ preventScroll: true });
 
 			let nextFocusedCell: FocucedCell | undefined = undefined;
 			if (key === 'ArrowUp') {
@@ -76,13 +74,30 @@
 				table.createCellInput({ rowIndex, colIndex, originalCell }); */
 			}
 
-			if (typeof nextFocusedCell?.rowIndex !== 'undefined' && typeof nextFocusedCell?.colIndex !== 'undefined' && typeof table.element !== 'undefined') {
-				e.preventDefault();
-				const dataRowLength = table.get.data.length;
-				const dataColLength = table.columns.length;
-				if (nextFocusedCell.colIndex >= 0 && nextFocusedCell.colIndex < dataColLength && nextFocusedCell.rowIndex >= 0 && nextFocusedCell.rowIndex < dataRowLength) {
-					await table.setFocusedCell(nextFocusedCell);
+			const nextRowIndex = nextFocusedCell?.rowIndex;
+			const nextColIndex = nextFocusedCell?.colIndex;
+			const nextOriginalCell = nextFocusedCell?.originalCell;
+			if (typeof nextRowIndex === 'undefined' || typeof nextColIndex === 'undefined' || typeof nextOriginalCell === 'undefined') return;
+
+			e.preventDefault();
+			const dataRowLength = table.get.data.length;
+			const dataColLength = table.columns.length;
+			// next row index'i ve net col index'i, toplam satır sayısının ve toplam sütün sayısının içinde mi?
+			if (nextColIndex >= 0 && nextColIndex < dataColLength && nextRowIndex >= 0 && nextRowIndex < dataRowLength) {
+				await table.setFocusedCellState(nextFocusedCell);
+				const { rowVisibleStartIndex, rowVisibleEndIndex, overscanThreshold } = table.findVirtualRowIndex({});
+
+				// next row index'i, görünen satırların başlangıç ve bitiş index'lerinin 3 altında veya üstündeyse, virtual datayı trigger ile yeniden hesaplat.
+				// 3 <=> overscanThreshold - 1 <=> 4 - 1
+				const overscan = overscanThreshold - 1;
+				if (
+					(typeof rowVisibleStartIndex !== 'undefined' && nextRowIndex < rowVisibleStartIndex - overscan) ||
+					(typeof rowVisibleEndIndex !== 'undefined' && nextRowIndex > rowVisibleEndIndex + overscan)
+				) {
+					await table.setVirtualDataDerivedTrigger(`focus_${nextOriginalCell}`);
 				}
+
+				table.focusCellNode();
 			}
 		};
 
@@ -98,7 +113,7 @@
 
 <div
 	role="gridcell"
-	use:mouseAction
+	use:clickAction
 	use:keyboardAction
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={`${ci + 1} / ${ci + 2}`}

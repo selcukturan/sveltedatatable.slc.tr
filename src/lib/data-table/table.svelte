@@ -32,7 +32,7 @@
 			if (clientHeight === 0) return;
 
 			calculatingVirtualData = true;
-			await table.setVirtualDataTrigger(`scroll_${scrollTop}`);
+			await table.setVirtualDataDerivedTrigger(`scroll_${scrollTop}`);
 			calculatingVirtualData = false;
 		};
 
@@ -54,7 +54,7 @@
 			for (let entry of entries) {
 				const clientHeight = entry.contentRect.height;
 				if (clientHeight === 0) return;
-				await table.setVirtualDataTrigger(`height_${clientHeight}`);
+				await table.setVirtualDataDerivedTrigger(`height_${clientHeight}`);
 			}
 		});
 

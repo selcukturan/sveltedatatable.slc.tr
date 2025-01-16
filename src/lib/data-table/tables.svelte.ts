@@ -1,5 +1,5 @@
 import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field } from './types';
-import { getContext, setContext } from 'svelte';
+import { getContext, setContext, untrack } from 'svelte';
 import { tick } from 'svelte';
 
 class Table<TData extends Row> {
@@ -59,7 +59,7 @@ class Table<TData extends Row> {
 	// ################################## BEGIN Variables ##############################################################
 	test = $state('test');
 	headerRowsCount = $state(1);
-	virtualDataTrigger?: string = $state();
+	virtualDataDerivedTrigger?: string = $state();
 	focusedCell?: FocucedCell = $state.raw();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
@@ -75,15 +75,14 @@ class Table<TData extends Row> {
 	virtualData = $derived.by(() => {
 		if (this.get.enableVirtualization === false) return [];
 		if (typeof this.element === 'undefined') return [];
-		if (typeof this.virtualDataTrigger === 'undefined') return [];
+		if (typeof this.virtualDataDerivedTrigger === 'undefined') return [];
 
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
-		const overscanThreshold = 4;
 		const dataLength = this.get.data.length;
 
-		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({ headerRowsHeight, footerRowsHeight, dataRowHeight, overscanThreshold, dataLength });
+		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({ headerRowsHeight, footerRowsHeight, dataRowHeight, dataLength });
 		if (typeof rowOverscanStartIndex === 'undefined' || typeof rowOverscanEndIndex === 'undefined') return [];
 
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
@@ -91,7 +90,8 @@ class Table<TData extends Row> {
 			return { ...row, oi: rowOverscanStartIndex + index }; // oi = original row index
 		});
 
-		const focusedCellRowIndex = this.focusedCell?.rowIndex;
+		const focusedCell = untrack(() => this.focusedCell);
+		const focusedCellRowIndex = focusedCell?.rowIndex;
 		if (typeof focusedCellRowIndex === 'number' && focusedCellRowIndex < dataLength) {
 			const isAboveOverscanStart = focusedCellRowIndex < rowOverscanStartIndex ? true : false;
 			const isBelowOverscanEnd = focusedCellRowIndex >= rowOverscanEndIndex + 1 ? true : false;
@@ -107,23 +107,25 @@ class Table<TData extends Row> {
 	});
 	// ################################## END Vertical Virtual Data ####################################################
 
-	setVirtualDataTrigger = async (virtualDataTrigger: string) => {
-		// console.time('setVirtualData');
-		// flushSync(); // Bekleyen durum/state değişikliklerini ve bunun sonucunda ortaya çıkanları eşzamanlı olarak temizler.
-		this.virtualDataTrigger = virtualDataTrigger;
+	setVirtualDataDerivedTrigger = async (virtualDataDerivedTrigger: string) => {
+		this.virtualDataDerivedTrigger = virtualDataDerivedTrigger;
 		await tick();
-		// console.timeEnd('setVirtualData');
 	};
 
-	setFocusedCell = async (focucedCell?: FocucedCell) => {
-		// flushSync();
+	setFocusedCellState = async (focucedCell?: FocucedCell) => {
 		this.focusedCell = focucedCell;
 		await tick();
-		const nextFocusedCellNode = this.element?.querySelector('[tabindex="0"]') as HTMLDivElement | null | undefined;
+	};
+
+	focusCellNode = () => {
+		const tableElement = this.element;
+		if (typeof tableElement === 'undefined') return [];
+		const nextFocusedCellNode = tableElement.querySelector<HTMLDivElement>(':scope > [role="row"] > [tabindex="0"]');
 		if (nextFocusedCellNode) {
-			// nextFocusedCellNode.focus();
-			nextFocusedCellNode.focus({ preventScroll: true });
 			nextFocusedCellNode.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+			// Kullanılabilir olduğunda hücrenin kendisi yerine hücre içeriğine odaklanma
+			const elementToFocus = nextFocusedCellNode.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]') ?? nextFocusedCellNode;
+			elementToFocus.focus({ preventScroll: true });
 		}
 	};
 
@@ -163,12 +165,15 @@ class Table<TData extends Row> {
 		overscanThreshold?: number;
 		dataLength?: number;
 	}) => {
+		const defaultOverscanThreshold = 4;
+
 		if (typeof this.element === 'undefined') {
 			return {
 				rowVisibleStartIndex: undefined,
 				rowVisibleEndIndex: undefined,
 				rowOverscanStartIndex: undefined,
-				rowOverscanEndIndex: undefined
+				rowOverscanEndIndex: undefined,
+				overscanThreshold: defaultOverscanThreshold
 			};
 		}
 
@@ -177,7 +182,7 @@ class Table<TData extends Row> {
 		const xHeaderRowsHeight = headerRowsHeight ?? this.headerRowsCount * this.get.theadRowHeight;
 		const xFooterRowsHeight = footerRowsHeight ?? this.get.footers.length * this.get.tfootRowHeight;
 		const xDataRowHeight = dataRowHeight ?? this.get.tbodyRowHeight;
-		const xOverscanThreshold = overscanThreshold ?? 4;
+		const xOverscanThreshold = typeof overscanThreshold !== 'undefined' && overscanThreshold >= defaultOverscanThreshold ? overscanThreshold : defaultOverscanThreshold;
 		const xDataLength = dataLength ?? this.get.data.length;
 
 		const currentHeight = xClientHeight - xHeaderRowsHeight - xFooterRowsHeight;
@@ -187,7 +192,7 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - xOverscanThreshold);
 		const rowOverscanEndIndex = Math.min(xDataLength - 1, rowVisibleEndIndex + xOverscanThreshold);
 
-		return { rowVisibleStartIndex, rowVisibleEndIndex, rowOverscanStartIndex, rowOverscanEndIndex };
+		return { rowVisibleStartIndex, rowVisibleEndIndex, rowOverscanStartIndex, rowOverscanEndIndex, overscanThreshold: xOverscanThreshold };
 	};
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
