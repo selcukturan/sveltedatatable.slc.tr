@@ -25,8 +25,12 @@
 			{#each table.columns as col, ci (col.oi)}
 				{@const cell = row[col.field]}
 				<Td {src} {col} {ci} {row} {ri} class="border-zinc-200 dark:border-zinc-700">
-					<!-- <input type="checkbox" name="sssss" id="ssss" tabindex="0" /> -->
-					{cell}
+					{#if ci === 5}
+						<input type="checkbox" name="sssss" id="ssss" tabindex="0" />
+						{cell}
+					{:else}
+						{cell}
+					{/if}
 				</Td>
 			{/each}
 		</Trd>

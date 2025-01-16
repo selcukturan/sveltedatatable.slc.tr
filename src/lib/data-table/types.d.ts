@@ -47,4 +47,5 @@ export type FocucedCell = {
 	rowIndex?: number;
 	colIndex?: number;
 	originalCell?: `${number}_${number}`;
+	tabIndex?: number;
 };

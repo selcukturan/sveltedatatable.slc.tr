@@ -59,7 +59,6 @@ class Table<TData extends Row> {
 	// ################################## BEGIN Variables ##############################################################
 	test = $state('test');
 	headerRowsCount = $state(1);
-	virtualDataDerivedTrigger?: string = $state();
 	focusedCell?: FocucedCell = $state.raw();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
@@ -71,6 +70,7 @@ class Table<TData extends Row> {
 	// ################################## END Variables ################################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
+	virtualDataDerivedTrigger?: string = $state();
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
 		if (this.get.enableVirtualization === false) return [];
@@ -113,20 +113,33 @@ class Table<TData extends Row> {
 	};
 
 	setFocusedCellState = async (focucedCell?: FocucedCell) => {
-		this.focusedCell = focucedCell;
+		const tableElement = this.element;
+		if (typeof tableElement === 'undefined') return [];
+		let setFocucedCell = focucedCell;
+
+		const rowIndex = setFocucedCell?.rowIndex;
+		const colIndex = setFocucedCell?.colIndex;
+		if (typeof rowIndex !== 'undefined' && typeof colIndex !== 'undefined') {
+			const nextFocusedCellNode = tableElement.querySelector<HTMLDivElement>(`:scope > [role="row"] > [data-cell="${rowIndex}_${colIndex}"]`);
+			if (nextFocusedCellNode) {
+				const elementToFocus = nextFocusedCellNode.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]');
+				if (elementToFocus !== null) setFocucedCell = { ...focucedCell, tabIndex: -1 };
+			}
+		}
+
+		this.focusedCell = setFocucedCell;
 		await tick();
 	};
 
 	focusCellNode = () => {
 		const tableElement = this.element;
 		if (typeof tableElement === 'undefined') return [];
-		const nextFocusedCellNode = tableElement.querySelector<HTMLDivElement>(':scope > [role="row"] > [tabindex="0"]');
-		if (nextFocusedCellNode) {
-			nextFocusedCellNode.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-			// Kullanılabilir olduğunda hücrenin kendisi yerine hücre içeriğine odaklanma
-			const elementToFocus = nextFocusedCellNode.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]') ?? nextFocusedCellNode;
-			elementToFocus.focus({ preventScroll: true });
-		}
+		const nextFocusedCellNode = tableElement.querySelector<HTMLDivElement>(':scope > [role="row"] > [aria-selected="true"]');
+		if (nextFocusedCellNode === null) return;
+
+		nextFocusedCellNode.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+		const elementToFocus = nextFocusedCellNode.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]') ?? nextFocusedCellNode;
+		elementToFocus.focus({ preventScroll: true });
 	};
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {

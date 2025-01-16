@@ -25,7 +25,7 @@
 	const clickAction = (cellNode: HTMLDivElement) => {
 		const handleClick = async () => {
 			if (typeof row_oi === 'undefined') return;
-			await table.setFocusedCellState({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}` });
+			await table.setFocusedCellState({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}`, tabIndex: 0 });
 			// await table.setVirtualDataDerivedTrigger(`click_${row_oi}_${ci}`);
 			table.focusCellNode();
 		};
@@ -55,13 +55,13 @@
 
 			let nextFocusedCell: FocucedCell | undefined = undefined;
 			if (key === 'ArrowUp') {
-				nextFocusedCell = { rowIndex: focusedRowIndex - 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex - 1}_${focusedColIndex}` };
+				nextFocusedCell = { rowIndex: focusedRowIndex - 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex - 1}_${focusedColIndex}`, tabIndex: 0 };
 			} else if (key === 'ArrowDown' || key === 'Enter') {
-				nextFocusedCell = { rowIndex: focusedRowIndex + 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex + 1}_${focusedColIndex}` };
+				nextFocusedCell = { rowIndex: focusedRowIndex + 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex + 1}_${focusedColIndex}`, tabIndex: 0 };
 			} else if (key === 'ArrowLeft' || (e.shiftKey && key === 'Tab')) {
-				nextFocusedCell = { rowIndex: focusedRowIndex, colIndex: focusedColIndex - 1, originalCell: `${focusedRowIndex}_${focusedColIndex - 1}` };
+				nextFocusedCell = { rowIndex: focusedRowIndex, colIndex: focusedColIndex - 1, originalCell: `${focusedRowIndex}_${focusedColIndex - 1}`, tabIndex: 0 };
 			} else if (key === 'ArrowRight' || (!e.shiftKey && key === 'Tab')) {
-				nextFocusedCell = { rowIndex: focusedRowIndex, colIndex: focusedColIndex + 1, originalCell: `${focusedRowIndex}_${focusedColIndex + 1}` };
+				nextFocusedCell = { rowIndex: focusedRowIndex, colIndex: focusedColIndex + 1, originalCell: `${focusedRowIndex}_${focusedColIndex + 1}`, tabIndex: 0 };
 			} else if (key === 'F2') {
 				/* e.preventDefault();
 				table.createCellInput({ rowIndex, colIndex, originalCell }); */
@@ -85,16 +85,17 @@
 			// next row index'i ve net col index'i, toplam satır sayısının ve toplam sütün sayısının içinde mi?
 			if (nextColIndex >= 0 && nextColIndex < dataColLength && nextRowIndex >= 0 && nextRowIndex < dataRowLength) {
 				await table.setFocusedCellState(nextFocusedCell);
-				const { rowVisibleStartIndex, rowVisibleEndIndex, overscanThreshold } = table.findVirtualRowIndex({});
-
-				// next row index'i, görünen satırların başlangıç ve bitiş index'lerinin 3 altında veya üstündeyse, virtual datayı trigger ile yeniden hesaplat.
-				// 3 <=> overscanThreshold - 1 <=> 4 - 1
-				const overscan = overscanThreshold - 1;
-				if (
-					(typeof rowVisibleStartIndex !== 'undefined' && nextRowIndex < rowVisibleStartIndex - overscan) ||
-					(typeof rowVisibleEndIndex !== 'undefined' && nextRowIndex > rowVisibleEndIndex + overscan)
-				) {
-					await table.setVirtualDataDerivedTrigger(`focus_${nextOriginalCell}`);
+				if (table.get.enableVirtualization === true) {
+					const { rowVisibleStartIndex, rowVisibleEndIndex, overscanThreshold } = table.findVirtualRowIndex({});
+					// next row index'i, görünen satırların başlangıç ve bitiş index'lerinin 3 altında veya üstündeyse, virtual datayı trigger ile yeniden hesaplat.
+					// 3 <=> overscanThreshold - 1 <=> 4 - 1
+					const overscan = overscanThreshold - 1;
+					if (
+						(typeof rowVisibleStartIndex !== 'undefined' && nextRowIndex < rowVisibleStartIndex - overscan) ||
+						(typeof rowVisibleEndIndex !== 'undefined' && nextRowIndex > rowVisibleEndIndex + overscan)
+					) {
+						await table.setVirtualDataDerivedTrigger(`focus_${nextOriginalCell}`);
+					}
 				}
 
 				table.focusCellNode();
@@ -118,8 +119,9 @@
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={`${ci + 1} / ${ci + 2}`}
 	class:slc-table-td={true}
+	data-cell={originalCell}
 	class={classes}
-	tabindex={table?.focusedCell?.originalCell === originalCell ? 0 : -1}
+	tabindex={table.focusedCell?.originalCell === originalCell && typeof table.focusedCell.tabIndex !== 'undefined' ? table.focusedCell.tabIndex : -1}
 	aria-selected={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
 	aria-colindex={ci + 1}
 	spellcheck="false"
