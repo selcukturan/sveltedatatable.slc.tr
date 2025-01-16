@@ -82,7 +82,7 @@ class Table<TData extends Row> {
 		const dataRowHeight = this.get.tbodyRowHeight;
 		const dataLength = this.get.data.length;
 
-		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVirtualRowIndex({ headerRowsHeight, footerRowsHeight, dataRowHeight, dataLength });
+		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndex({ headerRowsHeight, footerRowsHeight, dataRowHeight, dataLength });
 		if (typeof rowOverscanStartIndex === 'undefined' || typeof rowOverscanEndIndex === 'undefined') return [];
 
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
@@ -114,7 +114,7 @@ class Table<TData extends Row> {
 
 	setFocusedCellState = async (focucedCell?: FocucedCell) => {
 		const tableElement = this.element;
-		if (typeof tableElement === 'undefined') return [];
+		if (typeof tableElement === 'undefined') return;
 		let setFocucedCell = focucedCell;
 
 		const rowIndex = setFocucedCell?.rowIndex;
@@ -133,13 +133,41 @@ class Table<TData extends Row> {
 
 	focusCellNode = () => {
 		const tableElement = this.element;
-		if (typeof tableElement === 'undefined') return [];
+		if (typeof tableElement === 'undefined') return;
 		const nextFocusedCellNode = tableElement.querySelector<HTMLDivElement>(':scope > [role="row"] > [aria-selected="true"]');
 		if (nextFocusedCellNode === null) return;
 
 		nextFocusedCellNode.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 		const elementToFocus = nextFocusedCellNode.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]') ?? nextFocusedCellNode;
 		elementToFocus.focus({ preventScroll: true });
+	};
+
+	focusCell = async ({ cellToFocus, triggerVirtual = false }: { cellToFocus?: FocucedCell; triggerVirtual?: boolean }) => {
+		const nextRowIndex = cellToFocus?.rowIndex;
+		const nextColIndex = cellToFocus?.colIndex;
+		const nextOriginalCell = cellToFocus?.originalCell;
+		if (typeof nextRowIndex === 'undefined' || typeof nextColIndex === 'undefined' || typeof nextOriginalCell === 'undefined') return;
+
+		const dataRowLength = this.get.data.length;
+		const dataColLength = this.columns.length;
+		if (nextColIndex >= 0 && nextColIndex < dataColLength && nextRowIndex >= 0 && nextRowIndex < dataRowLength) {
+			await this.setFocusedCellState(cellToFocus);
+
+			if (this.get.enableVirtualization === true && triggerVirtual === true) {
+				const { rowVisibleStartIndex, rowVisibleEndIndex, overscanThreshold } = this.findVisibleRowIndex({});
+				// next row index'i, görünen satırların başlangıç ve bitiş index'lerinin 3 altında veya üstündeyse, virtual datayı trigger ile yeniden hesaplat.
+				// 3 <=> overscanThreshold - 1 <=> 4 - 1
+				const overscan = overscanThreshold - 1;
+				if (
+					(typeof rowVisibleStartIndex !== 'undefined' && nextRowIndex < rowVisibleStartIndex - overscan) ||
+					(typeof rowVisibleEndIndex !== 'undefined' && nextRowIndex > rowVisibleEndIndex + overscan)
+				) {
+					await this.setVirtualDataDerivedTrigger(`focus_${nextOriginalCell}`);
+				}
+			}
+
+			this.focusCellNode();
+		}
 	};
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
@@ -161,7 +189,7 @@ class Table<TData extends Row> {
 					: footer;
 	};
 
-	findVirtualRowIndex = ({
+	findVisibleRowIndex = ({
 		scrollTop,
 		clientHeight,
 		headerRowsHeight,
@@ -205,9 +233,28 @@ class Table<TData extends Row> {
 		const rowOverscanStartIndex = Math.max(0, rowVisibleStartIndex - xOverscanThreshold);
 		const rowOverscanEndIndex = Math.min(xDataLength - 1, rowVisibleEndIndex + xOverscanThreshold);
 
-		return { rowVisibleStartIndex, rowVisibleEndIndex, rowOverscanStartIndex, rowOverscanEndIndex, overscanThreshold: xOverscanThreshold };
+		return {
+			rowVisibleStartIndex,
+			rowVisibleEndIndex,
+			rowOverscanStartIndex,
+			rowOverscanEndIndex,
+			overscanThreshold: xOverscanThreshold,
+			currentHeight: currentHeight
+		};
 	};
 
+	getPageUpRowIndex = () => {
+		const { rowVisibleStartIndex, currentHeight } = this.findVisibleRowIndex({});
+		if (typeof rowVisibleStartIndex === 'undefined' || typeof currentHeight === 'undefined') return 0;
+		return rowVisibleStartIndex - Math.floor(currentHeight / this.get.tbodyRowHeight) + 1;
+	};
+	getPageDownRowIndex = () => {
+		const { rowVisibleEndIndex, currentHeight } = this.findVisibleRowIndex({});
+		if (typeof rowVisibleEndIndex === 'undefined' || typeof currentHeight === 'undefined') return 0;
+		return rowVisibleEndIndex + Math.floor(currentHeight / this.get.tbodyRowHeight) - 1;
+	};
+
+	/* 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 	throttle = (func: Function, delay: number) => {
 		let timeoutId: number;
@@ -230,6 +277,7 @@ class Table<TData extends Row> {
 			}
 		};
 	};
+	 */
 }
 
 // ################################## BEGIN Export Table Context ###############################################################

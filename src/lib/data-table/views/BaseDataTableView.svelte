@@ -5,8 +5,8 @@
 
 	const { sources: src }: { sources: Sources<TData> } = $props();
 	const table = getTable<TData>(src.id);
-	$inspect(table.virtualData);
-	// $inspect(table.focusedCell);
+	// $inspect('$inspect-virtualData', table.virtualData);
+	// $inspect('$inspect-focusedCell', table.focusedCell);
 </script>
 
 <Table {src} class="bg-zinc-50 dark:bg-zinc-950">
@@ -26,7 +26,7 @@
 				{@const cell = row[col.field]}
 				<Td {src} {col} {ci} {row} {ri} class="border-zinc-200 dark:border-zinc-700">
 					{#if ci === 5}
-						<input type="checkbox" name="sssss" id="ssss" tabindex="0" />
+						<input type="checkbox" name={`name_${ri}_${ci}`} id={`id_${ri}_${ci}`} tabindex="0" />
 						{cell}
 					{:else}
 						{cell}

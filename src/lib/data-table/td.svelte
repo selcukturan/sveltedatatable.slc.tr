@@ -25,9 +25,8 @@
 	const clickAction = (cellNode: HTMLDivElement) => {
 		const handleClick = async () => {
 			if (typeof row_oi === 'undefined') return;
-			await table.setFocusedCellState({ rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}`, tabIndex: 0 });
-			// await table.setVirtualDataDerivedTrigger(`click_${row_oi}_${ci}`);
-			table.focusCellNode();
+			const focusedCell: FocucedCell = { rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}`, tabIndex: 0 };
+			await table.focusCell({ cellToFocus: focusedCell });
 		};
 
 		cellNode.addEventListener('click', handleClick);
@@ -53,53 +52,87 @@
 			const typableUpper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 			const typableOther = " =-`[\\]';,./ğüşıöçĞÜŞİÖÇ";
 
+			const rowFirstIndex = 0;
+			const rowLastIndex = table.get.data.length - 1;
+			const colFirstIndex = 0;
+			const colLastIndex = table.columns.length - 1;
+
 			let nextFocusedCell: FocucedCell | undefined = undefined;
+
 			if (key === 'ArrowUp') {
-				nextFocusedCell = { rowIndex: focusedRowIndex - 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex - 1}_${focusedColIndex}`, tabIndex: 0 };
+				const rowIndex = focusedRowIndex - 1;
+				const colIndex = focusedColIndex;
+				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
 			} else if (key === 'ArrowDown' || key === 'Enter') {
-				nextFocusedCell = { rowIndex: focusedRowIndex + 1, colIndex: focusedColIndex, originalCell: `${focusedRowIndex + 1}_${focusedColIndex}`, tabIndex: 0 };
+				const rowIndex = focusedRowIndex + 1;
+				const colIndex = focusedColIndex;
+				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
 			} else if (key === 'ArrowLeft' || (e.shiftKey && key === 'Tab')) {
-				nextFocusedCell = { rowIndex: focusedRowIndex, colIndex: focusedColIndex - 1, originalCell: `${focusedRowIndex}_${focusedColIndex - 1}`, tabIndex: 0 };
+				const rowIndex = focusedRowIndex;
+				const colIndex = focusedColIndex - 1;
+				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				if (key === 'Tab' && colIndex < colFirstIndex) {
+					const rowIndex = focusedRowIndex - 1;
+					const colIndex = colLastIndex;
+					const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+					nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				}
 			} else if (key === 'ArrowRight' || (!e.shiftKey && key === 'Tab')) {
-				nextFocusedCell = { rowIndex: focusedRowIndex, colIndex: focusedColIndex + 1, originalCell: `${focusedRowIndex}_${focusedColIndex + 1}`, tabIndex: 0 };
+				const rowIndex = focusedRowIndex;
+				const colIndex = focusedColIndex + 1;
+				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				if (key === 'Tab' && colIndex > colLastIndex) {
+					const rowIndex = focusedRowIndex + 1;
+					const colIndex = colFirstIndex;
+					const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+					nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				}
+			} else if (key === 'Home') {
+				const rowIndex = focusedRowIndex;
+				const colIndex = colFirstIndex;
+				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+			} else if (key === 'End') {
+				const rowIndex = focusedRowIndex;
+				const colIndex = colLastIndex;
+				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+			} else if (key === 'PageUp') {
+				const pageUpRowIndex = table.getPageUpRowIndex();
+				const rowIndex = pageUpRowIndex < rowFirstIndex ? rowFirstIndex : pageUpRowIndex;
+				const colIndex = focusedColIndex;
+				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+			} else if (key === 'PageDown') {
+				const pageDownRowIndex = table.getPageDownRowIndex();
+				const rowIndex = pageDownRowIndex > rowLastIndex ? rowLastIndex : pageDownRowIndex;
+				const colIndex = focusedColIndex;
+				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
+				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
 			} else if (key === 'F2') {
-				/* e.preventDefault();
-				table.createCellInput({ rowIndex, colIndex, originalCell }); */
+				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			} else if ((e.ctrlKey || e.metaKey) && (key === 'c' || key === 'C')) {
-				/* Ctrl + C = Kopyala */
+				/* Ctrl + C = Coppy */
 			} else if ((e.ctrlKey || e.metaKey) && (key === 'v' || key === 'V')) {
-				/* Ctrl + V = Yapistir */
+				/* Ctrl + V = Paste */
 			} else if (!e.ctrlKey && !e.metaKey && (typableNumber.includes(key) || typableLower.includes(key) || typableUpper.includes(key) || typableOther.includes(key))) {
-				/* e.preventDefault();
-				table.createCellInput({ rowIndex, colIndex, originalCell }); */
+				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			}
 
 			const nextRowIndex = nextFocusedCell?.rowIndex;
 			const nextColIndex = nextFocusedCell?.colIndex;
 			const nextOriginalCell = nextFocusedCell?.originalCell;
-			if (typeof nextRowIndex === 'undefined' || typeof nextColIndex === 'undefined' || typeof nextOriginalCell === 'undefined') return;
+			const nextTabIndex = nextFocusedCell?.tabIndex;
+			if (typeof nextRowIndex === 'undefined' || typeof nextColIndex === 'undefined' || typeof nextOriginalCell === 'undefined' || typeof nextTabIndex === 'undefined') {
+				return;
+			}
 
 			e.preventDefault();
-			const dataRowLength = table.get.data.length;
-			const dataColLength = table.columns.length;
-			// next row index'i ve net col index'i, toplam satır sayısının ve toplam sütün sayısının içinde mi?
-			if (nextColIndex >= 0 && nextColIndex < dataColLength && nextRowIndex >= 0 && nextRowIndex < dataRowLength) {
-				await table.setFocusedCellState(nextFocusedCell);
-				if (table.get.enableVirtualization === true) {
-					const { rowVisibleStartIndex, rowVisibleEndIndex, overscanThreshold } = table.findVirtualRowIndex({});
-					// next row index'i, görünen satırların başlangıç ve bitiş index'lerinin 3 altında veya üstündeyse, virtual datayı trigger ile yeniden hesaplat.
-					// 3 <=> overscanThreshold - 1 <=> 4 - 1
-					const overscan = overscanThreshold - 1;
-					if (
-						(typeof rowVisibleStartIndex !== 'undefined' && nextRowIndex < rowVisibleStartIndex - overscan) ||
-						(typeof rowVisibleEndIndex !== 'undefined' && nextRowIndex > rowVisibleEndIndex + overscan)
-					) {
-						await table.setVirtualDataDerivedTrigger(`focus_${nextOriginalCell}`);
-					}
-				}
-
-				table.focusCellNode();
-			}
+			await table.focusCell({ cellToFocus: nextFocusedCell, triggerVirtual: true });
 		};
 
 		cellNode.addEventListener('keydown', handleKeydown);
