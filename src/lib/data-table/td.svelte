@@ -25,8 +25,8 @@
 	const clickAction = (cellNode: HTMLDivElement) => {
 		const handleClick = async () => {
 			if (typeof row_oi === 'undefined') return;
-			const focusedCell: FocucedCell = { rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}`, tabIndex: 0 };
-			await table.focusCell({ cellToFocus: focusedCell });
+			const cellToFocus: Required<FocucedCell> = { rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}`, tabIndex: 0 };
+			await table.focusCell({ cellToFocus });
 		};
 
 		cellNode.addEventListener('click', handleClick);
@@ -40,10 +40,10 @@
 
 	const keyboardAction = (cellNode: HTMLDivElement) => {
 		const handleKeydown = async (e: KeyboardEvent) => {
-			const focusedCell = table.focusedCell;
-			const focusedRowIndex = focusedCell?.rowIndex;
-			const focusedColIndex = focusedCell?.colIndex;
-			if (typeof focusedRowIndex === 'undefined' || typeof focusedColIndex === 'undefined') return;
+			const { rowIndex, colIndex, originalCell, tabIndex } = table.focusedCell ?? {};
+			if (rowIndex == null || colIndex == null || tabIndex == null || originalCell == null) return;
+
+			let cellToFocus: Required<FocucedCell> = { rowIndex, colIndex, originalCell, tabIndex };
 
 			const { key } = e;
 
@@ -57,82 +57,44 @@
 			const colFirstIndex = 0;
 			const colLastIndex = table.columns.length - 1;
 
-			let nextFocusedCell: FocucedCell | undefined = undefined;
-
 			if (key === 'ArrowUp') {
-				const rowIndex = focusedRowIndex - 1;
-				const colIndex = focusedColIndex;
-				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				cellToFocus.rowIndex = Math.max(rowFirstIndex, cellToFocus.rowIndex - 1);
 			} else if (key === 'ArrowDown' || key === 'Enter') {
-				const rowIndex = focusedRowIndex + 1;
-				const colIndex = focusedColIndex;
-				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				cellToFocus.rowIndex = Math.min(rowLastIndex, cellToFocus.rowIndex + 1);
 			} else if (key === 'ArrowLeft' || (e.shiftKey && key === 'Tab')) {
-				const rowIndex = focusedRowIndex;
-				const colIndex = focusedColIndex - 1;
-				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
-				if (key === 'Tab' && colIndex < colFirstIndex) {
-					const rowIndex = focusedRowIndex - 1;
-					const colIndex = colLastIndex;
-					const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-					nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				cellToFocus.colIndex = cellToFocus.colIndex - 1;
+				if (key === 'Tab' && cellToFocus.colIndex < colFirstIndex) {
+					cellToFocus.rowIndex = Math.max(rowFirstIndex, cellToFocus.rowIndex - 1);
+					cellToFocus.colIndex = colLastIndex;
 				}
 			} else if (key === 'ArrowRight' || (!e.shiftKey && key === 'Tab')) {
-				const rowIndex = focusedRowIndex;
-				const colIndex = focusedColIndex + 1;
-				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
-				if (key === 'Tab' && colIndex > colLastIndex) {
-					const rowIndex = focusedRowIndex + 1;
-					const colIndex = colFirstIndex;
-					const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-					nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				cellToFocus.colIndex = cellToFocus.colIndex + 1;
+				if (key === 'Tab' && cellToFocus.colIndex > colLastIndex) {
+					cellToFocus.rowIndex = Math.min(rowLastIndex, cellToFocus.rowIndex + 1);
+					cellToFocus.colIndex = colFirstIndex;
 				}
 			} else if (key === 'Home') {
-				const rowIndex = focusedRowIndex;
-				const colIndex = colFirstIndex;
-				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				cellToFocus.colIndex = colFirstIndex;
 			} else if (key === 'End') {
-				const rowIndex = focusedRowIndex;
-				const colIndex = colLastIndex;
-				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				cellToFocus.colIndex = colLastIndex;
 			} else if (key === 'PageUp') {
-				const pageUpRowIndex = table.getPageUpRowIndex();
-				const rowIndex = pageUpRowIndex < rowFirstIndex ? rowFirstIndex : pageUpRowIndex;
-				const colIndex = focusedColIndex;
-				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				cellToFocus.rowIndex = Math.max(rowFirstIndex, table.getPageUpRowIndex() ?? rowFirstIndex);
 			} else if (key === 'PageDown') {
-				const pageDownRowIndex = table.getPageDownRowIndex();
-				const rowIndex = pageDownRowIndex > rowLastIndex ? rowLastIndex : pageDownRowIndex;
-				const colIndex = focusedColIndex;
-				const originalCell: FocucedCell['originalCell'] = `${rowIndex}_${colIndex}`;
-				nextFocusedCell = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+				cellToFocus.rowIndex = Math.min(rowLastIndex, table.getPageDownRowIndex() ?? rowLastIndex);
 			} else if (key === 'F2') {
 				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			} else if ((e.ctrlKey || e.metaKey) && (key === 'c' || key === 'C')) {
-				/* Ctrl + C = Coppy */
+				/* Ctrl + C = Copy */
 			} else if ((e.ctrlKey || e.metaKey) && (key === 'v' || key === 'V')) {
 				/* Ctrl + V = Paste */
 			} else if (!e.ctrlKey && !e.metaKey && (typableNumber.includes(key) || typableLower.includes(key) || typableUpper.includes(key) || typableOther.includes(key))) {
 				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			}
 
-			const nextRowIndex = nextFocusedCell?.rowIndex;
-			const nextColIndex = nextFocusedCell?.colIndex;
-			const nextOriginalCell = nextFocusedCell?.originalCell;
-			const nextTabIndex = nextFocusedCell?.tabIndex;
-			if (typeof nextRowIndex === 'undefined' || typeof nextColIndex === 'undefined' || typeof nextOriginalCell === 'undefined' || typeof nextTabIndex === 'undefined') {
-				return;
-			}
+			cellToFocus.originalCell = `${cellToFocus.rowIndex}_${cellToFocus.colIndex}`;
 
 			e.preventDefault();
-			await table.focusCell({ cellToFocus: nextFocusedCell, triggerVirtual: true });
+			await table.focusCell({ cellToFocus, triggerVirtual: true });
 		};
 
 		cellNode.addEventListener('keydown', handleKeydown);

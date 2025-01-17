@@ -59,6 +59,7 @@ class Table<TData extends Row> {
 	// ################################## BEGIN Variables ##############################################################
 	test = $state('test');
 	headerRowsCount = $state(1);
+	defaultOverscanThreshold = 4;
 	focusedCell?: FocucedCell = $state.raw();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
@@ -82,7 +83,7 @@ class Table<TData extends Row> {
 		const dataRowHeight = this.get.tbodyRowHeight;
 		const dataLength = this.get.data.length;
 
-		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndex({ headerRowsHeight, footerRowsHeight, dataRowHeight, dataLength });
+		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndexs({ headerRowsHeight, footerRowsHeight, dataRowHeight, dataLength });
 		if (typeof rowOverscanStartIndex === 'undefined' || typeof rowOverscanEndIndex === 'undefined') return [];
 
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
@@ -119,6 +120,7 @@ class Table<TData extends Row> {
 
 		const rowIndex = setFocucedCell?.rowIndex;
 		const colIndex = setFocucedCell?.colIndex;
+		// Hücre elementinin içinde, tabindex'i 0 olan fokuslanılabilir bir element varsa, hücre elementinin tabindex'ini -1 yap.
 		if (typeof rowIndex !== 'undefined' && typeof colIndex !== 'undefined') {
 			const nextFocusedCellNode = tableElement.querySelector<HTMLDivElement>(`:scope > [role="row"] > [data-cell="${rowIndex}_${colIndex}"]`);
 			if (nextFocusedCellNode) {
@@ -142,27 +144,22 @@ class Table<TData extends Row> {
 		elementToFocus.focus({ preventScroll: true });
 	};
 
-	focusCell = async ({ cellToFocus, triggerVirtual = false }: { cellToFocus?: FocucedCell; triggerVirtual?: boolean }) => {
-		const nextRowIndex = cellToFocus?.rowIndex;
-		const nextColIndex = cellToFocus?.colIndex;
-		const nextOriginalCell = cellToFocus?.originalCell;
-		if (typeof nextRowIndex === 'undefined' || typeof nextColIndex === 'undefined' || typeof nextOriginalCell === 'undefined') return;
-
+	focusCell = async ({ cellToFocus, triggerVirtual = false }: { cellToFocus: Required<FocucedCell>; triggerVirtual?: boolean }) => {
 		const dataRowLength = this.get.data.length;
 		const dataColLength = this.columns.length;
-		if (nextColIndex >= 0 && nextColIndex < dataColLength && nextRowIndex >= 0 && nextRowIndex < dataRowLength) {
+		if (cellToFocus.colIndex >= 0 && cellToFocus.colIndex < dataColLength && cellToFocus.rowIndex >= 0 && cellToFocus.rowIndex < dataRowLength) {
 			await this.setFocusedCellState(cellToFocus);
 
+			// next row index'i, görünen satırların başlangıç ve bitiş index'lerinin 3 altında veya üstündeyse, virtual datayı trigger ile yeniden hesaplat.
+			// 3 <=> overscanThreshold - 1 <=> 4 - 1
 			if (this.get.enableVirtualization === true && triggerVirtual === true) {
-				const { rowVisibleStartIndex, rowVisibleEndIndex, overscanThreshold } = this.findVisibleRowIndex({});
-				// next row index'i, görünen satırların başlangıç ve bitiş index'lerinin 3 altında veya üstündeyse, virtual datayı trigger ile yeniden hesaplat.
-				// 3 <=> overscanThreshold - 1 <=> 4 - 1
-				const overscan = overscanThreshold - 1;
+				const { rowVisibleStartIndex, rowVisibleEndIndex, overscan } = this.findVisibleRowIndexs({});
+				const overscanThreshold = typeof overscan === 'number' ? overscan - 1 : 3;
 				if (
-					(typeof rowVisibleStartIndex !== 'undefined' && nextRowIndex < rowVisibleStartIndex - overscan) ||
-					(typeof rowVisibleEndIndex !== 'undefined' && nextRowIndex > rowVisibleEndIndex + overscan)
+					(typeof rowVisibleStartIndex !== 'undefined' && cellToFocus.rowIndex < rowVisibleStartIndex - overscanThreshold) ||
+					(typeof rowVisibleEndIndex !== 'undefined' && cellToFocus.rowIndex > rowVisibleEndIndex + overscanThreshold)
 				) {
-					await this.setVirtualDataDerivedTrigger(`focus_${nextOriginalCell}`);
+					await this.setVirtualDataDerivedTrigger(`focus_${cellToFocus.originalCell}`);
 				}
 			}
 
@@ -189,15 +186,7 @@ class Table<TData extends Row> {
 					: footer;
 	};
 
-	findVisibleRowIndex = ({
-		scrollTop,
-		clientHeight,
-		headerRowsHeight,
-		footerRowsHeight,
-		dataRowHeight,
-		overscanThreshold,
-		dataLength
-	}: {
+	findVisibleRowIndexs: (params: {
 		scrollTop?: number;
 		clientHeight?: number;
 		headerRowsHeight?: number;
@@ -206,17 +195,17 @@ class Table<TData extends Row> {
 		overscanThreshold?: number;
 		dataLength?: number;
 	}) => {
-		const defaultOverscanThreshold = 4;
+		rowVisibleStartIndex?: number;
+		rowVisibleEndIndex?: number;
+		rowOverscanStartIndex?: number;
+		rowOverscanEndIndex?: number;
+		overscan: number;
+		currentHeight?: number;
+		dataRowHeight?: number;
+	} = ({ scrollTop, clientHeight, headerRowsHeight, footerRowsHeight, dataRowHeight, overscanThreshold, dataLength }) => {
+		const defaultOverscanThreshold = this.defaultOverscanThreshold;
 
-		if (typeof this.element === 'undefined') {
-			return {
-				rowVisibleStartIndex: undefined,
-				rowVisibleEndIndex: undefined,
-				rowOverscanStartIndex: undefined,
-				rowOverscanEndIndex: undefined,
-				overscanThreshold: defaultOverscanThreshold
-			};
-		}
+		if (typeof this.element === 'undefined') return { overscan: defaultOverscanThreshold };
 
 		const xScrollTop = scrollTop ?? this.element.scrollTop;
 		const xClientHeight = clientHeight ?? this.element.clientHeight;
@@ -238,20 +227,23 @@ class Table<TData extends Row> {
 			rowVisibleEndIndex,
 			rowOverscanStartIndex,
 			rowOverscanEndIndex,
-			overscanThreshold: xOverscanThreshold,
-			currentHeight: currentHeight
+			overscan: xOverscanThreshold,
+			currentHeight: currentHeight,
+			dataRowHeight: xDataRowHeight
 		};
 	};
 
 	getPageUpRowIndex = () => {
-		const { rowVisibleStartIndex, currentHeight } = this.findVisibleRowIndex({});
-		if (typeof rowVisibleStartIndex === 'undefined' || typeof currentHeight === 'undefined') return 0;
-		return rowVisibleStartIndex - Math.floor(currentHeight / this.get.tbodyRowHeight) + 1;
+		const { rowVisibleStartIndex, currentHeight, dataRowHeight } = this.findVisibleRowIndexs({});
+		if (typeof rowVisibleStartIndex === 'undefined' || typeof currentHeight === 'undefined' || typeof dataRowHeight === 'undefined') return undefined;
+
+		return rowVisibleStartIndex - Math.floor(currentHeight / dataRowHeight) + 1;
 	};
 	getPageDownRowIndex = () => {
-		const { rowVisibleEndIndex, currentHeight } = this.findVisibleRowIndex({});
-		if (typeof rowVisibleEndIndex === 'undefined' || typeof currentHeight === 'undefined') return 0;
-		return rowVisibleEndIndex + Math.floor(currentHeight / this.get.tbodyRowHeight) - 1;
+		const { rowVisibleEndIndex, currentHeight, dataRowHeight } = this.findVisibleRowIndexs({});
+		if (typeof rowVisibleEndIndex === 'undefined' || typeof currentHeight === 'undefined' || typeof dataRowHeight === 'undefined') return undefined;
+
+		return rowVisibleEndIndex + Math.floor(currentHeight / dataRowHeight) - 1;
 	};
 
 	/* 
