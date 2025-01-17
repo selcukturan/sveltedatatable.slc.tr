@@ -44,6 +44,7 @@
 			if (rowIndex == null || colIndex == null || tabIndex == null || originalCell == null) return;
 
 			let cellToFocus: Required<FocucedCell> = { rowIndex, colIndex, originalCell, tabIndex };
+			const initialOriginalCell = cellToFocus.originalCell;
 
 			const { key } = e;
 
@@ -90,11 +91,12 @@
 			} else if (!e.ctrlKey && !e.metaKey && (typableNumber.includes(key) || typableLower.includes(key) || typableUpper.includes(key) || typableOther.includes(key))) {
 				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			}
-
 			cellToFocus.originalCell = `${cellToFocus.rowIndex}_${cellToFocus.colIndex}`;
 
-			e.preventDefault();
-			await table.focusCell({ cellToFocus, triggerVirtual: true });
+			if (initialOriginalCell !== cellToFocus.originalCell) {
+				e.preventDefault();
+				await table.focusCell({ cellToFocus, triggerVirtual: true });
+			}
 		};
 
 		cellNode.addEventListener('keydown', handleKeydown);
