@@ -40,11 +40,10 @@
 
 	const keyboardAction = (cellNode: HTMLDivElement) => {
 		const handleKeydown = async (e: KeyboardEvent) => {
-			const { rowIndex, colIndex, originalCell, tabIndex } = table.focusedCell ?? {};
-			if (rowIndex == null || colIndex == null || tabIndex == null || originalCell == null) return;
+			const { rowIndex, colIndex, originalCell } = table.focusedCell ?? {};
+			if (rowIndex == null || colIndex == null || originalCell == null) return;
 
-			let cellToFocus: Required<FocucedCell> = { rowIndex, colIndex, originalCell, tabIndex };
-			const initialOriginalCell = cellToFocus.originalCell;
+			let cellToFocus: Required<FocucedCell> = { rowIndex, colIndex, originalCell, tabIndex: 0 };
 
 			const { key } = e;
 
@@ -60,28 +59,36 @@
 
 			if (key === 'ArrowUp') {
 				cellToFocus.rowIndex = Math.max(rowFirstIndex, cellToFocus.rowIndex - 1);
+				e.preventDefault();
 			} else if (key === 'ArrowDown' || key === 'Enter') {
 				cellToFocus.rowIndex = Math.min(rowLastIndex, cellToFocus.rowIndex + 1);
+				e.preventDefault();
 			} else if (key === 'ArrowLeft' || (e.shiftKey && key === 'Tab')) {
 				cellToFocus.colIndex = cellToFocus.colIndex - 1;
 				if (key === 'Tab' && cellToFocus.colIndex < colFirstIndex) {
 					cellToFocus.rowIndex = Math.max(rowFirstIndex, cellToFocus.rowIndex - 1);
 					cellToFocus.colIndex = colLastIndex;
 				}
+				e.preventDefault();
 			} else if (key === 'ArrowRight' || (!e.shiftKey && key === 'Tab')) {
 				cellToFocus.colIndex = cellToFocus.colIndex + 1;
 				if (key === 'Tab' && cellToFocus.colIndex > colLastIndex) {
 					cellToFocus.rowIndex = Math.min(rowLastIndex, cellToFocus.rowIndex + 1);
 					cellToFocus.colIndex = colFirstIndex;
 				}
+				e.preventDefault();
 			} else if (key === 'Home') {
 				cellToFocus.colIndex = colFirstIndex;
+				e.preventDefault();
 			} else if (key === 'End') {
 				cellToFocus.colIndex = colLastIndex;
+				e.preventDefault();
 			} else if (key === 'PageUp') {
 				cellToFocus.rowIndex = Math.max(rowFirstIndex, table.getPageUpRowIndex() ?? rowFirstIndex);
+				e.preventDefault();
 			} else if (key === 'PageDown') {
 				cellToFocus.rowIndex = Math.min(rowLastIndex, table.getPageDownRowIndex() ?? rowLastIndex);
+				e.preventDefault();
 			} else if (key === 'F2') {
 				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			} else if ((e.ctrlKey || e.metaKey) && (key === 'c' || key === 'C')) {
@@ -91,12 +98,9 @@
 			} else if (!e.ctrlKey && !e.metaKey && (typableNumber.includes(key) || typableLower.includes(key) || typableUpper.includes(key) || typableOther.includes(key))) {
 				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			}
-			cellToFocus.originalCell = `${cellToFocus.rowIndex}_${cellToFocus.colIndex}`;
 
-			if (initialOriginalCell !== cellToFocus.originalCell) {
-				e.preventDefault();
-				await table.focusCell({ cellToFocus, triggerVirtual: true });
-			}
+			cellToFocus.originalCell = `${cellToFocus.rowIndex}_${cellToFocus.colIndex}`;
+			await table.focusCell({ cellToFocus, triggerVirtual: true });
 		};
 
 		cellNode.addEventListener('keydown', handleKeydown);
@@ -120,6 +124,7 @@
 	class={classes}
 	tabindex={table.focusedCell?.originalCell === originalCell && typeof table.focusedCell.tabIndex !== 'undefined' ? table.focusedCell.tabIndex : -1}
 	aria-selected={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
+	data-focused={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
 	aria-colindex={ci + 1}
 	spellcheck="false"
 	{...attributes}
@@ -158,7 +163,10 @@
 	.slc-table-td:nth-last-child(2) {
 		border-right-width: 0px;
 	} */
-	[aria-selected='true'] {
+	/* [aria-selected='true'] {
+		background-color: #ffdca0cb;
+	} */
+	[data-focused='true'] {
 		outline: 2px solid #f59e0b;
 		outline-offset: -2px;
 	}
