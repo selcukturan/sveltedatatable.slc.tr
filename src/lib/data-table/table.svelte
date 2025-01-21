@@ -2,7 +2,7 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
@@ -32,7 +32,9 @@
 			if (clientHeight === 0) return;
 
 			calculatingVirtualData = true;
-			await table.setVirtualDataDerivedTrigger(`scroll_${scrollTop}`);
+			// await table.setVirtualDataDerivedTrigger(`scroll_${scrollTop}`);
+			table.scrollTop = scrollTop;
+			await tick();
 			calculatingVirtualData = false;
 		};
 

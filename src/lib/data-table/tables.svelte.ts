@@ -59,6 +59,7 @@ class Table<TData extends Row> {
 	// ################################## BEGIN Variables ##############################################################
 	test = $state('test');
 	headerRowsCount = $state(1);
+	scrollTop = $state(0);
 	defaultOverscanThreshold = 4;
 	focusedCell?: FocucedCell = $state();
 	gridTemplateRows = $derived.by(() => {
@@ -76,12 +77,13 @@ class Table<TData extends Row> {
 	virtualData = $derived.by(() => {
 		if (this.get.enableVirtualization === false || this.element == null || this.virtualDataDerivedTrigger == null) return [];
 
+		const scrollTop = this.scrollTop;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
 		const dataLength = this.get.data.length;
 
-		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndexs({ headerRowsHeight, footerRowsHeight, dataRowHeight, dataLength });
+		const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndexs({ scrollTop, headerRowsHeight, footerRowsHeight, dataRowHeight, dataLength });
 		if (rowOverscanStartIndex == null || rowOverscanEndIndex == null) return [];
 
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
