@@ -32,9 +32,7 @@
 			if (clientHeight === 0) return;
 
 			calculatingVirtualData = true;
-			// await table.setVirtualDataDerivedTrigger(`scroll_${scrollTop}`);
-			table.scrollTop = scrollTop;
-			await tick();
+			await table.setVirtualDataDerivedTrigger(`scroll_${scrollTop}`);
 			calculatingVirtualData = false;
 		};
 
@@ -127,6 +125,7 @@
 		content-visibility: auto; /* auto: Tarayıcı, elementin içeriğini yalnızca görünür olduğunda render eder. Bu, performans optimizasyonları yapmasına olanak tanır. */
 		box-sizing: border-box;
 		overflow: auto;
+		overscroll-behavior: none;
 	}
 	.slc-table-no-data {
 		display: flex;
