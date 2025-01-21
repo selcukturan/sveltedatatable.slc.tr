@@ -3,6 +3,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { type Snippet } from 'svelte';
 	import { getTable } from './tables.svelte';
+	import { tick } from 'svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
 		src: Sources<TData>;
@@ -23,9 +24,10 @@
 	const gridRowStart = $derived(typeof row_oi === 'number' ? row_oi + table.headerRowsCount + indexToRow : 0);
 
 	const clickAction = (cellNode: HTMLDivElement) => {
-		const handleClick = async () => {
-			if (typeof row_oi === 'undefined') return;
+		const handleClick = async (e: Event) => {
+			if (row_oi == null) return;
 			const cellToFocus: Required<FocucedCell> = { rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}`, tabIndex: 0 };
+			if (cellToFocus.originalCell === table.focusedCell?.originalCell) return;
 			await table.focusCell({ cellToFocus });
 		};
 
@@ -44,6 +46,7 @@
 			if (rowIndex == null || colIndex == null || originalCell == null) return;
 
 			let cellToFocus: Required<FocucedCell> = { rowIndex, colIndex, originalCell, tabIndex: 0 };
+			let initalOriginalCell = cellToFocus.originalCell;
 
 			const { key } = e;
 
@@ -68,6 +71,8 @@
 				if (key === 'Tab' && cellToFocus.colIndex < colFirstIndex) {
 					cellToFocus.rowIndex = Math.max(rowFirstIndex, cellToFocus.rowIndex - 1);
 					cellToFocus.colIndex = colLastIndex;
+				} else {
+					cellToFocus.colIndex = Math.max(colFirstIndex, cellToFocus.colIndex);
 				}
 				e.preventDefault();
 			} else if (key === 'ArrowRight' || (!e.shiftKey && key === 'Tab')) {
@@ -75,6 +80,8 @@
 				if (key === 'Tab' && cellToFocus.colIndex > colLastIndex) {
 					cellToFocus.rowIndex = Math.min(rowLastIndex, cellToFocus.rowIndex + 1);
 					cellToFocus.colIndex = colFirstIndex;
+				} else {
+					cellToFocus.colIndex = Math.min(colLastIndex, cellToFocus.colIndex);
 				}
 				e.preventDefault();
 			} else if (key === 'Home') {
@@ -98,9 +105,19 @@
 			} else if (!e.ctrlKey && !e.metaKey && (typableNumber.includes(key) || typableLower.includes(key) || typableUpper.includes(key) || typableOther.includes(key))) {
 				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			}
-
 			cellToFocus.originalCell = `${cellToFocus.rowIndex}_${cellToFocus.colIndex}`;
-			await table.focusCell({ cellToFocus, triggerVirtual: true });
+
+			if (initalOriginalCell !== cellToFocus.originalCell) {
+				await table.focusCell({ cellToFocus, triggerVirtual: true });
+
+				/* if (onSelectedCellChange && !samePosition) {
+					onSelectedCellChange({
+						rowIdx: position.rowIdx,
+						row: isRowIdxWithinViewportBounds(position.rowIdx) ? rows[position.rowIdx] : undefined,
+						column: columns[position.idx]
+					});
+				} */
+			}
 		};
 
 		cellNode.addEventListener('keydown', handleKeydown);

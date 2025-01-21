@@ -60,7 +60,7 @@ class Table<TData extends Row> {
 	test = $state('test');
 	headerRowsCount = $state(1);
 	defaultOverscanThreshold = 4;
-	focusedCell?: FocucedCell = $state.raw();
+	focusedCell?: FocucedCell = $state();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
 		const repeatTbody = this.get.data.length > 0 ? `repeat(${this.get.data.length}, ${this.get.tbodyRowHeight}px)` : ``;
@@ -85,7 +85,8 @@ class Table<TData extends Row> {
 		if (rowOverscanStartIndex == null || rowOverscanEndIndex == null) return [];
 
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
-		const processedData: TData[] = slicedData.map((row, index) => {
+
+		const processedData: TData[] = slicedData.map((row: TData, index: number): TData => {
 			return { ...row, oi: rowOverscanStartIndex + index }; // oi = original row index
 		});
 
@@ -134,26 +135,24 @@ class Table<TData extends Row> {
 	};
 
 	focusCell = async ({ cellToFocus, triggerVirtual = false }: { cellToFocus: Required<FocucedCell>; triggerVirtual?: boolean }) => {
-		const dataRowLength = this.get.data.length;
-		const dataColLength = this.columns.length;
-		if (cellToFocus.colIndex >= 0 && cellToFocus.colIndex < dataColLength && cellToFocus.rowIndex >= 0 && cellToFocus.rowIndex < dataRowLength) {
-			await this.setFocusedCellState(cellToFocus);
+		await this.setFocusedCellState(cellToFocus); // tabindex durumunu ve focucedCell state'ini günceller.
 
-			// next row index'i, görünen satırların başlangıç ve bitiş index'lerinin 3 altında veya üstündeyse, virtual datayı trigger ile yeniden hesaplat.
-			// 3 <=> overscanThreshold - 1 <=> 4 - 1
-			if (this.get.enableVirtualization === true && triggerVirtual === true) {
-				const { rowVisibleStartIndex, rowVisibleEndIndex, overscan } = this.findVisibleRowIndexs({});
-				const overscanThreshold = overscan - 1;
-				if (
-					(rowVisibleStartIndex != null && cellToFocus.rowIndex < rowVisibleStartIndex - overscanThreshold) ||
-					(rowVisibleEndIndex != null && cellToFocus.rowIndex > rowVisibleEndIndex + overscanThreshold)
-				) {
-					await this.setVirtualDataDerivedTrigger(`focus_${cellToFocus.originalCell}`);
-				}
+		// pageup veya pagedown gibi uzun atlamalar olduğunda, yani scan edilmiş tüm virtual datanın da uzağına gidilmek istendiğinde, virtual data bir kez güncellenir.
+		// bu güncelleme setFocusedCellState ile değişen state'i baz alarak focuslanacak hücre bilgilerini virtual dataya pinler ve dom'u günceller.
+		// artık uzaktaki hücre dom'da oluşturukmuştur.
+		if (this.get.enableVirtualization === true && triggerVirtual === true) {
+			const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndexs({});
+			if (
+				(rowOverscanStartIndex != null && cellToFocus.rowIndex <= rowOverscanStartIndex) ||
+				(rowOverscanEndIndex != null && cellToFocus.rowIndex >= rowOverscanEndIndex)
+			) {
+				await this.setVirtualDataDerivedTrigger(`focus_${cellToFocus.originalCell}`);
+				await this.setFocusedCellState(cellToFocus); // dom'da yeni görünür olduğundan, tabindex durumunu yeniden güncellemek için.
 			}
-
-			this.focusCellNode();
 		}
+
+		// satır başında ve satır sonunda 4'er tane overscan satır olduğu için, scrollIntoView sayesinde scroll tetiklenir ve virtual data bir kez güncellenir.
+		this.focusCellNode();
 	};
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
@@ -224,13 +223,13 @@ class Table<TData extends Row> {
 
 	getPageUpRowIndex = () => {
 		const { rowVisibleStartIndex, currentHeight, dataRowHeight } = this.findVisibleRowIndexs({});
-		if (typeof rowVisibleStartIndex === 'undefined' || typeof currentHeight === 'undefined' || typeof dataRowHeight === 'undefined') return undefined;
+		if (rowVisibleStartIndex == null || currentHeight == null || dataRowHeight == null) return undefined;
 
 		return rowVisibleStartIndex - Math.floor(currentHeight / dataRowHeight) + 1;
 	};
 	getPageDownRowIndex = () => {
 		const { rowVisibleEndIndex, currentHeight, dataRowHeight } = this.findVisibleRowIndexs({});
-		if (typeof rowVisibleEndIndex === 'undefined' || typeof currentHeight === 'undefined' || typeof dataRowHeight === 'undefined') return undefined;
+		if (rowVisibleEndIndex == null || currentHeight == null || dataRowHeight == null) return undefined;
 
 		return rowVisibleEndIndex + Math.floor(currentHeight / dataRowHeight) - 1;
 	};
