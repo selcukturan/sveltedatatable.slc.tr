@@ -28,8 +28,8 @@
 		const setScrollTop = async () => {
 			if (calculatingVirtualData) return;
 
-			const { scrollTop, clientHeight } = tableNode;
-			if (clientHeight === 0) return;
+			const { scrollTop } = tableNode;
+			// if (clientHeight === 0) return;
 
 			calculatingVirtualData = true;
 			// await table.setVirtualDataDerivedTrigger(`scroll_${scrollTop}`);
