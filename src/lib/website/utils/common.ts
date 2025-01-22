@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import type { ProducedGrapes } from '$lib/dev/schemaProducedGrapes';
 
 export default class common {
 	static randomString(length?: number): string {
@@ -17,53 +18,17 @@ export default class common {
 	static isInput(element: HTMLElement): boolean {
 		const tagName = element && element.tagName ? element.tagName.toLowerCase() : '';
 
-		return (
-			tagName === 'input' ||
-			tagName === 'select' ||
-			tagName === 'textarea' ||
-			element?.isContentEditable
-		);
+		return tagName === 'input' || tagName === 'select' || tagName === 'textarea' || element?.isContentEditable;
 	}
 
 	static isFocusable(element: HTMLElement): boolean {
 		const tagName = element && element.tagName ? element.tagName.toLowerCase() : '';
 
-		return (
-			common.isInput(element) ||
-			tagName === 'button' ||
-			tagName === 'a' ||
-			tagName === 'details' ||
-			element?.tabIndex >= 0
-		);
+		return common.isInput(element) || tagName === 'button' || tagName === 'a' || tagName === 'details' || element?.tabIndex >= 0;
 	}
 
 	static generateExampleData(count: number) {
 		if (!browser) return [];
-		const grape = [
-			'Merlot',
-			'Chardonnay',
-			'Pinot Noir',
-			'Syrah',
-			'Sauvignon Blanc',
-			'Zinfandel',
-			'Grenache',
-			'Viognier',
-			'Boğazkere',
-			'Kalecik Karası',
-			'Öküzgözü',
-			'Narince',
-			'Emir',
-			'Çal Karası',
-			'Cabernet Sauvignon',
-			'Petit Verdot',
-			'Tempranillo',
-			'Malbec',
-			'Grenache Noir',
-			'Cabernet Franc',
-			'Fiano',
-			'Misket',
-			'Sultaniye'
-		];
 		const producerName = [
 			'Ahmet',
 			'Mehmet',
@@ -264,43 +229,145 @@ export default class common {
 			'Koçak',
 			'Özkan'
 		];
-		const regions = [
-			{ province: 'Denizli', district: 'Güney', village: 'Kızılcabölük' },
-			{ province: 'Denizli', district: 'Çal', village: 'Selcen' },
-			{ province: 'Denizli', district: 'Çal', village: 'Hançalar' },
-			{ province: 'Denizli', district: 'Çal', village: 'Süller' },
-			{ province: 'Uşak', district: 'Eşme', village: 'Kızılcabölük' },
-			{ province: 'Tekirdağ', district: 'Şarköy', village: 'Mürefte' },
-			{ province: 'Çanakkale', district: 'Acıpayam', village: 'Kızılcabölük' },
-			{ province: 'İzmir', district: 'Menderes', village: 'Kızılcabölük' },
-			{ province: 'Manisa', district: 'Acıpayam', village: 'Kızılcabölük' },
-			{ province: 'Tokat', district: 'Erbaa', village: 'Kızılcabölük' },
-			{ province: 'Nevşehir', district: 'Acıpayam', village: 'Kızılcabölük' },
-			{ province: 'Ankara', district: 'Acıpayam', village: 'Kızılcabölük' },
-			{ province: 'Elazığ', district: 'Acıpayam', village: 'Kızılcabölük' },
-			{ province: 'Malatya', district: 'Acıpayam', village: 'Kızılcabölük' },
-			{ province: 'Diyarbakır', district: 'Acıpayam', village: 'Kızılcabölük' }
+		const regionAndGrape = [
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Develler', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Süller', grape: 'Çal Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Süller', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Anadolu', province: 'Tokat', district: 'Erbaa', village: 'Bağpınar', grape: 'Narince', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Hançalar', grape: 'Çal Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Hançalar', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Anadolu', province: 'Tokat', district: 'Erbaa', village: 'Üzümlü', grape: 'Narince', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Merkez', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Merkez', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Merkez', grape: 'Syrah', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Selcen', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Anadolu', province: 'Tokat', district: 'Niksar', village: 'Gökçeli', grape: 'Narince', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Bahadınlar', grape: 'Çal Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Bahadınlar', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Develler', grape: 'Çal Karası', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Mürefte', grape: 'Merlot', grapeColor: 'Red' },
+			{ region: 'Doğu Anadolu', province: 'Elazığ', district: 'Merkez', village: 'Koruk', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Merkez', grape: 'Chardonnay', grapeColor: 'White' },
+			{ region: 'Doğu Anadolu', province: 'Elazığ', district: 'Merkez', village: 'Pirinçci', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Ege', province: 'İzmir', district: 'Menderes', village: 'Merkez', grape: 'Misket', grapeColor: 'White' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Chardonnay', grapeColor: 'White' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Viognier', grapeColor: 'White' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Cabernet Saugvignon', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Merkez', grape: 'Merlot', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Parmaksızlar', grape: 'Chardonnay', grapeColor: 'White' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Merlot', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Merkez', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Anadolu', province: 'Tokat', district: 'Erbaa', village: 'Doğanyurt', grape: 'Narince', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Kayapınar', grape: 'Syrah', grapeColor: 'Red' },
+			{ region: 'İç Anadolu', province: 'Nevşehir', district: 'Ürgüp', village: 'Sofular', grape: 'Emir', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Bekilli', village: 'Yeşiloba', grape: 'Boğazkere', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Sofuköy', grape: 'Gamay', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Sofuköy', grape: 'Merlot', grapeColor: 'Red' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Tepte', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Mürefte', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Boğazkere', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Cabernet Franc', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Chardonnay', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Cabernet Saugvignon', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Fiano', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Grenache Noir', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Malbec', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Merlot', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Misket', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Pinot Noir', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Petit Verdot', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Syrah', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Tempranillo', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Keklikli', grape: 'Viognier', grapeColor: 'White' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Cabernet Franc', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Kuntra', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Syrah', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Misket', grapeColor: 'White' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Petit Verdot', grapeColor: 'Red' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Merkez', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Çakırlar', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Adıgüzeller', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Akkent', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Parmaksızlar', grape: 'Syrah', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Kara Lahana', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Zinfandel', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Ortaçeşme', grape: 'Chardonnay', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Ortaçeşme', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Ortaçeşme', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'Doğu Anadolu', province: 'Elazığ', district: 'Merkez', village: 'Çatalharman', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Parmaksızlar', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Arapgir', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Merkez', village: 'Merkez', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Kuyucak', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Kayapınar', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Selcen', grape: 'Çal Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Parmaksızlar', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Adıgüzeller', grape: 'Chardonnay', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Adıgüzeller', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Gelibolu', village: 'Çokal', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Ortaköy', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Saraycık', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'İç Anadolu', province: 'Tokat', district: 'Niksar', village: 'Gözpınar', grape: 'Narince', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Merkez', grape: 'Sultaniye', grapeColor: 'White' },
+			{ region: 'İç Anadolu', province: 'Ankara', district: 'Kalecik', village: 'Merkez', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Kılıçlı', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Yeniköy', grape: 'Cabernet Franc', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Yeniköy', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Araplı', grape: 'Merlot', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Araplı', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Yabanlı', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Sofuköy', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Güllü', grape: 'Syrah', grapeColor: 'Red' },
+			{ region: 'İç Anadolu', province: 'Tokat', district: 'Erbaa', village: 'Salkımören', grape: 'Narince', grapeColor: 'White' },
+			{ region: 'Doğu Anadolu', province: 'Elazığ', district: 'Merkez', village: 'Muratçık', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Merkez', grape: 'Gamay', grapeColor: 'Red' },
+			{ region: 'Doğu Anadolu', province: 'Diyarbakır', district: 'Çermik', village: 'Kuyu', grape: 'Boğazkere', grapeColor: 'Red' },
+			{ region: 'İç Anadolu', province: 'Nevşehir', district: 'Ürgüp', village: 'Karakaya', grape: 'Emir', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Uşak', district: 'Eşme', village: 'Güllü', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Haylamaz', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Haylamaz', grape: 'Syrah', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Yazılı', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Çal', village: 'Merkez', grape: 'Çal Karası', grapeColor: 'Red' },
+			{ region: 'Doğu Anadolu', province: 'Elazığ', district: 'Merkez', village: 'Hozik', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Pağnik', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Çanakkale', district: 'Bozcaada', village: 'Merkez', grape: 'Alicante', grapeColor: 'Red' },
+			{ region: 'İç Anadolu', province: 'Ankara', district: 'Kalecik', village: 'Buğra', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Adıgüzeller', grape: 'Syrah', grapeColor: 'Red' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arapgir', village: 'Denizli', grape: 'Öküzgözü', grapeColor: 'Red' },
+			{ region: 'Marmara', province: 'Tekirdağ', district: 'Şarköy', village: 'Mürefte', grape: 'Gamay', grapeColor: 'Red' },
+			{ region: 'İç Anadolu', province: 'Ankara', district: 'Kalecik', village: 'Akkuzulu', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Haylamaz', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Aşağıçeşme', grape: 'Kalecik Karası', grapeColor: 'Red' },
+			{ region: 'İç Ege', province: 'Denizli', district: 'Güney', village: 'Aşağıçeşme', grape: 'Sauvignon Blanc', grapeColor: 'White' },
+			{ region: 'Doğu Anadolu', province: 'Malatya', district: 'Arguvan', village: 'Çakırsu', grape: 'Öküzgözü', grapeColor: 'Red' }
 		];
-		const data = [];
+
+		const data: ProducedGrapes[] = [];
+
 		for (let i = 1; i <= count; i++) {
-			const region = regions[Math.floor(Math.random() * regions.length)];
+			const randomProducerName = producerName[Math.floor(Math.random() * producerName.length)];
+			const randomProducerSurname = producerSurname[Math.floor(Math.random() * producerSurname.length)];
+			const randomRegionAndGrape = regionAndGrape[Math.floor(Math.random() * regionAndGrape.length)];
+
+			const order = i;
+			const producer = `${randomProducerName} ${randomProducerSurname}`;
+			const province = randomRegionAndGrape.province;
+			const district = randomRegionAndGrape.district;
+			const village = randomRegionAndGrape.village;
+			const grape = randomRegionAndGrape.grape;
+			const grapeColor = randomRegionAndGrape.grapeColor;
 			const calcQuantity = Math.floor(Math.random() * 10000);
 			const calcPrice = parseFloat((Math.random() * 10).toFixed(2));
 			const quantity = calcQuantity === 0 ? 1000 : calcQuantity;
 			const price = calcPrice < 1 ? 10 : calcPrice;
-			data.push({
-				order: i,
-				producer: `${producerName[Math.floor(Math.random() * producerName.length)]} ${producerSurname[Math.floor(Math.random() * producerSurname.length)]}`,
-				province: region.province,
-				district: region.district,
-				village: region.village,
-				grape: grape[Math.floor(Math.random() * grape.length)],
-				grapeColor: i % 2 === 0 ? 'red' : 'white',
-				quantity: quantity,
-				price: price,
-				amount: parseFloat((quantity * price).toFixed(2))
-			});
+			const amount = parseFloat((quantity * price).toFixed(2));
+
+			data.push({ order, producer, province, district, village, grape, grapeColor, quantity, price, amount });
 		}
+
 		return data;
 	}
 }

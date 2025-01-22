@@ -1,26 +1,15 @@
-<script lang="ts" generics="TData extends Row">
+<script lang="ts">
+	import type { ProducedGrapes } from '$lib/dev/schemaProducedGrapes';
 	import common from '$lib/website/utils/common';
-	import { getTable, type Sources, type Row } from '$lib/data-table/tables.svelte';
+	import { getTable, type Sources } from '$lib/data-table/tables.svelte';
 
-	const { sources: src }: { sources: Sources<TData> } = $props();
-
-	type ProducedGrapes = {
-		order: number;
-		producer: string;
-		province: string;
-		district: string;
-		village: string;
-		grape: string;
-		grapeColor: string;
-		quantity: number;
-		price: number;
-		amount: number;
-	};
+	const { sources: src }: { sources: Sources<ProducedGrapes> } = $props();
 
 	const table = getTable<ProducedGrapes>(src.id);
 
 	const setPageData = (count: number) => {
-		table.set_data(common.generateExampleData(count));
+		const data = common.generateExampleData(count);
+		table.set_data(data);
 	};
 </script>
 

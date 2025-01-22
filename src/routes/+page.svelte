@@ -5,19 +5,7 @@
 	import { BaseDataTableView, type Sources } from '$lib/data-table/views';
 	import { createTable } from '$lib/data-table/tables.svelte';
 	import Code from '$lib/website/contents/Code.md';
-
-	type ProducedGrapes = {
-		order: number;
-		producer: string;
-		province: string;
-		district: string;
-		village: string;
-		grape: string;
-		grapeColor: string;
-		quantity: number;
-		price: number;
-		amount: number;
-	};
+	import type { ProducedGrapes } from '$lib/dev/schemaProducedGrapes';
 
 	// initial sources setup
 	let sources: Sources<ProducedGrapes> = {
@@ -26,7 +14,7 @@
 		enableVirtualization: true,
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
-			{ field: 'producer', label: 'Producer', width: '150px', hidden: true },
+			{ field: 'producer', label: 'Producer', width: '150px', hidden: false },
 			{ field: 'province', label: 'Province', width: '90px' },
 			{ field: 'district', label: 'District', width: '100px' },
 			{ field: 'village', label: 'Village', width: '120px' },

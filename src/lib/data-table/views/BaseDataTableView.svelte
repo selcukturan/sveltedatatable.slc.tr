@@ -25,7 +25,7 @@
 			{#each table.columns as col, ci (col.oi)}
 				{@const cell = row[col.field]}
 				<Td {src} {col} {ci} {row} {ri} class="border-zinc-200 dark:border-zinc-700">
-					{#if ci === 5}
+					{#if col.field === 'grapeColor'}
 						<input type="checkbox" name={`name_${ri}_${ci}`} id={`id_${ri}_${ci}`} tabindex="0" />
 						{cell}
 					{:else}
