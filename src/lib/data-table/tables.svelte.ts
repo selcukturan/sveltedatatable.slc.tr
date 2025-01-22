@@ -87,7 +87,7 @@ class Table<TData extends Row> {
 
 		const slicedData = $state.snapshot(this.get.data.slice(rowOverscanStartIndex, rowOverscanEndIndex + 1)) as TData[];
 
-		const processedData: TData[] = slicedData.map((row: TData, index: number): TData => {
+		const processedData = slicedData.map((row: TData, index: number): TData => {
 			return { ...row, oi: rowOverscanStartIndex + index }; // oi = original row index
 		});
 
@@ -140,7 +140,7 @@ class Table<TData extends Row> {
 
 		// pageup veya pagedown gibi uzun atlamalar olduğunda, yani scan edilmiş tüm virtual datanın da uzağına gidilmek istendiğinde, virtual data bir kez güncellenir.
 		// bu güncelleme setFocusedCellState ile değişen state'i baz alarak focuslanacak hücre bilgilerini virtual dataya pinler ve dom'u günceller.
-		// artık uzaktaki hücre dom'da oluşturukmuştur.
+		// artık uzaktaki hücre dom'da oluşturulmuştur.
 		if (this.get.enableVirtualization === true && triggerVirtual === true) {
 			const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndexs({});
 			if (

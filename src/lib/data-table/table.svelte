@@ -48,21 +48,21 @@
 	};
 
 	onMount(() => {
-		if (table.get.enableVirtualization === false) return;
+		if (table.get.enableVirtualization === true) {
+			const observer = new ResizeObserver(async (entries) => {
+				for (let entry of entries) {
+					const clientHeight = entry.contentRect.height;
+					if (clientHeight === 0) return;
+					await table.setVirtualDataDerivedTrigger(`height_${clientHeight}`);
+				}
+			});
 
-		const observer = new ResizeObserver(async (entries) => {
-			for (let entry of entries) {
-				const clientHeight = entry.contentRect.height;
-				if (clientHeight === 0) return;
-				await table.setVirtualDataDerivedTrigger(`height_${clientHeight}`);
-			}
-		});
+			if (table.element) observer.observe(table.element);
 
-		if (table.element) observer.observe(table.element);
-
-		return () => {
-			if (table.element) observer.unobserve(table.element);
-		};
+			return () => {
+				if (table.element) observer.unobserve(table.element);
+			};
+		}
 	});
 </script>
 
