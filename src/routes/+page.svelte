@@ -8,7 +8,7 @@
 	import type { ProducedGrapes } from '$lib/dev/schemaProducedGrapes';
 
 	// initial sources setup
-	let sources: Sources<ProducedGrapes> = {
+	const sources: Sources<ProducedGrapes> = {
 		id: 'table1',
 		data: common.generateExampleData(100),
 		enableVirtualization: true,
