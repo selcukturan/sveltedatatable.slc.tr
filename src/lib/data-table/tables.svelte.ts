@@ -1,4 +1,4 @@
-import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field, OnCellFocusChange } from './types';
+import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field } from './types';
 import { getContext, setContext, untrack } from 'svelte';
 import { tick } from 'svelte';
 
@@ -35,11 +35,11 @@ class Table<TData extends Row> {
 	// ################################## END Set Sources ##################################################################
 
 	// ################################## BEGIN Events ##########################################################
-	thisOnCellFocusChange = (params: OnCellFocusChange): void => {
+	thisOnCellFocusChange: RequiredSources<TData>['onCellFocusChange'] = (params) => {
 		const { event, detail } = params;
-		// before `onCellFocusChange `
+		// before `onCellFocusChange`
 		if (this.get.onCellFocusChange != null) this.get.onCellFocusChange({ event, detail });
-		// after `onCellFocusChange `
+		// after `onCellFocusChange`
 	};
 	// ################################## END Events ############################################################
 
@@ -166,12 +166,14 @@ class Table<TData extends Row> {
 		// satır başında ve satır sonunda 4'er tane overscan satır olduğu için, scrollIntoView sayesinde scroll tetiklenir ve virtual data bir kez güncellenir.
 		this.focusCellNode();
 
-		this.thisOnCellFocusChange({
-			event: JSON.stringify(this.focusedCell),
-			detail: {
-				test: 'string' + Math.random()
-			}
-		});
+		if (this.thisOnCellFocusChange != null) {
+			this.thisOnCellFocusChange({
+				event: JSON.stringify(this.focusedCell),
+				detail: {
+					test: 'string' + Math.random()
+				}
+			});
+		}
 	};
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {

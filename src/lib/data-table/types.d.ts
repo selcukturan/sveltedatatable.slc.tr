@@ -29,13 +29,6 @@ export type Column<TData> = {
 
 export type Footer<TData> = Partial<Record<Field<TData>, string>>;
 
-export type OnCellFocusChange = {
-	event: string;
-	detail: {
-		test: string;
-	};
-};
-
 export type Sources<TData> = {
 	id: string; // required
 	data?: TData[];
@@ -47,7 +40,12 @@ export type Sources<TData> = {
 	tfootRowHeight?: number;
 	columns: Column<TData>[]; // required
 	footers?: Footer<TData>[];
-	onCellFocusChange?: (params: OnCellFocusChange) => void;
+	onCellFocusChange?: (params: {
+		event: string;
+		detail: {
+			test: string;
+		};
+	}) => void;
 };
 export type RequiredSources<TData> = Omit<Required<Sources<TData>>, 'onCellFocusChange'> & {
 	// event'ler undefined olabilir
