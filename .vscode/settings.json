@@ -14,7 +14,6 @@
 	"window.commandCenter": false,
 	"workbench.preferredLightColorTheme": "GitHub Light",
 	"workbench.preferredDarkColorTheme": "One Dark Pro Darker",
-	"workbench.iconTheme": "material-icon-theme",
 	"window.autoDetectColorScheme": true,
 	"workbench.layoutControl.enabled": false,
 	"inlineChat.mode": "preview",
