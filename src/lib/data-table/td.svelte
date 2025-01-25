@@ -3,7 +3,6 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { type Snippet } from 'svelte';
 	import { getTable } from './tables.svelte';
-	import { tick } from 'svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
 		src: Sources<TData>;
@@ -109,14 +108,6 @@
 
 			if (initalOriginalCell !== cellToFocus.originalCell) {
 				await table.focusCell({ cellToFocus, triggerVirtual: true });
-
-				/* if (onSelectedCellChange && !samePosition) {
-					onSelectedCellChange({
-						rowIdx: position.rowIdx,
-						row: isRowIdxWithinViewportBounds(position.rowIdx) ? rows[position.rowIdx] : undefined,
-						column: columns[position.idx]
-					});
-				} */
 			}
 		};
 

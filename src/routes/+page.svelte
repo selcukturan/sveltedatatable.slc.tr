@@ -24,10 +24,17 @@
 			{ field: 'price', label: 'Price', align: 'right', width: '100px' },
 			{ field: 'amount', label: 'Amount', align: 'right', width: '100px' }
 		],
-		footers: [{ order: 'f1' }, { quantity: 'sum' }]
+		footers: [{ order: 'f1' }, { quantity: 'sum' }],
+		onCellFocusChange: (params) => {
+			console.log('onCellFocusChange-1', params);
+		}
 	};
 
 	const table = createTable<ProducedGrapes>(sources);
+
+	table.set_onCellFocusChange((params) => {
+		console.log('onCellFocusChange-2', $state.snapshot(table.focusedCell));
+	});
 </script>
 
 <Page>

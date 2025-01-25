@@ -1,9 +1,5 @@
 <script lang="ts">
-	let {
-		id,
-		size = 20,
-		class: classes
-	}: { id: string; size?: string | number; class?: string } = $props();
+	let { id, size = 20, class: classes }: { id: string; size?: string | number; class?: string } = $props();
 </script>
 
 <svg class={`${classes || ''} slc-icon`} width={size} height={size}>

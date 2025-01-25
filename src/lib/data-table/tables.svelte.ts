@@ -1,4 +1,4 @@
-import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field } from './types';
+import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field, OnCellFocusChange } from './types';
 import { getContext, setContext, untrack } from 'svelte';
 import { tick } from 'svelte';
 
@@ -14,7 +14,8 @@ class Table<TData extends Row> {
 		tbodyRowHeight: 35,
 		tfootRowHeight: 35,
 		columns: [],
-		footers: []
+		footers: [],
+		onCellFocusChange: undefined
 	};
 	// ################################## END Default Sources ##############################################################
 
@@ -30,7 +31,17 @@ class Table<TData extends Row> {
 	set_tfootRowHeight = (value: RequiredSources<TData>['tfootRowHeight']) => (this.set.tfootRowHeight = value);
 	set_columns = (value: RequiredSources<TData>['columns']) => (this.set.columns = value);
 	set_footers = (value: RequiredSources<TData>['footers']) => (this.set.footers = value);
+	set_onCellFocusChange = (value: RequiredSources<TData>['onCellFocusChange']) => (this.set.onCellFocusChange = value);
 	// ################################## END Set Sources ##################################################################
+
+	// ################################## BEGIN Events ##########################################################
+	thisOnCellFocusChange = (params: OnCellFocusChange): void => {
+		const { event, detail } = params;
+		// before `onCellFocusChange `
+		if (this.get.onCellFocusChange != null) this.get.onCellFocusChange({ event, detail });
+		// after `onCellFocusChange `
+	};
+	// ################################## END Events ############################################################
 
 	// ################################## BEGIN Constructor ################################################################
 	element?: HTMLDivElement = $state();
@@ -154,6 +165,13 @@ class Table<TData extends Row> {
 
 		// satır başında ve satır sonunda 4'er tane overscan satır olduğu için, scrollIntoView sayesinde scroll tetiklenir ve virtual data bir kez güncellenir.
 		this.focusCellNode();
+
+		this.thisOnCellFocusChange({
+			event: JSON.stringify(this.focusedCell),
+			detail: {
+				test: 'string' + Math.random()
+			}
+		});
 	};
 
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
@@ -234,31 +252,6 @@ class Table<TData extends Row> {
 
 		return rowVisibleEndIndex + Math.floor(currentHeight / dataRowHeight) - 1;
 	};
-
-	/* 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-	throttle = (func: Function, delay: number) => {
-		let timeoutId: number;
-		let lastRunTime = 0;
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		return function (this: any, ...args: Array<any>) {
-			const currentTime = Date.now(); // şu anki zaman
-			const elapsedTime = currentTime - lastRunTime; // geçen zaman
-
-			if (elapsedTime > delay) {
-				func.apply(this, args);
-				lastRunTime = currentTime;
-			} else {
-				clearTimeout(timeoutId);
-				timeoutId = setTimeout(() => {
-					func.apply(this, args);
-					lastRunTime = Date.now();
-				}, delay - elapsedTime);
-			}
-		};
-	};
-	 */
 }
 
 // ################################## BEGIN Export Table Context ###############################################################
@@ -269,4 +262,5 @@ export function getTable<TData extends Row>(id: string) {
 	return getContext<ReturnType<typeof createTable<TData>>>(id);
 }
 // ################################## END Export Table Context #################################################################
+
 export type { Sources, Row };

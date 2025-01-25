@@ -56,5 +56,6 @@
 	},
 	"[javascript]": {
 		"editor.defaultFormatter": "vscode.typescript-language-features"
-	}
+	},
+	"github.copilot.chat.localeOverride": "tr"
 }
