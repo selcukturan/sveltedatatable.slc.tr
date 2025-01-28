@@ -78,7 +78,7 @@ class Table<TData extends Row> {
 		const repeatTfoot = this.get.footers.length > 0 ? `repeat(${this.get.footers.length}, ${this.get.tfootRowHeight}px)` : ``;
 		return `${repeatThead} ${repeatTbody} ${repeatTfoot}`;
 	});
-	gridTemplateColumns = $derived(this.columns.map((col) => col.width ?? `150px`).join(' '));
+	gridTemplateColumns = $derived(`50px ${this.columns.map((col) => col.width ?? `150px`).join(' ')}`);
 	// ################################## END Variables ################################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
@@ -254,6 +254,39 @@ class Table<TData extends Row> {
 
 		return rowVisibleEndIndex + Math.floor(currentHeight / dataRowHeight) - 1;
 	};
+
+	// ################################## BEGIN Row Selection Methods ##############################################################
+	private _selectedRows: number[] = $state([]); // Seçili satır indeksleri
+
+	// Seçili satır sayısı
+	selectedRowCount = $derived(this._selectedRows.length);
+
+	// Seçili satır indeksleri
+	selectedRowIndexes = $derived([...this._selectedRows]);
+
+	// Seçili satır verileri
+	selectedRows = $derived(this._selectedRows.map((index) => this.get.data[index]).filter(Boolean));
+
+	// Bir satırın seçili olup olmadığını kontrol eder
+	isRowSelected(rowIndex: number): boolean {
+		return this._selectedRows.includes(rowIndex);
+	}
+
+	// Bir satırın seçimini değiştirir
+	toggleRowSelection(rowIndex: number) {
+		const index = this._selectedRows.indexOf(rowIndex);
+		if (index === -1) {
+			this._selectedRows.push(rowIndex);
+		} else {
+			this._selectedRows.splice(index, 1);
+		}
+	}
+
+	// Tüm seçimleri temizler
+	clearSelection() {
+		this._selectedRows = [];
+	}
+	// ################################## END Row Selection Methods ################################################################
 }
 
 // ################################## BEGIN Export Table Context ###############################################################

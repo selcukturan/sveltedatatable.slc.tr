@@ -26,15 +26,15 @@
 		],
 		footers: [{ order: 'f1' }, { quantity: 'sum' }],
 		onCellFocusChange: (params) => {
-			console.log('onCellFocusChange-1', params);
+			/* console.log('onCellFocusChange-1', params); */
 		}
 	};
 
 	const table = createTable<ProducedGrapes>(sources);
 
 	table.set_onCellFocusChange((params) => {
-		console.log('onCellFocusChange-2-1', params);
-		console.log('onCellFocusChange-2-2', $state.snapshot(table.focusedCell));
+		/* console.log('onCellFocusChange-2-1', params);
+		console.log('onCellFocusChange-2-2', $state.snapshot(table.focusedCell)); */
 	});
 </script>
 

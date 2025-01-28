@@ -56,7 +56,7 @@
 
 			const rowFirstIndex = 0;
 			const rowLastIndex = table.get.data.length - 1;
-			const colFirstIndex = 0;
+			const colFirstIndex = -1; // Seçim kolonu için -1
 			const colLastIndex = table.columns.length - 1;
 
 			if (key === 'ArrowUp') {
@@ -95,6 +95,10 @@
 			} else if (key === 'PageDown') {
 				cellToFocus.rowIndex = Math.min(rowLastIndex, table.getPageDownRowIndex() ?? rowLastIndex);
 				e.preventDefault();
+			} else if (key === ' ' && cellToFocus.colIndex === -1) {
+				// Seçim kolonunda boşluk tuşuna basıldığında satırı seç/kaldır
+				table.toggleRowSelection(cellToFocus.rowIndex);
+				e.preventDefault();
 			} else if (key === 'F2') {
 				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			} else if ((e.ctrlKey || e.metaKey) && (key === 'c' || key === 'C')) {
@@ -126,7 +130,7 @@
 	use:clickAction
 	use:keyboardAction
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
-	style:grid-column={`${ci + 1} / ${ci + 2}`}
+	style:grid-column={col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`}
 	class:slc-table-td={true}
 	data-cell={originalCell}
 	class={classes}

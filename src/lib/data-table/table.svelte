@@ -2,7 +2,7 @@
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import { getTable } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {

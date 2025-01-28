@@ -19,10 +19,10 @@
 
 <div
 	role="columnheader"
+	style:grid-row={`${table.headerRowsCount} / ${table.headerRowsCount + 1}`}
+	style:grid-column={col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`}
 	class:slc-table-th={true}
 	class={classes}
-	style:grid-row={`${table.headerRowsCount} / ${table.headerRowsCount + 1}`}
-	style:grid-column={`${ci + 1} / ${ci + 2}`}
 	aria-colindex={ci + 1}
 	data-col={ci}
 	{...attributes}
