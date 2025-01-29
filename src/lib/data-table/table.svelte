@@ -23,20 +23,11 @@
 	const virtualScrollAction = (tableNode: HTMLDivElement) => {
 		if (table.get.enableVirtualization === false) return;
 
-		let calculatingVirtualData = false;
-
 		const setScrollTop = async () => {
-			if (calculatingVirtualData) return;
-
 			const { scrollTop, clientHeight } = tableNode;
 			if (clientHeight === 0) return;
-
-			calculatingVirtualData = true;
 			await table.setVirtualDataDerivedTrigger(`scroll_${scrollTop}`);
-			calculatingVirtualData = false;
 		};
-
-		// const throttledSetScrollTop = table.throttle(setScrollTop, 50);
 
 		tableNode.addEventListener('scroll', setScrollTop, { passive: true });
 

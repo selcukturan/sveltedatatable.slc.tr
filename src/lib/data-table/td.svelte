@@ -97,8 +97,8 @@
 				e.preventDefault();
 			} else if (key === ' ' && cellToFocus.colIndex === -1) {
 				// Seçim kolonunda boşluk tuşuna basıldığında satırı seç/kaldır
-				table.toggleRowSelection(cellToFocus.rowIndex);
-				e.preventDefault();
+				// table.toggleRowSelection(cellToFocus.rowIndex);
+				// e.preventDefault();
 			} else if (key === 'F2') {
 				/* e.preventDefault(); createCellInput({ rowIndex, colIndex, originalCell }); */
 			} else if ((e.ctrlKey || e.metaKey) && (key === 'c' || key === 'C')) {

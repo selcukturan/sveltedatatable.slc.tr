@@ -1,60 +1,37 @@
 <script lang="ts">
-	import type { Row } from './types';
-	import { getTable } from './tables.svelte';
+	import { getTable, type Row } from './tables.svelte';
 
 	type Props = {
 		tableId: string;
-		rowIndex: number;
+		rowIndex?: number;
+		type?: 'header' | 'cell';
 	};
 
-	const { tableId, rowIndex }: Props = $props();
+	const { tableId, rowIndex, type = 'cell' }: Props = $props();
 	const table = getTable<Row>(tableId);
 
-	function handleInteraction() {
-		table.toggleRowSelection(rowIndex);
-	}
+	const isChecked = $derived(typeof rowIndex === 'number' ? (table.selectedRows.indexOf(rowIndex) === -1 ? false : true) : false);
 
-	function handleKeyDown(event: KeyboardEvent) {
-		if (event.key === ' ' || event.key === 'Enter') {
-			event.preventDefault();
-			handleInteraction();
-		}
-	}
+	const action = (buttonNode: HTMLButtonElement) => {
+		const handleClick = (e: MouseEvent) => {
+			if (type === 'header') {
+				const allSelected = table.selectedRows.length === table.get.data.length;
+				table.toggleAllRows(!allSelected);
+			} else if (rowIndex !== undefined) {
+				table.toggleRowSelection(rowIndex);
+			}
+		};
+
+		buttonNode.addEventListener('click', handleClick);
+
+		return {
+			destroy() {
+				buttonNode.removeEventListener('click', handleClick);
+			}
+		};
+	};
 </script>
 
-<div class="selection-cell">
-	<button type="button" onclick={handleInteraction} onkeydown={handleKeyDown} aria-label="Satır seçimi" aria-pressed={table.isRowSelected(rowIndex)}>
-		<input type="checkbox" checked={table.isRowSelected(rowIndex)} readonly tabindex="-1" />
-	</button>
-</div>
-
-<style>
-	.selection-cell {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100%;
-		width: 100%;
-	}
-
-	button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: none;
-		border: none;
-		padding: 0;
-		cursor: pointer;
-		width: 100%;
-		height: 100%;
-	}
-
-	button:focus {
-		outline: 2px solid var(--focus-color, #4f46e5);
-		outline-offset: -2px;
-	}
-
-	input[type='checkbox'] {
-		pointer-events: none;
-	}
-</style>
+<button type="button" tabindex="0" use:action>
+	{isChecked ? '✓' : 'x'}
+</button>

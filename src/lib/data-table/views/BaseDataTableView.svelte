@@ -15,9 +15,7 @@
 	{#snippet thead()}
 		<Trh {src}>
 			<Th {src} col={{ field: '_selection', width: '50px' }} ci={-1} class="border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
-				{#snippet children()}
-					<!-- Başlık hücresi boş bırakılıyor -->
-				{/snippet}
+				<SelectionColumn tableId={src.id} type="header" />
 			</Th>
 			{#each table.columns as col, ci (col.oi)}
 				{@const header = col.label}
@@ -30,9 +28,7 @@
 	{#snippet tbody(row, ri)}
 		<Trd {src} {row} {ri}>
 			<Td {src} col={{ field: '_selection', width: '50px' }} ci={-1} {row} {ri} class="border-zinc-200 dark:border-zinc-700">
-				{#snippet children()}
-					<SelectionColumn tableId={src.id} rowIndex={table.get.enableVirtualization ? (row.oi ?? ri) : ri} />
-				{/snippet}
+				<SelectionColumn tableId={src.id} type="cell" rowIndex={row.oi} />
 			</Td>
 			{#each table.columns as col, ci (col.oi)}
 				{@const cell = row[col.field]}
@@ -50,9 +46,7 @@
 	{#snippet tfoot(foot, fi)}
 		<Trf {src} {fi}>
 			<Tf {src} col={{ field: '_selection', width: '50px' }} ci={-1} {foot} {fi} class="border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
-				{#snippet children()}
-					<!-- Footer hücresi boş bırakılıyor -->
-				{/snippet}
+				{''}
 			</Tf>
 			{#each table.columns as col, ci (col.oi)}
 				{@const footer = foot[col.field]}
