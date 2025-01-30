@@ -32,10 +32,10 @@
 
 	const table = createTable<ProducedGrapes>(sources);
 
-	table.set_onCellFocusChange((params) => {
+	/* table.set_onCellFocusChange((params) => {
 		console.log('onCellFocusChange-2-1', params);
 		console.log('onCellFocusChange-2-2', $state.snapshot(table.focusedCell));
-	});
+	}); */
 </script>
 
 <Page>
