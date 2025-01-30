@@ -15,12 +15,20 @@
 	const { src, children, ci, col, class: classes, ...attributes }: Props = $props();
 
 	const table = getTable<TData>(src.id);
+
+	const gridColumn = $derived.by(() => {
+		if (table.get.enableRowSelection) {
+			return col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`;
+		} else {
+			return `${ci + 1} / ${ci + 2}`;
+		}
+	});
 </script>
 
 <div
 	role="columnheader"
 	style:grid-row={`${table.headerRowsCount} / ${table.headerRowsCount + 1}`}
-	style:grid-column={col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`}
+	style:grid-column={gridColumn}
 	class:slc-table-th={true}
 	class={classes}
 	aria-colindex={ci + 1}

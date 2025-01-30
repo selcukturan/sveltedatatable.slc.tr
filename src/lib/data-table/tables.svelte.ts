@@ -1,8 +1,17 @@
-import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field } from './types';
+import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field, onCellFocusChange } from './types';
 import { getContext, setContext, untrack } from 'svelte';
 import { tick } from 'svelte';
 
 class Table<TData extends Row> {
+	// ################################## BEGIN Constructor ################################################################
+	element?: HTMLDivElement = $state();
+	private set: Sources<TData> = $state({ id: '', columns: [] }); // orjinal sources. kaynaklar/sources değiştirilirken bu değişken kullanılacak. `table.set`
+	sources = (value: Sources<TData>) => (this.set = value); // Set All Sources Method
+	constructor(sources: Sources<TData>) {
+		this.sources(sources);
+	}
+	// ################################## END Constructor #################################################################
+
 	// ################################## BEGIN Default Sources ############################################################
 	private readonly defaultSources: RequiredSources<TData> = {
 		id: '',
@@ -10,52 +19,48 @@ class Table<TData extends Row> {
 		width: '100%',
 		height: '100%',
 		enableVirtualization: true,
+		enableRowSelection: true,
+		rowSelectionColumnWidth: 50,
 		theadRowHeight: 35,
 		tbodyRowHeight: 35,
 		tfootRowHeight: 35,
 		columns: [],
-		footers: [],
-		onCellFocusChange: undefined
+		footers: []
 	};
 	// ################################## END Default Sources ##############################################################
 
 	// ################################## BEGIN Set Sources ################################################################
-	set_sources = (value: Sources<TData>) => (this.set = value);
-	set_id = (value: RequiredSources<TData>['id']) => (this.set.id = value);
-	set_data = (value: RequiredSources<TData>['data']) => (this.set.data = value);
-	set_width = (value: RequiredSources<TData>['width']) => (this.set.width = value);
-	set_height = (value: RequiredSources<TData>['height']) => (this.set.height = value);
-	set_enableVirtualization = (value: RequiredSources<TData>['enableVirtualization']) => (this.set.enableVirtualization = value);
-	set_theadRowHeight = (value: RequiredSources<TData>['theadRowHeight']) => (this.set.theadRowHeight = value);
-	set_tbodyRowHeight = (value: RequiredSources<TData>['tbodyRowHeight']) => (this.set.tbodyRowHeight = value);
-	set_tfootRowHeight = (value: RequiredSources<TData>['tfootRowHeight']) => (this.set.tfootRowHeight = value);
-	set_columns = (value: RequiredSources<TData>['columns']) => (this.set.columns = value);
-	set_footers = (value: RequiredSources<TData>['footers']) => (this.set.footers = value);
-	set_onCellFocusChange = (value: RequiredSources<TData>['onCellFocusChange']) => (this.set.onCellFocusChange = value);
-	// ################################## END Set Sources ##################################################################
-
-	// ################################## BEGIN Events ##########################################################
-	thisOnCellFocusChange: RequiredSources<TData>['onCellFocusChange'] = (params) => {
-		const { event, detail } = params;
-		// before `onCellFocusChange`
-		if (this.get.onCellFocusChange != null) this.get.onCellFocusChange({ event, detail });
-		// after `onCellFocusChange`
+	id = (value: RequiredSources<TData>['id']) => (this.set.id = value);
+	data = (value: RequiredSources<TData>['data']) => {
+		this.clearSelection();
+		this.clearFocusedCell();
+		this.set.data = value;
 	};
-	// ################################## END Events ############################################################
-
-	// ################################## BEGIN Constructor ################################################################
-	element?: HTMLDivElement = $state();
-	private set: Sources<TData> = $state({ id: '', columns: [] }); // orjinal sources. kaynaklar/sources değiştirilirken bu değişken kullanılacak. `table.set`
-	constructor(sources: Sources<TData>) {
-		this.set_sources(sources);
-	}
-	// ################################## END Constructor #################################################################
+	width = (value: RequiredSources<TData>['width']) => (this.set.width = value);
+	height = (value: RequiredSources<TData>['height']) => (this.set.height = value);
+	enableVirtualization = (value: RequiredSources<TData>['enableVirtualization']) => {
+		this.clearSelection();
+		this.clearFocusedCell();
+		this.set.enableVirtualization = value;
+	};
+	enableRowSelection = (value: RequiredSources<TData>['enableRowSelection']) => {
+		this.clearSelection();
+		this.clearFocusedCell();
+		this.set.enableRowSelection = value;
+	};
+	rowSelectionColumnWidth = (value: RequiredSources<TData>['rowSelectionColumnWidth']) => (this.set.rowSelectionColumnWidth = value);
+	theadRowHeight = (value: RequiredSources<TData>['theadRowHeight']) => (this.set.theadRowHeight = value);
+	tbodyRowHeight = (value: RequiredSources<TData>['tbodyRowHeight']) => (this.set.tbodyRowHeight = value);
+	tfootRowHeight = (value: RequiredSources<TData>['tfootRowHeight']) => (this.set.tfootRowHeight = value);
+	columns = (value: RequiredSources<TData>['columns']) => (this.set.columns = value);
+	footers = (value: RequiredSources<TData>['footers']) => (this.set.footers = value);
+	// ################################## END Set Sources ##################################################################
 
 	// ################################## BEGIN Properties ################################################################
 	// derived sources. kaynaklar/sources okunurken bu değişken kullanılacak. `table.get`
 	get = $derived({ ...this.defaultSources, ...this.set });
 	// derived columns. kolon bilgileri okunurken bu değişken kullanılacak. `table.columns`
-	columns = $derived(
+	visibleColumns = $derived(
 		this.get.columns
 			.map((col, index) => {
 				return {
@@ -71,15 +76,26 @@ class Table<TData extends Row> {
 	test = $state('test');
 	headerRowsCount = $state(1);
 	defaultOverscanThreshold = 4;
-	focusedCell?: FocucedCell = $state();
 	gridTemplateRows = $derived.by(() => {
 		const repeatThead = this.headerRowsCount >= 1 ? `repeat(${this.headerRowsCount}, ${this.get.theadRowHeight}px)` : ``;
 		const repeatTbody = this.get.data.length > 0 ? `repeat(${this.get.data.length}, ${this.get.tbodyRowHeight}px)` : ``;
 		const repeatTfoot = this.get.footers.length > 0 ? `repeat(${this.get.footers.length}, ${this.get.tfootRowHeight}px)` : ``;
 		return `${repeatThead} ${repeatTbody} ${repeatTfoot}`;
 	});
-	gridTemplateColumns = $derived(`50px ${this.columns.map((col) => col.width ?? `150px`).join(' ')}`);
+	gridTemplateColumns = $derived(`${this.get.enableRowSelection ? this.get.rowSelectionColumnWidth + 'px' : ''} ${this.visibleColumns.map((col) => col.width ?? `150px`).join(' ')}`);
 	// ################################## END General Variables ########################################################
+
+	// ################################## BEGIN Events ##########################################################
+	// ***** onCellFocusChange Event *****
+	onCellFocusChange = (value: onCellFocusChange) => (this.onCellFocusChangeRun = value);
+	private onCellFocusChangeRun?: onCellFocusChange;
+	private onCellFocusChangeThis: onCellFocusChange = (params) => {
+		// const { event, detail } = params;
+		// before `onCellFocusChange`
+		if (this.onCellFocusChangeRun != null) this.onCellFocusChangeRun(params);
+		// after `onCellFocusChange`
+	};
+	// ################################## END Events ############################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
 	private calculatingVirtualData = false;
@@ -88,7 +104,6 @@ class Table<TData extends Row> {
 	virtualData = $derived.by(() => {
 		if (this.get.enableVirtualization === false || this.element == null || this.virtualDataDerivedTrigger == null) return [];
 
-		// const scrollTop = this.scrollTop;
 		const headerRowsHeight = this.headerRowsCount * this.get.theadRowHeight;
 		const footerRowsHeight = this.get.footers.length * this.get.tfootRowHeight;
 		const dataRowHeight = this.get.tbodyRowHeight;
@@ -145,6 +160,8 @@ class Table<TData extends Row> {
 	// ################################## END Keyboard Navigation Methods ###############################################
 
 	// ################################## BEGIN Set Focused Cell State ##################################################
+	focusedCell?: FocucedCell = $state();
+
 	setFocusedCellState = async (focucedCell?: FocucedCell) => {
 		// Fokuslanacak hücre elementinin içinde, tabindex'i 0 olan fokuslanılabilir bir element varsa, hücre elementinin tabindex'ini -1 yap.
 		if (this.element != null && focucedCell != null && focucedCell.rowIndex != null && focucedCell.colIndex != null) {
@@ -175,10 +192,7 @@ class Table<TData extends Row> {
 		// artık uzaktaki hücre dom'da oluşturulmuştur.
 		if (this.get.enableVirtualization === true && triggerVirtual === true) {
 			const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndexs({});
-			if (
-				(rowOverscanStartIndex != null && cellToFocus.rowIndex <= rowOverscanStartIndex) ||
-				(rowOverscanEndIndex != null && cellToFocus.rowIndex >= rowOverscanEndIndex)
-			) {
+			if ((rowOverscanStartIndex != null && cellToFocus.rowIndex <= rowOverscanStartIndex) || (rowOverscanEndIndex != null && cellToFocus.rowIndex >= rowOverscanEndIndex)) {
 				await this.setVirtualDataDerivedTrigger(`focus_${cellToFocus.originalCell}`);
 				await this.setFocusedCellState(cellToFocus); // dom'da yeni görünür olduğundan, tabindex durumunu yeniden güncellemek için.
 			}
@@ -187,14 +201,16 @@ class Table<TData extends Row> {
 		// satır başında ve satır sonunda 4'er tane overscan satır olduğu için, scrollIntoView sayesinde scroll tetiklenir ve virtual data bir kez güncellenir.
 		this.focusCellNode();
 
-		if (this.thisOnCellFocusChange != null) {
-			this.thisOnCellFocusChange({
-				event: JSON.stringify(this.focusedCell),
-				detail: {
-					test: 'string' + Math.random()
-				}
-			});
-		}
+		this.onCellFocusChangeThis({
+			event: JSON.stringify(this.focusedCell),
+			detail: {
+				test: 'string' + Math.random()
+			}
+		});
+	};
+
+	clearFocusedCell = () => {
+		this.setFocusedCellState(undefined);
 	};
 	// ################################## END Set Focused Cell State #####################################################
 
@@ -202,28 +218,28 @@ class Table<TData extends Row> {
 	selectedRows: number[] = $state.raw([]); // Seçili satır indeksleri
 
 	// Bir satırın seçimini değiştirir
-	toggleRowSelection(rowIndex: number) {
+	toggleRowSelection = (rowIndex: number) => {
 		const index = this.selectedRows.indexOf(rowIndex);
 		if (index === -1) {
 			this.selectedRows = [...this.selectedRows, rowIndex]; // Yeni seçim eklerken yeni bir array oluştur
 		} else {
 			this.selectedRows = this.selectedRows.filter((idx) => idx !== rowIndex); // Seçimi kaldırırken filter kullan
 		}
-	}
+	};
 
 	// Tüm satırları seçer veya seçimi kaldırır
-	toggleAllRows(select: boolean) {
+	toggleAllRows = (select: boolean) => {
 		if (select) {
 			this.selectedRows = Array.from({ length: this.get.data.length }, (_, i) => i); // Tüm satırları seç
 		} else {
 			this.clearSelection(); // Tüm seçimleri kaldır
 		}
-	}
+	};
 
 	// Tüm seçimleri temizler
-	clearSelection() {
+	clearSelection = () => {
 		this.selectedRows = [];
-	}
+	};
 	// ################################## END Row Selection Methods ################################################################
 
 	// ################################## BEGIN General Methods ##############################################################

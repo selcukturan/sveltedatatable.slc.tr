@@ -4,8 +4,7 @@ export type Row = Record<RowKey, RowValue> & {
 	oi?: number; // original row index
 };
 
-export type SpecialField = '_selection';
-export type Field<TData> = Extract<keyof TData, RowKey> | SpecialField;
+export type Field<TData> = Extract<keyof TData, RowKey> | '_selection';
 
 // 100px | 1.25fr | minmax(100px,1.25fr) | minmax(1.25fr,100px) | minmax(1fr,1.25fr) | minmax(100px,200px)
 export type Width =
@@ -37,22 +36,15 @@ export type Sources<TData> = {
 	width?: string;
 	height?: string;
 	enableVirtualization?: boolean;
+	enableRowSelection?: boolean;
+	rowSelectionColumnWidth?: number;
 	theadRowHeight?: number;
 	tbodyRowHeight?: number;
 	tfootRowHeight?: number;
 	columns: Column<TData>[]; // required
 	footers?: Footer<TData>[];
-	onCellFocusChange?: (params: {
-		event: string;
-		detail: {
-			test: string;
-		};
-	}) => void;
 };
-export type RequiredSources<TData> = Omit<Required<Sources<TData>>, 'onCellFocusChange'> & {
-	// event'ler undefined olabilir
-	onCellFocusChange?: Sources<TData>['onCellFocusChange'];
-};
+export type RequiredSources<TData> = Required<Sources<TData>>;
 
 export type FocucedCell = {
 	rowIndex?: number;
@@ -60,3 +52,11 @@ export type FocucedCell = {
 	originalCell?: `${number}_${number}`;
 	tabIndex?: number;
 };
+
+// Events Types
+export type onCellFocusChange = (params: {
+	event: string;
+	detail: {
+		test: string;
+	};
+}) => void;

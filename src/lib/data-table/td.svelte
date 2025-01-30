@@ -56,8 +56,8 @@
 
 			const rowFirstIndex = 0;
 			const rowLastIndex = table.get.data.length - 1;
-			const colFirstIndex = -1; // Seçim kolonu için -1
-			const colLastIndex = table.columns.length - 1;
+			const colFirstIndex = table.get.enableRowSelection ? -1 : 0; // Seçim kolonu için -1
+			const colLastIndex = table.visibleColumns.length - 1;
 
 			if (key === 'ArrowUp') {
 				cellToFocus.rowIndex = Math.max(rowFirstIndex, cellToFocus.rowIndex - 1);
@@ -123,6 +123,13 @@
 			}
 		};
 	};
+	const gridColumn = $derived.by(() => {
+		if (table.get.enableRowSelection) {
+			return col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`;
+		} else {
+			return `${ci + 1} / ${ci + 2}`;
+		}
+	});
 </script>
 
 <div
@@ -130,7 +137,7 @@
 	use:clickAction
 	use:keyboardAction
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
-	style:grid-column={col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`}
+	style:grid-column={gridColumn}
 	class:slc-table-td={true}
 	data-cell={originalCell}
 	class={classes}

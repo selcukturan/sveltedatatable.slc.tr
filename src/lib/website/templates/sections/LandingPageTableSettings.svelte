@@ -9,13 +9,8 @@
 
 	const setPageData = (count: number) => {
 		const data = common.generateExampleData(count);
-		table.set_data(data);
+		table.data(data);
 	};
-
-	function toggleThirdRow() {
-		const thirdRowIndex = 2; // 0-based index olduğu için 2
-		table.toggleRowSelection(thirdRowIndex);
-	}
 </script>
 
 <div class="flex flex-col gap-4">
@@ -34,9 +29,25 @@
 		<button
 			type="button"
 			class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-			onclick={toggleThirdRow}
+			onclick={() => table.toggleRowSelection(2)}
 		>
 			3. Satırı Seç/Kaldır
+		</button>
+
+		<button
+			type="button"
+			class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+			onclick={() => table.enableVirtualization(!table.get.enableVirtualization)}
+		>
+			enableVirtualization = {table.get.enableVirtualization}
+		</button>
+
+		<button
+			type="button"
+			class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+			onclick={() => table.enableRowSelection(!table.get.enableRowSelection)}
+		>
+			enableRowSelection = {table.get.enableRowSelection}
 		</button>
 	</div>
 </div>

@@ -1,8 +1,7 @@
 <script lang="ts" generics="TData extends Row">
-	import type { Row, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
-	import { getTable } from './tables.svelte';
+	import { getTable, type Sources, type Row } from './tables.svelte';
 
 	type Props = HTMLAttributes<HTMLDivElement> & {
 		src: Sources<TData>;

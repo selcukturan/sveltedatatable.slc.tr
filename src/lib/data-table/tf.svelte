@@ -19,12 +19,19 @@
 	const bottom = $derived(`${(table.get.footers.length - fi - 1) * table.get.tfootRowHeight}px`);
 	const footerIndexToRow = 1;
 	const gridRowStart = $derived(table.get.data.length + table.headerRowsCount + fi + footerIndexToRow);
+	const gridColumn = $derived.by(() => {
+		if (table.get.enableRowSelection) {
+			return col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`;
+		} else {
+			return `${ci + 1} / ${ci + 2}`;
+		}
+	});
 </script>
 
 <div
 	role="gridcell"
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
-	style:grid-column={col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`}
+	style:grid-column={gridColumn}
 	class:slc-table-tf={true}
 	class={classes}
 	style:bottom
