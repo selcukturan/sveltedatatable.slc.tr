@@ -67,7 +67,7 @@ class Table<TData extends Row> {
 	);
 	// ################################## END Properties ###############################################################
 
-	// ################################## BEGIN Variables ##############################################################
+	// ################################## BEGIN General Variables ######################################################
 	test = $state('test');
 	headerRowsCount = $state(1);
 	defaultOverscanThreshold = 4;
@@ -78,10 +78,11 @@ class Table<TData extends Row> {
 		const repeatTfoot = this.get.footers.length > 0 ? `repeat(${this.get.footers.length}, ${this.get.tfootRowHeight}px)` : ``;
 		return `${repeatThead} ${repeatTbody} ${repeatTfoot}`;
 	});
-	gridTemplateColumns = $derived(this.columns.map((col) => col.width ?? `150px`).join(' '));
-	// ################################## END Variables ################################################################
+	gridTemplateColumns = $derived(`50px ${this.columns.map((col) => col.width ?? `150px`).join(' ')}`);
+	// ################################## END General Variables ########################################################
 
 	// ################################## BEGIN Vertical Virtual Data ##################################################
+	private calculatingVirtualData = false;
 	virtualDataDerivedTrigger?: string = $state();
 	// derived virtualData. Virtual veriler okurken bu değişken kullanılacak. `table.data`
 	virtualData = $derived.by(() => {
@@ -117,13 +118,33 @@ class Table<TData extends Row> {
 
 		return processedData;
 	});
-	// ################################## END Vertical Virtual Data ####################################################
 
 	setVirtualDataDerivedTrigger = async (virtualDataDerivedTrigger: string) => {
+		if (this.calculatingVirtualData) return;
+
+		this.calculatingVirtualData = true;
 		this.virtualDataDerivedTrigger = virtualDataDerivedTrigger;
 		await tick();
+		this.calculatingVirtualData = false;
 	};
+	// ################################## END Vertical Virtual Data ####################################################
 
+	// ################################## BEGIN Keyboard Navigation Methods ############################################
+	getPageUpRowIndex = () => {
+		const { rowVisibleStartIndex, currentHeight, dataRowHeight } = this.findVisibleRowIndexs({});
+		if (rowVisibleStartIndex == null || currentHeight == null || dataRowHeight == null) return undefined;
+
+		return rowVisibleStartIndex - Math.floor(currentHeight / dataRowHeight) + 1;
+	};
+	getPageDownRowIndex = () => {
+		const { rowVisibleEndIndex, currentHeight, dataRowHeight } = this.findVisibleRowIndexs({});
+		if (rowVisibleEndIndex == null || currentHeight == null || dataRowHeight == null) return undefined;
+
+		return rowVisibleEndIndex + Math.floor(currentHeight / dataRowHeight) - 1;
+	};
+	// ################################## END Keyboard Navigation Methods ###############################################
+
+	// ################################## BEGIN Set Focused Cell State ##################################################
 	setFocusedCellState = async (focucedCell?: FocucedCell) => {
 		// Fokuslanacak hücre elementinin içinde, tabindex'i 0 olan fokuslanılabilir bir element varsa, hücre elementinin tabindex'ini -1 yap.
 		if (this.element != null && focucedCell != null && focucedCell.rowIndex != null && focucedCell.colIndex != null) {
@@ -175,7 +196,37 @@ class Table<TData extends Row> {
 			});
 		}
 	};
+	// ################################## END Set Focused Cell State #####################################################
 
+	// ################################## BEGIN Row Selection Methods ##############################################################
+	selectedRows: number[] = $state.raw([]); // Seçili satır indeksleri
+
+	// Bir satırın seçimini değiştirir
+	toggleRowSelection(rowIndex: number) {
+		const index = this.selectedRows.indexOf(rowIndex);
+		if (index === -1) {
+			this.selectedRows = [...this.selectedRows, rowIndex]; // Yeni seçim eklerken yeni bir array oluştur
+		} else {
+			this.selectedRows = this.selectedRows.filter((idx) => idx !== rowIndex); // Seçimi kaldırırken filter kullan
+		}
+	}
+
+	// Tüm satırları seçer veya seçimi kaldırır
+	toggleAllRows(select: boolean) {
+		if (select) {
+			this.selectedRows = Array.from({ length: this.get.data.length }, (_, i) => i); // Tüm satırları seç
+		} else {
+			this.clearSelection(); // Tüm seçimleri kaldır
+		}
+	}
+
+	// Tüm seçimleri temizler
+	clearSelection() {
+		this.selectedRows = [];
+	}
+	// ################################## END Row Selection Methods ################################################################
+
+	// ################################## BEGIN General Methods ##############################################################
 	getFooter = ({ field, foot }: { field: Field<TData>; foot: Footer<TData> }): number | string => {
 		const footer = foot[field]; // sum, avg, count or footer content
 		if (footer == null) return '';
@@ -241,19 +292,7 @@ class Table<TData extends Row> {
 			dataRowHeight: xDataRowHeight
 		};
 	};
-
-	getPageUpRowIndex = () => {
-		const { rowVisibleStartIndex, currentHeight, dataRowHeight } = this.findVisibleRowIndexs({});
-		if (rowVisibleStartIndex == null || currentHeight == null || dataRowHeight == null) return undefined;
-
-		return rowVisibleStartIndex - Math.floor(currentHeight / dataRowHeight) + 1;
-	};
-	getPageDownRowIndex = () => {
-		const { rowVisibleEndIndex, currentHeight, dataRowHeight } = this.findVisibleRowIndexs({});
-		if (rowVisibleEndIndex == null || currentHeight == null || dataRowHeight == null) return undefined;
-
-		return rowVisibleEndIndex + Math.floor(currentHeight / dataRowHeight) - 1;
-	};
+	// ################################## END General Methods ################################################################
 }
 
 // ################################## BEGIN Export Table Context ###############################################################

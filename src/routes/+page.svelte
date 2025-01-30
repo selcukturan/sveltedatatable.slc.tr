@@ -26,16 +26,23 @@
 		],
 		footers: [{ order: 'f1' }, { quantity: 'sum' }],
 		onCellFocusChange: (params) => {
-			console.log('onCellFocusChange-1', params);
+			/* console.log('onCellFocusChange-1', params); */
 		}
 	};
 
 	const table = createTable<ProducedGrapes>(sources);
 
+<<<<<<< HEAD
 	/* table.set_onCellFocusChange((params) => {
 		console.log('onCellFocusChange-2-1', params);
 		console.log('onCellFocusChange-2-2', $state.snapshot(table.focusedCell));
 	}); */
+=======
+	table.set_onCellFocusChange((params) => {
+		/* console.log('onCellFocusChange-2-1', params);
+		console.log('onCellFocusChange-2-2', $state.snapshot(table.focusedCell)); */
+	});
+>>>>>>> 70e2a5050dada5b452f18a2d2dc9992687e66038
 </script>
 
 <Page>

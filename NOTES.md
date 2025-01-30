@@ -1,3 +1,71 @@
+# Geliştirme Planı ve Notlar
+
+## Yapılacaklar
+
+### 1. Test Senaryoları
+- [ ] Seçim Sistemi Testleri
+  - [ ] Tekli satır seçimi testleri
+  - [ ] Seçim durumu state kontrolü
+  - [ ] Virtualization ile seçim sistemi entegrasyonu
+  - [ ] Klavye navigasyonu testleri
+  - [ ] Erişilebilirlik testleri
+
+- [ ] Virtualization Testleri
+  - [ ] Büyük veri setleri performans testleri
+  - [ ] Scroll davranışı testleri
+  - [ ] İndeks dönüşümleri testleri
+
+- [ ] Entegrasyon Testleri
+  - [ ] Seçim + Virtualization entegrasyon testleri
+  - [ ] Klavye navigasyonu + Seçim entegrasyon testleri
+
+### 2. Kod Organizasyonu
+- [ ] Klasör Yapısı Düzenlemesi
+  ```
+  data-table/
+  ├── core/
+  │   ├── state.ts
+  │   └── types.ts
+  ├── features/
+  │   ├── selection/
+  │   │   ├── SelectionColumn.svelte
+  │   │   └── selection-store.ts
+  │   └── virtualization/
+  │       ├── VirtualList.svelte
+  │       └── virtual-store.ts
+  ├── utils/
+  │   ├── keyboard.ts
+  │   └── index-utils.ts
+  └── views/
+      └── BaseDataTableView.svelte
+  ```
+
+### 3. Gelecek Özellikler
+- [ ] Toplu Seçim
+  - [ ] Tümünü seç/kaldır
+  - [ ] Sayfa bazlı seçim
+  - [ ] Seçim filtreleme
+
+- [ ] Gelişmiş Klavye Navigasyonu
+  - [ ] Shift + Ok tuşları ile çoklu seçim
+  - [ ] Space/Enter ile seçim toggle
+  - [ ] Page Up/Down ile sayfa gezinme
+
+- [ ] Görsel İyileştirmeler
+  - [ ] Seçili satır vurgusu
+  - [ ] Hover efektleri
+  - [ ] Seçim animasyonları
+
+### 4. Performans İyileştirmeleri
+- [ ] State güncelleme optimizasyonları
+- [ ] Gereksiz render'ların engellenmesi
+- [ ] Büyük veri setleri için önbellekleme
+
+### 5. Dokümantasyon
+- [ ] API dokümantasyonu
+- [ ] Kullanım örnekleri
+- [ ] Geliştirici kılavuzu
+
 ```bash
 npm install -g npm-check
 npm-check -u

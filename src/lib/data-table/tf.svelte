@@ -23,10 +23,10 @@
 
 <div
 	role="gridcell"
+	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
+	style:grid-column={col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`}
 	class:slc-table-tf={true}
 	class={classes}
-	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
-	style:grid-column={`${ci + 1} / ${ci + 2}`}
 	style:bottom
 	aria-colindex={ci + 1}
 	data-foot={fi}
