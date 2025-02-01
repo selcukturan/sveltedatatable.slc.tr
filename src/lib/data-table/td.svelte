@@ -26,7 +26,7 @@
 		const handleClick = async (e: Event) => {
 			if (row_oi == null) return;
 			const cellToFocus: Required<FocucedCell> = { rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}`, tabIndex: 0 };
-			if (cellToFocus.originalCell === table.focusedCell?.originalCell) return;
+			if (cellToFocus.originalCell === table.getFocusedCell()?.originalCell) return;
 			await table.focusCell({ cellToFocus });
 		};
 
@@ -41,7 +41,7 @@
 
 	const keyboardAction = (cellNode: HTMLDivElement) => {
 		const handleKeydown = async (e: KeyboardEvent) => {
-			const { rowIndex, colIndex, originalCell } = table.focusedCell ?? {};
+			const { rowIndex, colIndex, originalCell } = table.getFocusedCell() ?? {};
 			if (rowIndex == null || colIndex == null || originalCell == null) return;
 
 			let cellToFocus: Required<FocucedCell> = { rowIndex, colIndex, originalCell, tabIndex: 0 };
@@ -141,9 +141,9 @@
 	class:slc-table-td={true}
 	data-cell={originalCell}
 	class={classes}
-	tabindex={table.focusedCell?.originalCell === originalCell && typeof table.focusedCell.tabIndex !== 'undefined' ? table.focusedCell.tabIndex : -1}
-	aria-selected={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
-	data-focused={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
+	tabindex={table.getFocusedCell()?.originalCell === originalCell && typeof table.getFocusedCell()?.tabIndex !== 'undefined' ? table.getFocusedCell()?.tabIndex : -1}
+	aria-selected={table?.getFocusedCell()?.originalCell === originalCell ? 'true' : 'false'}
+	data-focused={table?.getFocusedCell()?.originalCell === originalCell ? 'true' : 'false'}
 	aria-colindex={ci + 1}
 	spellcheck="false"
 	{...attributes}

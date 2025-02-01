@@ -1,4 +1,4 @@
-import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field, onCellFocusChange } from './types';
+import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field, OnCellFocusChange, OnRowSelectionChange } from './types';
 import { getContext, setContext, untrack } from 'svelte';
 import { tick } from 'svelte';
 
@@ -87,13 +87,15 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Events ##########################################################
 	// ***** onCellFocusChange Event *****
-	onCellFocusChange = (value: onCellFocusChange) => (this.onCellFocusChangeRun = value);
-	private onCellFocusChangeRun?: onCellFocusChange;
-	private onCellFocusChangeThis: onCellFocusChange = (params) => {
-		// const { event, detail } = params;
-		// before `onCellFocusChange`
+	onCellFocusChange = (fn: OnCellFocusChange) => (this.onCellFocusChangeRun = fn);
+	private onCellFocusChangeRun?: OnCellFocusChange;
+	private onCellFocusChangeThis: OnCellFocusChange = (params) => {
 		if (this.onCellFocusChangeRun != null) this.onCellFocusChangeRun(params);
-		// after `onCellFocusChange`
+	};
+	onRowSelectionChange = (fn: OnRowSelectionChange) => (this.onRowSelectionChangeRun = fn);
+	private onRowSelectionChangeRun?: OnRowSelectionChange;
+	private onRowSelectionChangeThis: OnRowSelectionChange = (params) => {
+		if (this.onRowSelectionChangeRun != null) this.onRowSelectionChangeRun(params);
 	};
 	// ################################## END Events ############################################################
 
@@ -160,22 +162,29 @@ class Table<TData extends Row> {
 	// ################################## END Keyboard Navigation Methods ###############################################
 
 	// ################################## BEGIN Set Focused Cell State ##################################################
-	focusedCell?: FocucedCell = $state();
+	private focusedCell?: FocucedCell = $state();
+	getFocusedCell = () => {
+		return this.focusedCell;
+	};
+	private setFocusedCell = (focucedCell: FocucedCell) => {
+		this.focusedCell = focucedCell;
+	};
+	private clearFocusedCell = () => {
+		this.focusedCell = undefined;
+	};
 
-	setFocusedCellState = async (focucedCell?: FocucedCell) => {
+	private setFocusedCellTabIndex = async (focucedCell: FocucedCell) => {
 		// Fokuslanacak hücre elementinin içinde, tabindex'i 0 olan fokuslanılabilir bir element varsa, hücre elementinin tabindex'ini -1 yap.
 		if (this.element != null && focucedCell != null && focucedCell.rowIndex != null && focucedCell.colIndex != null) {
 			const focusedCellNode = this.element.querySelector<HTMLDivElement>(`:scope > [role="row"] > [data-cell="${focucedCell.rowIndex}_${focucedCell.colIndex}"]`);
 			if (focusedCellNode && focusedCellNode.querySelector<Element & HTMLOrSVGElement>('[tabindex="0"]')) {
-				focucedCell = { ...focucedCell, tabIndex: -1 };
+				this.setFocusedCell({ ...focucedCell, tabIndex: -1 });
 			}
 		}
-
-		this.focusedCell = focucedCell;
+		this.setFocusedCell(focucedCell);
 		await tick();
 	};
-
-	focusCellNode = () => {
+	private focusCellNode = () => {
 		const nextFocusedCellNode = this.element?.querySelector<HTMLDivElement>(':scope > [role="row"] > [data-focused="true"]');
 		if (nextFocusedCellNode == null) return;
 
@@ -185,7 +194,7 @@ class Table<TData extends Row> {
 	};
 
 	focusCell = async ({ cellToFocus, triggerVirtual = false }: { cellToFocus: Required<FocucedCell>; triggerVirtual?: boolean }) => {
-		await this.setFocusedCellState(cellToFocus); // tabindex durumunu ve focucedCell state'ini günceller.
+		await this.setFocusedCellTabIndex(cellToFocus); // tabindex durumunu ve focucedCell state'ini günceller.
 
 		// pageup veya pagedown gibi uzun atlamalar olduğunda, yani scan edilmiş tüm virtual datanın da uzağına gidilmek istendiğinde, virtual data bir kez güncellenir.
 		// bu güncelleme setFocusedCellState ile değişen state'i baz alarak focuslanacak hücre bilgilerini virtual dataya pinler ve dom'u günceller.
@@ -194,51 +203,52 @@ class Table<TData extends Row> {
 			const { rowOverscanStartIndex, rowOverscanEndIndex } = this.findVisibleRowIndexs({});
 			if ((rowOverscanStartIndex != null && cellToFocus.rowIndex <= rowOverscanStartIndex) || (rowOverscanEndIndex != null && cellToFocus.rowIndex >= rowOverscanEndIndex)) {
 				await this.setVirtualDataDerivedTrigger(`focus_${cellToFocus.originalCell}`);
-				await this.setFocusedCellState(cellToFocus); // dom'da yeni görünür olduğundan, tabindex durumunu yeniden güncellemek için.
+				await this.setFocusedCellTabIndex(cellToFocus); // dom'da yeni görünür olduğundan, tabindex durumunu yeniden güncellemek için.
 			}
 		}
 
 		// satır başında ve satır sonunda 4'er tane overscan satır olduğu için, scrollIntoView sayesinde scroll tetiklenir ve virtual data bir kez güncellenir.
 		this.focusCellNode();
 
-		this.onCellFocusChangeThis({
-			event: JSON.stringify(this.focusedCell),
-			detail: {
-				test: 'string' + Math.random()
-			}
-		});
+		this.onCellFocusChangeThis({ rowIndex: cellToFocus.rowIndex, colIndex: cellToFocus.colIndex });
 	};
 
-	clearFocusedCell = () => {
-		this.setFocusedCellState(undefined);
-	};
 	// ################################## END Set Focused Cell State #####################################################
 
 	// ################################## BEGIN Row Selection Methods ##############################################################
-	selectedRows: number[] = $state.raw([]); // Seçili satır indeksleri
+	private selectedRows: number[] = $state.raw([]); // Seçili satır indeksleri
+	getSelection = () => {
+		return this.selectedRows;
+	};
+	private setSelection = (selectedRows: number[]) => {
+		this.selectedRows = selectedRows;
+	};
+	private clearSelection = () => {
+		this.selectedRows = [];
+	};
 
 	// Bir satırın seçimini değiştirir
-	toggleRowSelection = (rowIndex: number) => {
-		const index = this.selectedRows.indexOf(rowIndex);
+	toggleRowSelection = async (rowIndex: number) => {
+		const selectedRows = this.getSelection();
+		const index = selectedRows.indexOf(rowIndex);
 		if (index === -1) {
-			this.selectedRows = [...this.selectedRows, rowIndex]; // Yeni seçim eklerken yeni bir array oluştur
+			this.setSelection([...selectedRows, rowIndex]); // Yeni seçim eklerken yeni bir array oluştur
 		} else {
-			this.selectedRows = this.selectedRows.filter((idx) => idx !== rowIndex); // Seçimi kaldırırken filter kullan
+			this.setSelection(selectedRows.filter((idx) => idx !== rowIndex)); // Seçimi kaldırırken filter kullan
 		}
+		await tick();
+		this.onRowSelectionChangeThis({ selectedRows: this.getSelection() });
 	};
 
 	// Tüm satırları seçer veya seçimi kaldırır
-	toggleAllRows = (select: boolean) => {
+	toggleAllRows = async (select: boolean) => {
 		if (select) {
-			this.selectedRows = Array.from({ length: this.get.data.length }, (_, i) => i); // Tüm satırları seç
+			this.setSelection(Array.from({ length: this.get.data.length }, (_, i) => i)); // Tüm satırları seç
 		} else {
 			this.clearSelection(); // Tüm seçimleri kaldır
 		}
-	};
-
-	// Tüm seçimleri temizler
-	clearSelection = () => {
-		this.selectedRows = [];
+		await tick();
+		this.onRowSelectionChangeThis({ selectedRows: this.getSelection() });
 	};
 	// ################################## END Row Selection Methods ################################################################
 
@@ -262,7 +272,7 @@ class Table<TData extends Row> {
 					: footer;
 	};
 
-	findVisibleRowIndexs: (params: {
+	private findVisibleRowIndexs: (params: {
 		scrollTop?: number;
 		clientHeight?: number;
 		headerRowsHeight?: number;

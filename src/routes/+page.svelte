@@ -29,8 +29,13 @@
 
 	const table = createTable<ProducedGrapes>(sources);
 
-	table.onCellFocusChange((params) => {
-		/* console.log('onCellFocusChange-2-1', params); */
+	/* table.onCellFocusChange((params) => {
+		const { rowIndex, colIndex } = params;
+		console.log('onCellFocusChange', rowIndex, colIndex);
+	}); */
+	table.onRowSelectionChange((params) => {
+		const { selectedRows } = params;
+		console.log('onRowSelectionChange', selectedRows);
 	});
 </script>
 

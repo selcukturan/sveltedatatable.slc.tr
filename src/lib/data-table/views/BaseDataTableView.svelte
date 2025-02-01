@@ -1,14 +1,13 @@
 <!-- BaseDataTableView.svelte -->
 <script lang="ts" generics="TData extends Row">
 	import { getTable, type Sources, type Row } from '../tables.svelte';
-	import { Table, Th, Td, Tf, Trh, Trd, Trf } from '..';
-	import SelectionColumn from '../selection-column.svelte';
+	import { Table, Th, Td, Tf, Trh, Trd, Trf, SelectionColumn } from '..';
 
 	const { sources: src }: { sources: Sources<TData> } = $props();
 	const table = getTable<TData>(src.id);
 	// $inspect('$inspect-virtualData', table.virtualData);
 	// $inspect('$inspect-focusedCell', table.focusedCell);
-	$inspect('$inspect-selectedRows', table.selectedRows);
+	// $inspect('$inspect-selectedRows', table.selectedRows);
 
 	const tableClass = 'bg-zinc-50 dark:bg-zinc-950';
 	const thClass = 'border-zinc-200 bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800';

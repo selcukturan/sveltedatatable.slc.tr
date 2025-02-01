@@ -7,3 +7,5 @@ export { default as Tf } from './tf.svelte';
 export { default as Trh } from './trh.svelte';
 export { default as Trd } from './trd.svelte';
 export { default as Trf } from './trf.svelte';
+
+export { default as SelectionColumn } from './selection-column.svelte';

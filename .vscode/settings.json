@@ -13,7 +13,7 @@
 	"debug.console.fontSize": 12,
 	"window.commandCenter": false,
 	"workbench.preferredLightColorTheme": "GitHub Light",
-	"workbench.preferredDarkColorTheme": "GitHub Light",
+	"workbench.preferredDarkColorTheme": "One Dark Pro Darker",
 	"window.autoDetectColorScheme": true,
 	"workbench.layoutControl.enabled": false,
 	"inlineChat.mode": "preview",

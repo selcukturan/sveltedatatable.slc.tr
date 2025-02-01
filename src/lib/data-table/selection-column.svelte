@@ -7,15 +7,36 @@
 	const table = getTable<TData>(src.id);
 
 	const row_oi = $derived(table.get.enableVirtualization === false ? ri : row?.oi);
-	const isChecked = $derived(typeof row_oi === 'number' ? (table.selectedRows.indexOf(row_oi) === -1 ? false : true) : false);
+
+	const isChecked = $derived.by(() => {
+		const selectedRows = table.getSelection();
+		if (type === 'header') {
+			if (selectedRows.length > 0) {
+				const allSelected = selectedRows.length === table.get.data.length;
+				if (allSelected) return true;
+				return false;
+			}
+		} else if (row_oi !== undefined) {
+			return typeof row_oi === 'number' ? (selectedRows.indexOf(row_oi) === -1 ? false : true) : false;
+		}
+	});
+
+	const isIntermediate = $derived.by(() => {
+		const selectedRows = table.getSelection();
+		if (type === 'header' && selectedRows.length > 0) {
+			return selectedRows.length < table.get.data.length;
+		}
+		return false;
+	});
 
 	const action = (buttonNode: HTMLButtonElement) => {
-		const handleClick = (e: MouseEvent) => {
+		const handleClick = async (e: MouseEvent) => {
+			const selectedRows = table.getSelection();
 			if (type === 'header') {
-				const allSelected = table.selectedRows.length === table.get.data.length;
-				table.toggleAllRows(!allSelected);
+				const allSelected = selectedRows.length === table.get.data.length;
+				await table.toggleAllRows(!allSelected);
 			} else if (row_oi !== undefined) {
-				table.toggleRowSelection(row_oi);
+				await table.toggleRowSelection(row_oi);
 			}
 		};
 
@@ -29,6 +50,49 @@
 	};
 </script>
 
-<button type="button" tabindex="0" use:action>
-	{isChecked ? '✓' : 'x'}
+<button role="checkbox" use:action tabindex="0" aria-checked={isIntermediate ? 'mixed' : isChecked} aria-label="Satır seç">
+	<section>
+		{#if isIntermediate}
+			{@html `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`}
+		{:else if isChecked}
+			{@html `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`}
+		{:else}
+			{@html ``}
+		{/if}
+	</section>
 </button>
+
+<style>
+	button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		user-select: none;
+		padding: 0.25rem;
+		margin: 0;
+		border: none;
+		cursor: pointer;
+		border-radius: 0.25rem;
+	}
+	button:focus-visible {
+		outline: 0.125rem solid #71717a87; /* zinc-500 */
+		outline-offset: -0.125rem;
+		border-radius: 0.5rem;
+	}
+	section {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		user-select: none;
+		padding: 0;
+		margin: 0;
+		border-radius: 0.25rem;
+		border: 0.0625rem solid #71717a; /* zinc-500 */
+		width: 1rem;
+		height: 1rem;
+	}
+
+	:global(.dark) section {
+		border-color: #71717a; /* zinc-500 */
+	}
+</style>

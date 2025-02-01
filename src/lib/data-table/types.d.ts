@@ -54,9 +54,5 @@ export type FocucedCell = {
 };
 
 // Events Types
-export type onCellFocusChange = (params: {
-	event: string;
-	detail: {
-		test: string;
-	};
-}) => void;
+export type OnCellFocusChange = (params: { rowIndex: number; colIndex: number }) => void;
+export type OnRowSelectionChange = (params: { selectedRows: number[] }) => void;
