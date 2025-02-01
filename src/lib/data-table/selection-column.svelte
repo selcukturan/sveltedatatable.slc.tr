@@ -76,7 +76,7 @@
 		border: none;
 		cursor: pointer;
 		border-radius: 0.25rem;
-		color: red;
+		color: currentColor;
 	}
 	button:focus-visible {
 		outline: 0.125rem solid #71717a87; /* zinc-500 */
