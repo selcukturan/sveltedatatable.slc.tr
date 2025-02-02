@@ -1,7 +1,5 @@
 import { fontFamily } from 'tailwindcss/defaultTheme';
 import type { Config } from 'tailwindcss';
-import typography from '@tailwindcss/typography';
-import forms from '@tailwindcss/forms';
 
 export default {
 	darkMode: 'class',
@@ -284,8 +282,6 @@ export default {
 		}
 	},
 	plugins: [
-		typography,
-		forms,
 		({ addUtilities }) => {
 			addUtilities({
 				'.slc-select-none': {

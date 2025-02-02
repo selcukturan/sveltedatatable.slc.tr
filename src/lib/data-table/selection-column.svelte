@@ -52,15 +52,13 @@
 
 <button role="checkbox" use:action tabindex="0" aria-checked={isIntermediate ? 'mixed' : isChecked} aria-label="Satır seç">
 	<section>
-		<span>
-			{#if isIntermediate}
-				{@html `−`}
-			{:else if isChecked}
-				{@html `✓`}
-			{:else}
-				{@html `&nbsp;`}
-			{/if}
-		</span>
+		{#if isIntermediate}
+			{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus"><path d="M5 12h14"/></svg>`}
+		{:else if isChecked}
+			{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`}
+		{:else}
+			{@html ``}
+		{/if}
 	</section>
 </button>
 
@@ -74,8 +72,7 @@
 		margin: 0;
 		border: none;
 		cursor: pointer;
-		border-radius: 0.25rem;
-		color: currentColor;
+		color: currentColor; /* currentColor (tik işaretinin rengi) */
 	}
 	button:focus-visible {
 		outline: 0.125rem solid #71717a87; /* zinc-500 */
@@ -87,19 +84,13 @@
 		align-items: center;
 		justify-content: center;
 		user-select: none;
-		padding: 0;
+		padding: 0.0625rem;
 		margin: 0;
 		border-radius: 0.25rem;
 		border: 0.0625rem solid #71717a; /* zinc-500 */
 		width: 1rem;
 		height: 1rem;
 	}
-
-	section span {
-		font-size: 0.75rem; /* 12px */
-		line-height: 1;
-	}
-
 	:global(.dark) section {
 		border-color: #71717a; /* zinc-500 */
 	}
