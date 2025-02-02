@@ -75,7 +75,6 @@
 		border-radius: 0.375rem;
 		cursor: pointer;
 		color: currentColor;
-		opacity: 0.75;
 	}
 	button:focus-visible {
 		outline: 0.125rem solid currentColor;
