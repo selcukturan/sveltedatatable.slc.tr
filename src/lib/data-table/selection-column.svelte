@@ -54,9 +54,9 @@
 	<section>
 		<!-- 0.8175rem = 13px -->
 		{#if isIntermediate}
-			{@html `<svg width="0.8175rem" height="0.8175rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`}
+			{@html `<svg width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`}
 		{:else if isChecked}
-			{@html `<svg width="0.8175rem" height="0.8175rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`}
+			{@html `<svg width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`}
 		{:else}
 			{@html ``}
 		{/if}
@@ -90,7 +90,7 @@
 		padding: 0;
 		margin: 0;
 		border: none;
-		width: 1rem; /* 16px */
-		height: 1rem; /* 16px */
+		width: 16px; /* 16px */
+		height: 16px; /* 16px */
 	}
 </style>
