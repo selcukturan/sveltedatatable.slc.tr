@@ -20,7 +20,7 @@
 	const footerIndexToRow = 1;
 	const gridRowStart = $derived(table.get.data.length + table.headerRowsCount + fi + footerIndexToRow);
 	const gridColumn = $derived.by(() => {
-		if (table.get.enableRowSelection) {
+		if (table.get.rowSelection !== 'none') {
 			return col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`;
 		} else {
 			return `${ci + 1} / ${ci + 2}`;

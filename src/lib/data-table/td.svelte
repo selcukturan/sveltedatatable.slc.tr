@@ -56,7 +56,7 @@
 
 			const rowFirstIndex = 0;
 			const rowLastIndex = table.get.data.length - 1;
-			const colFirstIndex = table.get.enableRowSelection ? -1 : 0; // Seçim kolonu için -1
+			const colFirstIndex = table.get.rowSelection !== 'none' ? -1 : 0; // Seçim kolonu için -1
 			const colLastIndex = table.visibleColumns.length - 1;
 
 			if (key === 'ArrowUp') {
@@ -124,7 +124,7 @@
 		};
 	};
 	const gridColumn = $derived.by(() => {
-		if (table.get.enableRowSelection) {
+		if (table.get.rowSelection !== 'none') {
 			return col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`;
 		} else {
 			return `${ci + 1} / ${ci + 2}`;

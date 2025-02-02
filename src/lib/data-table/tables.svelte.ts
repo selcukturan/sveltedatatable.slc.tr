@@ -19,7 +19,7 @@ class Table<TData extends Row> {
 		width: '100%',
 		height: '100%',
 		enableVirtualization: true,
-		enableRowSelection: true,
+		rowSelection: 'none',
 		rowSelectionColumnWidth: 50,
 		theadRowHeight: 35,
 		tbodyRowHeight: 35,
@@ -43,10 +43,10 @@ class Table<TData extends Row> {
 		this.clearFocusedCell();
 		this.set.enableVirtualization = value;
 	};
-	enableRowSelection = (value: RequiredSources<TData>['enableRowSelection']) => {
+	rowSelection = (value: RequiredSources<TData>['rowSelection']) => {
 		this.clearSelection();
 		this.clearFocusedCell();
-		this.set.enableRowSelection = value;
+		this.set.rowSelection = value;
 	};
 	rowSelectionColumnWidth = (value: RequiredSources<TData>['rowSelectionColumnWidth']) => (this.set.rowSelectionColumnWidth = value);
 	theadRowHeight = (value: RequiredSources<TData>['theadRowHeight']) => (this.set.theadRowHeight = value);
@@ -82,7 +82,7 @@ class Table<TData extends Row> {
 		const repeatTfoot = this.get.footers.length > 0 ? `repeat(${this.get.footers.length}, ${this.get.tfootRowHeight}px)` : ``;
 		return `${repeatThead} ${repeatTbody} ${repeatTfoot}`;
 	});
-	gridTemplateColumns = $derived(`${this.get.enableRowSelection ? this.get.rowSelectionColumnWidth + 'px' : ''} ${this.visibleColumns.map((col) => col.width ?? `150px`).join(' ')}`);
+	gridTemplateColumns = $derived(`${this.get.rowSelection !== 'none' ? this.get.rowSelectionColumnWidth + 'px' : ''} ${this.visibleColumns.map((col) => col.width ?? `150px`).join(' ')}`);
 	// ################################## END General Variables ########################################################
 
 	// ################################## BEGIN Events ##########################################################
@@ -229,6 +229,8 @@ class Table<TData extends Row> {
 
 	// Bir satırın seçimini değiştirir
 	toggleRowSelection = async (rowIndex: number) => {
+		if (this.get.rowSelection === 'none') return;
+
 		const selectedRows = this.getSelection();
 		const index = selectedRows.indexOf(rowIndex);
 		if (index === -1) {
@@ -242,6 +244,8 @@ class Table<TData extends Row> {
 
 	// Tüm satırları seçer veya seçimi kaldırır
 	toggleAllRows = async (select: boolean) => {
+		if (this.get.rowSelection === 'none') return;
+
 		if (select) {
 			this.setSelection(Array.from({ length: this.get.data.length }, (_, i) => i)); // Tüm satırları seç
 		} else {

@@ -36,7 +36,7 @@ export type Sources<TData> = {
 	width?: string;
 	height?: string;
 	enableVirtualization?: boolean;
-	enableRowSelection?: boolean;
+	rowSelection?: 'none' | 'single' | 'multiple';
 	rowSelectionColumnWidth?: number;
 	theadRowHeight?: number;
 	tbodyRowHeight?: number;

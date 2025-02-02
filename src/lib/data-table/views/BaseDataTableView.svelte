@@ -18,7 +18,7 @@
 <Table {src} class={tableClass}>
 	{#snippet thead()}
 		<Trh {src}>
-			{#if table.get.enableRowSelection}
+			{#if table.get.rowSelection !== 'none'}
 				<Th {src} col={{ field: '_selection', align: 'center' }} ci={-1} class={thClass}>
 					<SelectionColumn type="header" {src} />
 				</Th>
@@ -34,7 +34,7 @@
 	{/snippet}
 	{#snippet tbody(row, ri)}
 		<Trd {src} {row} {ri}>
-			{#if table.get.enableRowSelection}
+			{#if table.get.rowSelection !== 'none'}
 				<Td {src} col={{ field: '_selection', align: 'center' }} ci={-1} {row} {ri} class={tdClass}>
 					<SelectionColumn type="cell" {src} {row} {ri} />
 				</Td>
@@ -55,7 +55,7 @@
 	{/snippet}
 	{#snippet tfoot(foot, fi)}
 		<Trf {src} {fi}>
-			{#if table.get.enableRowSelection}
+			{#if table.get.rowSelection !== 'none'}
 				<Tf {src} col={{ field: '_selection' }} ci={-1} {foot} {fi} class={tfClass}>
 					{''}
 				</Tf>

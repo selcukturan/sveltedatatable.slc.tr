@@ -52,13 +52,15 @@
 
 <button role="checkbox" use:action tabindex="0" aria-checked={isIntermediate ? 'mixed' : isChecked} aria-label="Satır seç">
 	<section>
-		{#if isIntermediate}
-			{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus"><path d="M5 12h14"/></svg>`}
-		{:else if isChecked}
-			{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>`}
-		{:else}
-			{@html ``}
-		{/if}
+		<span>
+			{#if isIntermediate}
+				{@html `<svg width="1rem" height="1rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`}
+			{:else if isChecked}
+				{@html `<svg width="1rem" height="1rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`}
+			{:else}
+				{@html ``}
+			{/if}
+		</span>
 	</section>
 </button>
 
@@ -68,30 +70,33 @@
 		align-items: center;
 		justify-content: center;
 		user-select: none;
-		padding: 0.25rem;
+		padding: 0;
 		margin: 0;
-		border: none;
+		border: 0.0625rem solid currentColor;
+		border-radius: 0.375rem;
 		cursor: pointer;
-		color: currentColor; /* currentColor (tik işaretinin rengi) */
+		color: currentColor;
+		opacity: 0.75;
 	}
 	button:focus-visible {
-		outline: 0.125rem solid #71717a87; /* zinc-500 */
+		outline: 0.125rem solid currentColor;
 		outline-offset: -0.125rem;
-		border-radius: 0.5rem;
+		border-radius: 0.375rem;
 	}
 	section {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		user-select: none;
-		padding: 0.0625rem;
+		padding: 0;
 		margin: 0;
-		border-radius: 0.25rem;
-		border: 0.0625rem solid #71717a; /* zinc-500 */
+		border: none;
+	}
+	section span {
 		width: 1rem;
 		height: 1rem;
 	}
-	:global(.dark) section {
-		border-color: #71717a; /* zinc-500 */
-	}
+	/* :global(.dark) section {
+		border-color: currentColor;
+	} */
 </style>

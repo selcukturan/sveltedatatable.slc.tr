@@ -17,7 +17,7 @@
 	const table = getTable<TData>(src.id);
 
 	const gridColumn = $derived.by(() => {
-		if (table.get.enableRowSelection) {
+		if (table.get.rowSelection !== 'none') {
 			return col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`;
 		} else {
 			return `${ci + 1} / ${ci + 2}`;
