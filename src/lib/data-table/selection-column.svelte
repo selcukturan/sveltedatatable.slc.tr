@@ -52,15 +52,14 @@
 
 <button role="checkbox" use:action tabindex="0" aria-checked={isIntermediate ? 'mixed' : isChecked} aria-label="Satır seç">
 	<section>
-		<span>
-			{#if isIntermediate}
-				{@html `<svg width="1rem" height="1rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`}
-			{:else if isChecked}
-				{@html `<svg width="1rem" height="1rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`}
-			{:else}
-				{@html ``}
-			{/if}
-		</span>
+		<!-- 0.8175rem = 13px -->
+		{#if isIntermediate}
+			{@html `<svg width="0.8175rem" height="0.8175rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`}
+		{:else if isChecked}
+			{@html `<svg width="0.8175rem" height="0.8175rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`}
+		{:else}
+			{@html ``}
+		{/if}
 	</section>
 </button>
 
@@ -91,12 +90,7 @@
 		padding: 0;
 		margin: 0;
 		border: none;
+		width: 1rem; /* 16px */
+		height: 1rem; /* 16px */
 	}
-	section span {
-		width: 1rem;
-		height: 1rem;
-	}
-	/* :global(.dark) section {
-		border-color: currentColor;
-	} */
 </style>
