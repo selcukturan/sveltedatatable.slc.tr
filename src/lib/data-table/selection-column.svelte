@@ -52,7 +52,6 @@
 
 <button role="checkbox" use:action tabindex="0" aria-checked={isIntermediate ? 'mixed' : isChecked} aria-label="Satır seç">
 	<section>
-		<!-- 0.8175rem = 13px -->
 		{#if isIntermediate}
 			{@html `<svg width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`}
 		{:else if isChecked}
@@ -71,15 +70,15 @@
 		user-select: none;
 		padding: 0;
 		margin: 0;
-		border: 0.0625rem solid currentColor;
-		border-radius: 0.375rem;
+		border: 1px solid currentColor;
+		border-radius: 6px;
 		cursor: pointer;
 		color: currentColor;
 	}
 	button:focus-visible {
-		outline: 0.125rem solid currentColor;
-		outline-offset: -0.125rem;
-		border-radius: 0.375rem;
+		outline: 2px solid currentColor;
+		outline-offset: -2px;
+		border-radius: 6px;
 	}
 	section {
 		display: flex;
@@ -89,7 +88,7 @@
 		padding: 0;
 		margin: 0;
 		border: none;
-		width: 16px; /* 16px */
-		height: 16px; /* 16px */
+		width: 16px;
+		height: 16px;
 	}
 </style>
