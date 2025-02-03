@@ -74,15 +74,12 @@
 		/* border: 1px solid currentColor; */
 		color: currentColor;
 		background-color: currentColor;
-		filter: invert(80%);
+		filter: invert(75%);
 		cursor: pointer;
 	}
 	button:focus-visible {
-		/* outline: 2px solid currentColor; */
-		/* filter: invert(10%); */
 		outline-width: 2px;
-		outline-offset: -1px;
-		border-radius: 4px;
+		outline-offset: -2px;
 	}
 	button span {
 		height: 1rem;
