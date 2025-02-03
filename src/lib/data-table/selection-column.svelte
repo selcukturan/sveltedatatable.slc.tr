@@ -68,17 +68,21 @@
 		align-items: center;
 		justify-content: center;
 		user-select: none;
-		border-radius: 6px;
+		border-radius: 4px;
 		padding: 0;
 		margin: 0;
-		border: 1px solid currentColor;
-		cursor: pointer;
+		/* border: 1px solid currentColor; */
 		color: currentColor;
+		background-color: currentColor;
+		filter: invert(80%);
+		cursor: pointer;
 	}
 	button:focus-visible {
-		outline: 2px solid currentColor;
-		outline-offset: -2px;
-		border-radius: 6px;
+		/* outline: 2px solid currentColor; */
+		/* filter: invert(10%); */
+		outline-width: 2px;
+		outline-offset: -1px;
+		border-radius: 4px;
 	}
 	button span {
 		height: 1rem;
@@ -87,6 +91,7 @@
 		padding: 0;
 		margin: 0;
 		color: currentColor;
+		filter: invert(100%);
 		background-size: 100% 100%;
 		background-position: center;
 		background-repeat: no-repeat;
