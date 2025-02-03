@@ -51,15 +51,15 @@
 </script>
 
 <button role="checkbox" use:action tabindex="0" aria-checked={isIntermediate ? 'mixed' : isChecked} aria-label="Satır seç">
-	<section>
+	<span>
 		{#if isIntermediate}
-			{@html `<svg width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>`}
+			{@html `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h8" /></svg>`}
 		{:else if isChecked}
-			{@html `<svg width="13px" height="13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`}
+			{@html `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z"/></svg>`}
 		{:else}
 			{@html ``}
 		{/if}
-	</section>
+	</span>
 </button>
 
 <style>
@@ -68,10 +68,10 @@
 		align-items: center;
 		justify-content: center;
 		user-select: none;
+		border-radius: 6px;
 		padding: 0;
 		margin: 0;
 		border: 1px solid currentColor;
-		border-radius: 6px;
 		cursor: pointer;
 		color: currentColor;
 	}
@@ -80,15 +80,15 @@
 		outline-offset: -2px;
 		border-radius: 6px;
 	}
-	section {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+	button span {
+		height: 1rem;
+		width: 1rem;
 		user-select: none;
 		padding: 0;
 		margin: 0;
-		border: none;
-		width: 16px;
-		height: 16px;
+		color: currentColor;
+		background-size: 100% 100%;
+		background-position: center;
+		background-repeat: no-repeat;
 	}
 </style>
