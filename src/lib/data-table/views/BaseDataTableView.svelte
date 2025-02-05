@@ -73,15 +73,18 @@
 		background-color: hsl(var(--surface-50));
 	}
 	section :global(.slc-th) {
-		border-color: hsl(var(--surface-200));
+		border-right: 1px solid hsl(var(--surface-200));
+		border-bottom: 1px solid hsl(var(--surface-200));
 		background-color: hsl(var(--surface-100));
 	}
 	section :global(.slc-td) {
-		border-color: hsl(var(--surface-200));
+		border-right: 1px solid hsl(var(--surface-200));
+		border-bottom: 1px solid hsl(var(--surface-200));
 		background-color: hsl(var(--surface-50));
 	}
 	section :global(.slc-tf) {
-		border-color: hsl(var(--surface-200));
+		border-right: 1px solid hsl(var(--surface-200));
+		border-bottom: 1px solid hsl(var(--surface-200));
 		background-color: hsl(var(--surface-100));
 	}
 </style>

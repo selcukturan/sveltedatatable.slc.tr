@@ -76,9 +76,6 @@
 		outline: 2px solid transparent;
 		outline-offset: 2px;
 		user-select: none;
-		border-bottom-width: 1px;
-		border-right-width: 1px;
-		border-style: solid;
 	}
 	.slc-freezed {
 		z-index: 5;

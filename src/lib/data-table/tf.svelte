@@ -73,13 +73,9 @@
 <style>
 	.slc-tf {
 		position: sticky;
-		/* bottom: 0px; */
 		z-index: 4;
 		user-select: none;
 		overflow: hidden;
-		border-bottom-width: 1px;
-		border-right-width: 1px;
-		border-style: solid;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */

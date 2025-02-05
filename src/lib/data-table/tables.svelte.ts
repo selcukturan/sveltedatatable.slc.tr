@@ -162,10 +162,10 @@ class Table<TData extends Row> {
 	// ################################## END Keyboard Navigation Methods ###############################################
 
 	// ################################## BEGIN Set Focused Cell State ##################################################
-	private focusedCell?: FocucedCell = $state();
-	getFocusedCell = () => {
+	focusedCell?: FocucedCell = $state();
+	/* getFocusedCell = () => {
 		return this.focusedCell;
-	};
+	}; */
 	private setFocusedCell = (focucedCell: FocucedCell) => {
 		this.focusedCell = focucedCell;
 	};

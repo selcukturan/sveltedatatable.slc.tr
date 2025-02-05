@@ -26,7 +26,7 @@
 		const handleClick = async (e: Event) => {
 			if (row_oi == null) return;
 			const cellToFocus: Required<FocucedCell> = { rowIndex: row_oi, colIndex: ci, originalCell: `${row_oi}_${ci}`, tabIndex: 0 };
-			if (cellToFocus.originalCell === table.getFocusedCell()?.originalCell) return;
+			if (cellToFocus.originalCell === table.focusedCell?.originalCell) return;
 			await table.focusCell({ cellToFocus });
 		};
 
@@ -41,7 +41,7 @@
 
 	const keyboardAction = (cellNode: HTMLDivElement) => {
 		const handleKeydown = async (e: KeyboardEvent) => {
-			const { rowIndex, colIndex, originalCell } = table.getFocusedCell() ?? {};
+			const { rowIndex, colIndex, originalCell } = table.focusedCell ?? {};
 			if (rowIndex == null || colIndex == null || originalCell == null) return;
 
 			let cellToFocus: Required<FocucedCell> = { rowIndex, colIndex, originalCell, tabIndex: 0 };
@@ -146,9 +146,9 @@
 	style:left
 	class={classes}
 	data-cell={originalCell}
-	tabindex={table.getFocusedCell()?.originalCell === originalCell && typeof table.getFocusedCell()?.tabIndex !== 'undefined' ? table.getFocusedCell()?.tabIndex : -1}
-	aria-selected={table?.getFocusedCell()?.originalCell === originalCell ? 'true' : 'false'}
-	data-focused={table?.getFocusedCell()?.originalCell === originalCell ? 'true' : 'false'}
+	tabindex={table.focusedCell?.originalCell === originalCell && typeof table.focusedCell?.tabIndex !== 'undefined' ? table.focusedCell?.tabIndex : -1}
+	aria-selected={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
+	data-focused={table?.focusedCell?.originalCell === originalCell ? 'true' : 'false'}
 	aria-colindex={ci + 1}
 	spellcheck="false"
 	{...attributes}
@@ -173,9 +173,6 @@
 		z-index: 2;
 		user-select: none;
 		overflow: hidden;
-		border-bottom-width: 1px;
-		border-right-width: 1px;
-		border-style: solid;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */
