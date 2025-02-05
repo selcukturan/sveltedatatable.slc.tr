@@ -16,6 +16,7 @@
 	const { src, children, fi, foot, col, ci, class: classes, ...attributes }: Props = $props();
 
 	const table = getTable<TData>(src.id);
+
 	const bottom = $derived(`${(table.get.footers.length - fi - 1) * table.get.tfootRowHeight}px`);
 	const footerIndexToRow = 1;
 	const gridRowStart = $derived(table.get.data.length + table.headerRowsCount + fi + footerIndexToRow);
@@ -26,13 +27,18 @@
 			return `${ci + 1} / ${ci + 2}`;
 		}
 	});
+	const freezed = col.field === '_selection';
+	const left = freezed ? '0px' : undefined;
 </script>
 
 <div
 	role="gridcell"
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={gridColumn}
-	class:slc-table-tf={true}
+	class:slc-tf={true}
+	class:slc-freezed={freezed}
+	class:slc-freezed-shadow={freezed}
+	style:left
 	class={classes}
 	style:bottom
 	aria-colindex={ci + 1}
@@ -56,16 +62,16 @@
 						? 'flex-end'
 						: 'flex-start'}
 		>
-			<p style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+			<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 				{@render children?.()}
-			</p>
+			</span>
 		</div>
 		<div style="display: none; align-items: center;">x</div>
 	</div>
 </div>
 
 <style>
-	.slc-table-tf {
+	.slc-tf {
 		position: sticky;
 		/* bottom: 0px; */
 		z-index: 4;
@@ -79,6 +85,13 @@
 		padding-right: 0.5rem; /* 8px */
 		outline: 2px solid transparent;
 		outline-offset: 2px;
+	}
+	.slc-freezed {
+		z-index: 5;
+		position: sticky;
+	}
+	.slc-freezed-shadow {
+		box-shadow: 2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
 	}
 	/* .slc-table-tf:nth-last-child(1) {
 		border-left-width: 1px;

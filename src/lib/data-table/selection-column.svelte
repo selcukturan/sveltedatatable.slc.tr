@@ -50,7 +50,7 @@
 	};
 </script>
 
-<button role="checkbox" use:action tabindex="0" aria-checked={isIntermediate ? 'mixed' : isChecked} aria-label="Satır seç">
+<button role="checkbox" use:action tabindex="0" aria-checked={isIntermediate ? 'mixed' : isChecked} aria-label="Select row">
 	<span>
 		{#if isIntermediate}
 			{@html `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h8" /></svg>`}
@@ -71,15 +71,13 @@
 		border-radius: 4px;
 		padding: 0;
 		margin: 0;
-		/* border: 1px solid currentColor; */
-		color: currentColor;
-		background-color: currentColor;
-		filter: invert(75%);
+		outline: none;
 		cursor: pointer;
+		color: currentColor;
+		background-color: color-mix(in srgb, currentColor 15%, transparent 85%);
 	}
 	button:focus-visible {
-		outline-width: 2px;
-		outline-offset: -2px;
+		background-color: color-mix(in srgb, currentColor 30%, transparent 70%);
 	}
 	button span {
 		height: 1rem;
@@ -87,10 +85,6 @@
 		user-select: none;
 		padding: 0;
 		margin: 0;
-		color: currentColor;
-		filter: invert(100%);
-		background-size: 100% 100%;
-		background-position: center;
-		background-repeat: no-repeat;
+		color: color-mix(in srgb, currentColor 85%, transparent 15%); /* change currentColor for svg color */
 	}
 </style>

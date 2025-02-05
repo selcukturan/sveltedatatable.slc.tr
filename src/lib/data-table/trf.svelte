@@ -18,12 +18,12 @@
 	const ariaRowIndex = $derived(table.get.data.length + table.headerRowsCount + fi + footerIndexToRow);
 </script>
 
-<div role="row" class:slc-table-trf={true} class={classes} aria-rowindex={ariaRowIndex} data-originalfootindex={fi} {...attributes}>
+<div role="row" class:slc-trf={true} class={classes} aria-rowindex={ariaRowIndex} data-originalfootindex={fi} {...attributes}>
 	{@render children?.()}
 </div>
 
 <style>
-	.slc-table-trf {
+	.slc-trf {
 		display: contents;
 	}
 </style>

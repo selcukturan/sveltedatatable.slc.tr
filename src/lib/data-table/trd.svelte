@@ -19,12 +19,12 @@
 	const ariaRowIndex = $derived(typeof row_oi === 'number' ? row_oi + table.headerRowsCount + indexToRow : undefined);
 </script>
 
-<div role="row" class:slc-table-trd={true} class={classes} aria-rowindex={ariaRowIndex} {...attributes}>
+<div role="row" class:slc-trd={true} class={classes} aria-rowindex={ariaRowIndex} {...attributes}>
 	{@render children?.()}
 </div>
 
 <style>
-	.slc-table-trd {
+	.slc-trd {
 		display: contents;
 	}
 </style>

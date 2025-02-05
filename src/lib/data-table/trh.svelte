@@ -14,12 +14,12 @@
 	const table = getTable<TData>(src.id);
 </script>
 
-<div role="row" class:slc-table-trh={true} class={classes} aria-rowindex={table.headerRowsCount} {...attributes}>
+<div role="row" class:slc-trh={true} class={classes} aria-rowindex={table.headerRowsCount} {...attributes}>
 	{@render children?.()}
 </div>
 
 <style>
-	.slc-table-trh {
+	.slc-trh {
 		display: contents;
 	}
 </style>

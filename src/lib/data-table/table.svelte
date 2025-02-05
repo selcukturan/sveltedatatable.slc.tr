@@ -71,6 +71,7 @@
 			style:grid-template-rows={table.gridTemplateRows}
 			style:grid-template-columns={table.gridTemplateColumns}
 			style:scroll-padding-block={`${table.headerRowsCount * table.get.theadRowHeight}px ${table.get.footers.length * table.get.tfootRowHeight}px`}
+			style:scroll-padding-inline={`${table.get.rowSelection === 'none' ? 0 : table.get.rowSelectionColumnWidth}px 0px`}
 			aria-colcount={table.visibleColumns.length}
 			aria-rowcount={table.get.data.length + table.get.footers.length + table.headerRowsCount}
 			{...attributes}

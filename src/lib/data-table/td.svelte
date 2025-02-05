@@ -130,6 +130,8 @@
 			return `${ci + 1} / ${ci + 2}`;
 		}
 	});
+	const freezed = col.field === '_selection';
+	const left = freezed ? '0px' : undefined;
 </script>
 
 <div
@@ -138,9 +140,12 @@
 	use:keyboardAction
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={gridColumn}
-	class:slc-table-td={true}
-	data-cell={originalCell}
+	class:slc-td={true}
+	class:slc-freezed={freezed}
+	class:slc-freezed-shadow={freezed}
+	style:left
 	class={classes}
+	data-cell={originalCell}
 	tabindex={table.getFocusedCell()?.originalCell === originalCell && typeof table.getFocusedCell()?.tabIndex !== 'undefined' ? table.getFocusedCell()?.tabIndex : -1}
 	aria-selected={table?.getFocusedCell()?.originalCell === originalCell ? 'true' : 'false'}
 	data-focused={table?.getFocusedCell()?.originalCell === originalCell ? 'true' : 'false'}
@@ -163,7 +168,7 @@
 </div>
 
 <style>
-	.slc-table-td {
+	.slc-td {
 		position: relative;
 		z-index: 2;
 		user-select: none;
@@ -175,6 +180,14 @@
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */
 		outline: none;
+		/* background-color: color-mix(in srgb, currentColor 100%, transparent 0%); */
+	}
+	.slc-freezed {
+		z-index: 3;
+		position: sticky;
+	}
+	.slc-freezed-shadow {
+		box-shadow: 2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
 	}
 	/* .slc-table-td:nth-last-child(1) {
 		border-left-width: 1px;

@@ -23,13 +23,18 @@
 			return `${ci + 1} / ${ci + 2}`;
 		}
 	});
+	const freezed = col.field === '_selection';
+	const left = freezed ? '0px' : undefined;
 </script>
 
 <div
 	role="columnheader"
 	style:grid-row={`${table.headerRowsCount} / ${table.headerRowsCount + 1}`}
 	style:grid-column={gridColumn}
-	class:slc-table-th={true}
+	class:slc-th={true}
+	class:slc-freezed={freezed}
+	class:slc-freezed-shadow={freezed}
+	style:left
 	class={classes}
 	aria-colindex={ci + 1}
 	data-col={ci}
@@ -51,16 +56,16 @@
 						? 'flex-end'
 						: 'flex-start'}
 		>
-			<p style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+			<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
 				{@render children?.()}
-			</p>
+			</span>
 		</div>
 		<div style="display: none; align-items: center;">x</div>
 	</div>
 </div>
 
 <style>
-	.slc-table-th {
+	.slc-th {
 		position: sticky;
 		top: 0px;
 		z-index: 4;
@@ -74,6 +79,13 @@
 		border-bottom-width: 1px;
 		border-right-width: 1px;
 		border-style: solid;
+	}
+	.slc-freezed {
+		z-index: 5;
+		position: sticky;
+	}
+	.slc-freezed-shadow {
+		box-shadow: 2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
 	}
 	/* .slc-table-th:nth-last-child(1) {
 		border-left-width: 1px;
