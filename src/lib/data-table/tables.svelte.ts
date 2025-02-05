@@ -32,19 +32,19 @@ class Table<TData extends Row> {
 	// ################################## BEGIN Set Sources ################################################################
 	id = (value: RequiredSources<TData>['id']) => (this.set.id = value);
 	data = (value: RequiredSources<TData>['data']) => {
-		this.clearSelection();
+		this.clearSelectedRows();
 		this.clearFocusedCell();
 		this.set.data = value;
 	};
 	width = (value: RequiredSources<TData>['width']) => (this.set.width = value);
 	height = (value: RequiredSources<TData>['height']) => (this.set.height = value);
 	enableVirtualization = (value: RequiredSources<TData>['enableVirtualization']) => {
-		this.clearSelection();
+		this.clearSelectedRows();
 		this.clearFocusedCell();
 		this.set.enableVirtualization = value;
 	};
 	rowSelection = (value: RequiredSources<TData>['rowSelection']) => {
-		this.clearSelection();
+		this.clearSelectedRows();
 		this.clearFocusedCell();
 		this.set.rowSelection = value;
 	};
@@ -120,7 +120,7 @@ class Table<TData extends Row> {
 			return { ...row, oi: rowOverscanStartIndex + index }; // oi = original row index
 		});
 
-		const focusedCell = untrack(() => this.focusedCell);
+		const focusedCell = untrack(() => this.getFocusedCell);
 		const focusedCellRowIndex = focusedCell?.rowIndex;
 		if (typeof focusedCellRowIndex === 'number' && focusedCellRowIndex < dataLength) {
 			const isAboveOverscanStart = focusedCellRowIndex < rowOverscanStartIndex ? true : false;
@@ -162,16 +162,10 @@ class Table<TData extends Row> {
 	// ################################## END Keyboard Navigation Methods ###############################################
 
 	// ################################## BEGIN Set Focused Cell State ##################################################
-	focusedCell?: FocucedCell = $state();
-	/* getFocusedCell = () => {
-		return this.focusedCell;
-	}; */
-	private setFocusedCell = (focucedCell: FocucedCell) => {
-		this.focusedCell = focucedCell;
-	};
-	private clearFocusedCell = () => {
-		this.focusedCell = undefined;
-	};
+	private focusedCell?: FocucedCell = $state();
+	readonly getFocusedCell = $derived(this.focusedCell); // reactive state getter
+	private setFocusedCell = (param: FocucedCell) => (this.focusedCell = param);
+	private clearFocusedCell = () => (this.focusedCell = undefined);
 
 	private setFocusedCellTabIndex = async (focucedCell: FocucedCell) => {
 		// Fokuslanacak hücre elementinin içinde, tabindex'i 0 olan fokuslanılabilir bir element varsa, hücre elementinin tabindex'ini -1 yap.
@@ -217,42 +211,56 @@ class Table<TData extends Row> {
 
 	// ################################## BEGIN Row Selection Methods ##############################################################
 	private selectedRows: number[] = $state.raw([]); // Seçili satır indeksleri
-	getSelection = () => {
-		return this.selectedRows;
-	};
-	private setSelection = (selectedRows: number[]) => {
-		this.selectedRows = selectedRows;
-	};
-	private clearSelection = () => {
-		this.selectedRows = [];
-	};
+	readonly getSelectedRows = $derived(this.selectedRows); // reactive state getter
+	private setSelectedRows = (param: number[]) => (this.selectedRows = param);
+	private clearSelectedRows = () => (this.selectedRows = []);
 
 	// Bir satırın seçimini değiştirir
 	toggleRowSelection = async (rowIndex: number) => {
 		if (this.get.rowSelection === 'none') return;
 
-		const selectedRows = this.getSelection();
+		const selectedRows = this.getSelectedRows;
+		const index = selectedRows.indexOf(rowIndex);
+
+		if (this.get.rowSelection === 'single') {
+			this.setSelectedRows(index === -1 ? [rowIndex] : []);
+		} else if (this.get.rowSelection === 'multiple') {
+			if (index === -1) {
+				this.setSelectedRows([...selectedRows, rowIndex]);
+			} else {
+				this.setSelectedRows(selectedRows.filter((idx) => idx !== rowIndex));
+			}
+		}
+
+		await tick();
+		this.onRowSelectionChangeThis({ selectedRows: this.getSelectedRows });
+	};
+	// Bir satırın seçimini değiştirir
+	/* toggleRowSelection = async (rowIndex: number) => {
+		if (this.get.rowSelection === 'none') return;
+
+		const selectedRows = this.getSelectedRows;
 		const index = selectedRows.indexOf(rowIndex);
 		if (index === -1) {
-			this.setSelection([...selectedRows, rowIndex]); // Yeni seçim eklerken yeni bir array oluştur
+			this.setSelectedRows([...selectedRows, rowIndex]); // Yeni seçim eklerken yeni bir array oluştur
 		} else {
-			this.setSelection(selectedRows.filter((idx) => idx !== rowIndex)); // Seçimi kaldırırken filter kullan
+			this.setSelectedRows(selectedRows.filter((idx) => idx !== rowIndex)); // Seçimi kaldırırken filter kullan
 		}
 		await tick();
-		this.onRowSelectionChangeThis({ selectedRows: this.getSelection() });
-	};
+		this.onRowSelectionChangeThis({ selectedRows: this.getSelectedRows });
+	}; */
 
 	// Tüm satırları seçer veya seçimi kaldırır
 	toggleAllRows = async (select: boolean) => {
-		if (this.get.rowSelection === 'none') return;
+		if (this.get.rowSelection !== 'multiple') return;
 
 		if (select) {
-			this.setSelection(Array.from({ length: this.get.data.length }, (_, i) => i)); // Tüm satırları seç
+			this.setSelectedRows(Array.from({ length: this.get.data.length }, (_, i) => i)); // Tüm satırları seç
 		} else {
-			this.clearSelection(); // Tüm seçimleri kaldır
+			this.clearSelectedRows(); // Tüm seçimleri kaldır
 		}
 		await tick();
-		this.onRowSelectionChangeThis({ selectedRows: this.getSelection() });
+		this.onRowSelectionChangeThis({ selectedRows: this.getSelectedRows });
 	};
 	// ################################## END Row Selection Methods ################################################################
 

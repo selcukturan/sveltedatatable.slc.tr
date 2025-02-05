@@ -10,7 +10,7 @@
 	// $inspect('$inspect-selectedRows', table.selectedRows);
 </script>
 
-<section style:display="contents">
+<div class="slc-view" style:display="contents">
 	<Table {src}>
 		{#snippet thead()}
 			<Trh {src}>
@@ -66,23 +66,23 @@
 			</Trf>
 		{/snippet}
 	</Table>
-</section>
+</div>
 
 <style>
-	section :global(.slc-table) {
+	.slc-view :global(.slc-table) {
 		background-color: hsl(var(--surface-50));
 	}
-	section :global(.slc-th) {
+	.slc-view :global(.slc-th) {
 		border-right: 1px solid hsl(var(--surface-200));
 		border-bottom: 1px solid hsl(var(--surface-200));
 		background-color: hsl(var(--surface-100));
 	}
-	section :global(.slc-td) {
+	.slc-view :global(.slc-td) {
 		border-right: 1px solid hsl(var(--surface-200));
 		border-bottom: 1px solid hsl(var(--surface-200));
 		background-color: hsl(var(--surface-50));
 	}
-	section :global(.slc-tf) {
+	.slc-view :global(.slc-tf) {
 		border-right: 1px solid hsl(var(--surface-200));
 		border-bottom: 1px solid hsl(var(--surface-200));
 		background-color: hsl(var(--surface-100));
