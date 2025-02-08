@@ -182,7 +182,7 @@
 		/* position: relative; */
 		z-index: 2;
 		user-select: none;
-		overflow: visible;
+		overflow: hidden;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */

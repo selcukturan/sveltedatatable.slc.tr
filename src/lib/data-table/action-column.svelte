@@ -34,7 +34,7 @@
 	const col: Column<TData> = { field: '_action', align: 'center' };
 
 	let isPopoverOpen = $state(false);
-	const uuid = `slc_${crypto.randomUUID()}`;
+	const uuid = `${crypto.randomUUID()}`;
 	let myPopover: HTMLDivElement | undefined = $state(undefined);
 
 	const handleSelectOnClick = async (e: MouseEvent) => {
@@ -63,24 +63,22 @@
 		</Th>
 	{:else if type === 'cell' && row != null && ri != null}
 		<Td {src} {col} ci={table.visibleColumns.length} {row} {ri}>
-			<button class="slc-action-button" type="button" aria-expanded={isPopoverOpen} aria-haspopup="true" tabindex="0" popovertarget={`s${uuid}`} style:anchor-name={`--anchor-${uuid}`}>
+			<button class="slc-action-button" popovertarget={`s${uuid}`} style:anchor-name={`--anchor-${uuid}`} aria-expanded={isPopoverOpen} type="button" aria-haspopup="true" tabindex="0">
 				<span>
 					{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>`}
 				</span>
 			</button>
 
-			<div class="slc-action-popup" bind:this={myPopover} id={`s${uuid}`} style:position-anchor={`--anchor-${uuid}`} style:top={`anchor(bottom)`} style:right={`anchor(right)`} popover="">
-				<div>
-					{#if data}
-						{#each data as item}
-							<button onclick={handleSelectOnClick}>
-								{item.label}
-							</button>
-						{/each}
-					{:else}
-						<div>No data</div>
-					{/if}
-				</div>
+			<div class="slc-action-popup" id={`s${uuid}`} bind:this={myPopover} style:position-anchor={`--anchor-${uuid}`} style:top={`anchor(bottom)`} style:right={`anchor(right)`} popover="">
+				{#if data}
+					{#each data as item}
+						<button onclick={handleSelectOnClick}>
+							{item.label + ' ' + row_oi}
+						</button>
+					{/each}
+				{:else}
+					<div>No data</div>
+				{/if}
 			</div>
 		</Td>
 	{:else if type === 'footer' && foot != null && fi != null}
@@ -115,28 +113,51 @@
 	}
 
 	.slc-action-popup {
+		display: none;
+		/* anchoring to the button */
 		position: absolute;
 		inset: auto;
-		/* position: absolute; */
-		margin-top: 5px;
-		/* position-try-options: flip-block; */
+		opacity: 0;
+		transition:
+			opacity 0.15s,
+			display 0.15s,
+			overlay 0.15s;
+
+		transition-behavior: allow-discrete;
+
+		animation: slide 0.15s ease-out;
 		position-visibility: anchors-visible;
-		min-width: calc(anchor-size(width) * 1);
-		max-height: 300px;
+
+		position-try-fallbacks: --left;
+
+		margin-left: 0.25rem;
+
+		& > * {
+			padding: 0.5rem;
+		}
+
+		&:popover-open {
+			display: grid;
+			opacity: 1;
+
+			@starting-style {
+				display: grid;
+				opacity: 0;
+			}
+		}
 	}
 
-	:popover-open {
-		display: grid;
-		animation: slide 0.2s ease-out;
+	@position-try --left {
+		inset: auto;
+		top: anchor(bottom);
+		right: anchor(right);
 	}
 
 	@keyframes slide {
 		from {
-			opacity: 0;
 			transform: translateY(-8px);
 		}
 		to {
-			opacity: 1;
 			transform: translateY(0);
 		}
 	}

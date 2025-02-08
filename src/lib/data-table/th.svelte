@@ -75,7 +75,7 @@
 		position: sticky;
 		top: 0px;
 		z-index: 4;
-		overflow: visible;
+		overflow: hidden;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */
