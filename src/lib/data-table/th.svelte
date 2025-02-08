@@ -74,16 +74,16 @@
 	.slc-th {
 		position: sticky;
 		top: 0px;
-		z-index: 4;
+		z-index: 2;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */
 		outline: none;
 		user-select: none;
 	}
+	.slc-freezed-right,
 	.slc-freezed-left {
-		z-index: 5;
-		position: sticky;
+		z-index: 3;
 	}
 	.slc-freezed-left-shadow {
 		box-shadow: 2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
@@ -91,10 +91,4 @@
 	.slc-freezed-right-shadow {
 		box-shadow: -2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
 	}
-	/* .slc-table-th:nth-last-child(1) {
-		border-left-width: 1px;
-	}
-	.slc-table-th:nth-last-child(2) {
-		border-right-width: 0px;
-	} */
 </style>

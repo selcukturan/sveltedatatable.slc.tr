@@ -46,7 +46,7 @@
 		const val = slcselectvalue || '';
 		value = cntrts?.required && val === '' ? undefined : val;
 		await tick(); // DOM güncellemelerinin tamamlanmasını bekler */
-		// if (myPopover) myPopover.hidePopover();
+		if (myPopover) myPopover.hidePopover();
 	};
 
 	const data = [

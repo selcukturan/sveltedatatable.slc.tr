@@ -1,4 +1,15 @@
 <script lang="ts" generics="TData extends Row">
+	/**
+	 *
+	 * Support;
+	 * Browser support for anchor positioning:	https://caniuse.com/css-anchor-positioning
+	 * Browser support for popover:				https://caniuse.com/mdn-api_htmlelement_popover
+	 * Polyfill;
+	 * Popover Polyfill:						https://github.com/oddbird/popover-polyfill
+	 * Anchor positioning polyfill:				https://github.com/oddbird/css-anchor-positioning
+	 *
+	 */
+
 	import type { Row, Footer, Sources } from './types';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { Snippet } from 'svelte';
@@ -60,6 +71,7 @@
 <div class:slc-table-main={true} class={containerClass} style:width={table.get.width} style:height={table.get.height}>
 	{@render toolbar?.()}
 	<div class:slc-table-container={true} class={tableContainerClass}>
+		<div style:display={'none'} class:slc-table-action-content={true}>Gösterilecek veri yok</div>
 		<div style:display={table.get.data.length > 0 ? 'none' : 'flex'} class:slc-table-no-data={true}>Gösterilecek veri yok</div>
 		<div
 			role="grid"

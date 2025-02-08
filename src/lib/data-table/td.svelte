@@ -164,6 +164,7 @@
 	{...attributes}
 >
 	<!-- Metin içerik kapsayıcısı -->
+
 	<div style="display: flex; height: 100%; width: 100%; justify-content: space-between;">
 		<div style="display: none; align-items: center;">x</div>
 		<div
@@ -178,17 +179,14 @@
 	</div>
 
 	<!-- Diğer içerik kapsayıcıları -->
-	<!--
-	<div>
+
+	<!-- <div style:display="contents">
 		{@render children?.()}
-	</div>
-	-->
+	</div> -->
 </div>
 
 <style>
 	.slc-td {
-		/* position: relative; */
-		z-index: 2;
 		user-select: none;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
@@ -197,7 +195,7 @@
 	}
 	.slc-freezed-right,
 	.slc-freezed-left {
-		z-index: 3;
+		z-index: 1;
 		position: sticky;
 	}
 	.slc-freezed-left-shadow {
