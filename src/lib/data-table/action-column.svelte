@@ -1,4 +1,14 @@
 <script lang="ts" generics="TData extends Row">
+	/**
+	 *
+	 * Support;
+	 * Browser support for anchor positioning:	https://caniuse.com/css-anchor-positioning
+	 * Browser support for popover:				https://caniuse.com/mdn-api_htmlelement_popover
+	 * Polyfill;
+	 * Popover Polyfill:						https://github.com/oddbird/popover-polyfill
+	 * Anchor positioning polyfill:				https://github.com/oddbird/css-anchor-positioning
+	 *
+	 */
 	import type { Row, Sources, Column, Footer } from './types';
 	import { getTable } from './tables.svelte';
 	import { Th, Td, Tf } from '.';
