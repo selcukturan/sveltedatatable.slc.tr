@@ -179,10 +179,10 @@
 
 <style>
 	.slc-td {
-		position: relative;
+		/* position: relative; */
 		z-index: 2;
 		user-select: none;
-		overflow: hidden;
+		overflow: visible;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */

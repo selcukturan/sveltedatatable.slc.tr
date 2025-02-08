@@ -69,7 +69,7 @@
 				</span>
 			</button>
 
-			<div id={`s${uuid}`} style:position-anchor={`--anchor-${uuid}`} style:top={`anchor(bottom)`} style:right={`anchor(right)`} popover="" bind:this={myPopover} class="slc-action-popup">
+			<div class="slc-action-popup" bind:this={myPopover} id={`s${uuid}`} style:position-anchor={`--anchor-${uuid}`} style:top={`anchor(bottom)`} style:right={`anchor(right)`} popover="">
 				<div>
 					{#if data}
 						{#each data as item}
@@ -115,8 +115,9 @@
 	}
 
 	.slc-action-popup {
-		inset: unset;
 		position: absolute;
+		inset: auto;
+		/* position: absolute; */
 		margin-top: 5px;
 		/* position-try-options: flip-block; */
 		position-visibility: anchors-visible;
@@ -125,6 +126,7 @@
 	}
 
 	:popover-open {
+		display: grid;
 		animation: slide 0.2s ease-out;
 	}
 
