@@ -4,7 +4,7 @@ export type Row = Record<RowKey, RowValue> & {
 	oi?: number; // original row index
 };
 
-export type Field<TData> = Extract<keyof TData, RowKey> | '_selection';
+export type Field<TData> = Extract<keyof TData, RowKey> | '_selection' | '_action';
 
 // 100px | 1.25fr | minmax(100px,1.25fr) | minmax(1.25fr,100px) | minmax(1fr,1.25fr) | minmax(100px,200px)
 export type Width =
@@ -38,6 +38,8 @@ export type Sources<TData> = {
 	enableVirtualization?: boolean;
 	rowSelection?: 'none' | 'single' | 'multiple';
 	rowSelectionColumnWidth?: number;
+	rowAction?: boolean;
+	rowActionColumnWidth?: number;
 	theadRowHeight?: number;
 	tbodyRowHeight?: number;
 	tfootRowHeight?: number;

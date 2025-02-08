@@ -27,8 +27,11 @@
 			return `${ci + 1} / ${ci + 2}`;
 		}
 	});
-	const freezed = col.field === '_selection';
-	const left = freezed ? '0px' : undefined;
+	const leftFreezed = col.field === '_selection';
+	const left = leftFreezed ? '0px' : undefined;
+
+	const rightFreezed = col.field === '_action';
+	const right = rightFreezed ? '0px' : undefined;
 </script>
 
 <div
@@ -36,9 +39,12 @@
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={gridColumn}
 	class:slc-tf={true}
-	class:slc-freezed={freezed}
-	class:slc-freezed-shadow={freezed}
+	class:slc-freezed-left={leftFreezed}
+	class:slc-freezed-left-shadow={leftFreezed}
 	style:left
+	class:slc-freezed-right={rightFreezed}
+	class:slc-freezed-right-shadow={rightFreezed}
+	style:right
 	class={classes}
 	style:bottom
 	aria-colindex={ci + 1}
@@ -79,15 +85,17 @@
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */
-		outline: 2px solid transparent;
-		outline-offset: 2px;
+		outline: none;
 	}
-	.slc-freezed {
+	.slc-freezed-left {
 		z-index: 5;
 		position: sticky;
 	}
-	.slc-freezed-shadow {
+	.slc-freezed-left-shadow {
 		box-shadow: 2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
+	}
+	.slc-freezed-right-shadow {
+		box-shadow: -2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
 	}
 	/* .slc-table-tf:nth-last-child(1) {
 		border-left-width: 1px;

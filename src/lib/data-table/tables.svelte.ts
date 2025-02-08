@@ -21,6 +21,8 @@ class Table<TData extends Row> {
 		enableVirtualization: true,
 		rowSelection: 'none',
 		rowSelectionColumnWidth: 50,
+		rowAction: true,
+		rowActionColumnWidth: 50,
 		theadRowHeight: 35,
 		tbodyRowHeight: 35,
 		tfootRowHeight: 35,
@@ -49,6 +51,8 @@ class Table<TData extends Row> {
 		this.set.rowSelection = value;
 	};
 	readonly rowSelectionColumnWidth = (value: RequiredSources<TData>['rowSelectionColumnWidth']) => (this.set.rowSelectionColumnWidth = value);
+	readonly rowAction = (value: RequiredSources<TData>['rowAction']) => (this.set.rowAction = value);
+	readonly rowActionColumnWidth = (value: RequiredSources<TData>['rowActionColumnWidth']) => (this.set.rowActionColumnWidth = value);
 	readonly theadRowHeight = (value: RequiredSources<TData>['theadRowHeight']) => (this.set.theadRowHeight = value);
 	readonly tbodyRowHeight = (value: RequiredSources<TData>['tbodyRowHeight']) => (this.set.tbodyRowHeight = value);
 	readonly tfootRowHeight = (value: RequiredSources<TData>['tfootRowHeight']) => (this.set.tfootRowHeight = value);
@@ -89,7 +93,9 @@ class Table<TData extends Row> {
 	});
 
 	readonly gridTemplateColumns = $derived(
-		`${this.get.rowSelection !== 'none' ? this.get.rowSelectionColumnWidth + 'px' : ''} ${this.visibleColumns.map((col) => col.width ?? `150px`).join(' ')}`
+		`${this.get.rowSelection !== 'none' ? this.get.rowSelectionColumnWidth + 'px' : ''} 
+		${this.visibleColumns.map((col) => col.width ?? `150px`).join(' ')} 
+		${this.get.rowAction ? this.get.rowActionColumnWidth + 'px' : ''}`
 	);
 	// ################################## END General Variables ########################################################
 

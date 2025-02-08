@@ -13,6 +13,7 @@
 		data: common.generateExampleData(100),
 		enableVirtualization: true,
 		rowSelection: 'single',
+		rowAction: true,
 		columns: [
 			{ field: 'order', label: 'Order', width: '75px' },
 			{ field: 'producer', label: 'Producer', width: '150px', hidden: false },

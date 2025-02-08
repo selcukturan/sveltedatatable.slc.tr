@@ -57,7 +57,7 @@
 			const rowFirstIndex = 0;
 			const rowLastIndex = table.get.data.length - 1;
 			const colFirstIndex = table.get.rowSelection !== 'none' ? -1 : 0; // Seçim kolonu için -1
-			const colLastIndex = table.visibleColumns.length - 1;
+			const colLastIndex = table.get.rowAction ? table.visibleColumns.length : table.visibleColumns.length - 1;
 
 			if (key === 'ArrowUp') {
 				cellToFocus.rowIndex = Math.max(rowFirstIndex, cellToFocus.rowIndex - 1);
@@ -124,14 +124,21 @@
 		};
 	};
 	const gridColumn = $derived.by(() => {
-		if (table.get.rowSelection !== 'none') {
-			return col.field === '_selection' ? '1 / 2' : `${ci + 2} / ${ci + 3}`;
+		const offset = table.get.rowSelection !== 'none' ? 1 : 0;
+		if (table.get.rowSelection !== 'none' && col.field === '_selection') {
+			return '1 / 2';
+		} else if (table.get.rowAction === true && col.field === '_action') {
+			return `${table.visibleColumns.length + 1 + offset} / ${table.visibleColumns.length + 2 + offset}`;
 		} else {
-			return `${ci + 1} / ${ci + 2}`;
+			return `${ci + 1 + offset} / ${ci + 2 + offset}`;
 		}
 	});
-	const freezed = col.field === '_selection';
-	const left = freezed ? '0px' : undefined;
+
+	const leftFreezed = col.field === '_selection';
+	const left = leftFreezed ? '0px' : undefined;
+
+	const rightFreezed = col.field === '_action';
+	const right = rightFreezed ? '0px' : undefined;
 </script>
 
 <div
@@ -141,9 +148,12 @@
 	style:grid-row={`${gridRowStart} / ${gridRowStart + 1}`}
 	style:grid-column={gridColumn}
 	class:slc-td={true}
-	class:slc-freezed={freezed}
-	class:slc-freezed-shadow={freezed}
+	class:slc-freezed-left={leftFreezed}
+	class:slc-freezed-left-shadow={leftFreezed}
 	style:left
+	class:slc-freezed-right={rightFreezed}
+	class:slc-freezed-right-shadow={rightFreezed}
+	style:right
 	class={classes}
 	data-cell={originalCell}
 	tabindex={table.getFocusedCell?.originalCell === originalCell && typeof table.getFocusedCell?.tabIndex !== 'undefined' ? table.getFocusedCell?.tabIndex : -1}
@@ -177,26 +187,22 @@
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */
 		outline: none;
-		/* background-color: color-mix(in srgb, currentColor 100%, transparent 0%); */
 	}
-	.slc-freezed {
+	.slc-freezed-right,
+	.slc-freezed-left {
 		z-index: 3;
 		position: sticky;
 	}
-	.slc-freezed-shadow {
+	.slc-freezed-left-shadow {
 		box-shadow: 2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
 	}
-	/* .slc-table-td:nth-last-child(1) {
-		border-left-width: 1px;
+	.slc-freezed-right-shadow {
+		box-shadow: -2px 0 5px -2px color-mix(in srgb, currentColor 30%, transparent 70%);
 	}
-	.slc-table-td:nth-last-child(2) {
-		border-right-width: 0px;
-	} */
-	/* [aria-selected='true'] {
-		background-color: #ffdca0cb;
-	} */
 	[data-focused='true'] {
-		outline: 2px solid #f59e0b;
+		outline-width: 2px;
 		outline-offset: -2px;
+		outline-style: solid;
+		outline-color: currentColor;
 	}
 </style>

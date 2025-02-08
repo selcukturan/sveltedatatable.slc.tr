@@ -1,7 +1,7 @@
 <!-- BaseDataTableView.svelte -->
 <script lang="ts" generics="TData extends Row">
 	import { getTable, type Sources, type Row } from '../tables.svelte';
-	import { Table, Th, Td, Tf, Trh, Trd, Trf, SelectionColumn } from '..';
+	import { Table, Th, Td, Tf, Trh, Trd, Trf, SelectionColumn, ActionColumn } from '..';
 
 	const { sources: src }: { sources: Sources<TData> } = $props();
 	const table = getTable<TData>(src.id);
@@ -10,32 +10,23 @@
 	// $inspect('$inspect-selectedRows', table.selectedRows);
 </script>
 
-<div class="slc-view" style:display="contents">
+<div class:slc-view={true} style:display="contents">
 	<Table {src}>
 		{#snippet thead()}
 			<Trh {src}>
-				{#if table.get.rowSelection !== 'none'}
-					<Th {src} col={{ field: '_selection', align: 'center' }} ci={-1}>
-						<SelectionColumn type="header" {src} />
-					</Th>
-				{/if}
-
+				<SelectionColumn type="header" {src} />
 				{#each table.visibleColumns as col, ci (ci)}
 					{@const header = col.label}
 					<Th {src} {col} {ci}>
 						{header}
 					</Th>
 				{/each}
+				<ActionColumn type="header" {src} />
 			</Trh>
 		{/snippet}
 		{#snippet tbody(row, ri)}
 			<Trd {src} {row} {ri}>
-				{#if table.get.rowSelection !== 'none'}
-					<Td {src} col={{ field: '_selection', align: 'center' }} ci={-1} {row} {ri}>
-						<SelectionColumn type="cell" {src} {row} {ri} />
-					</Td>
-				{/if}
-
+				<SelectionColumn type="cell" {src} {row} {ri} />
 				{#each table.visibleColumns as col, ci (ci)}
 					{@const cell = row[col.field]}
 					<Td {src} {col} {ci} {row} {ri}>
@@ -47,22 +38,19 @@
 						{/if}
 					</Td>
 				{/each}
+				<ActionColumn type="cell" {src} {row} {ri} />
 			</Trd>
 		{/snippet}
 		{#snippet tfoot(foot, fi)}
 			<Trf {src} {fi}>
-				{#if table.get.rowSelection !== 'none'}
-					<Tf {src} col={{ field: '_selection' }} ci={-1} {foot} {fi}>
-						{''}
-					</Tf>
-				{/if}
-
+				<SelectionColumn type="footer" {src} {foot} {fi} />
 				{#each table.visibleColumns as col, ci (ci)}
 					{@const footer = foot[col.field]}
 					<Tf {src} {col} {ci} {foot} {fi}>
 						{footer}
 					</Tf>
 				{/each}
+				<ActionColumn type="footer" {src} {foot} {fi} />
 			</Trf>
 		{/snippet}
 	</Table>
@@ -82,9 +70,34 @@
 		border-bottom: 1px solid hsl(var(--surface-200));
 		background-color: hsl(var(--surface-50));
 	}
+	.slc-view :global(.slc-td[data-focused='true']) {
+		outline-color: #f59e0b;
+	}
 	.slc-view :global(.slc-tf) {
 		border-right: 1px solid hsl(var(--surface-200));
 		border-bottom: 1px solid hsl(var(--surface-200));
 		background-color: hsl(var(--surface-100));
+	}
+
+	.slc-view :global(.slc-selection) {
+		background-color: color-mix(in srgb, currentColor 15%, transparent 85%);
+	}
+	.slc-view :global(.slc-selection:focus-visible) {
+		background-color: color-mix(in srgb, currentColor 30%, transparent 70%);
+	}
+
+	.slc-view :global(.slc-action-button) {
+		background-color: color-mix(in srgb, currentColor 10%, transparent 90%);
+	}
+	.slc-view :global(.slc-action-button:focus-visible) {
+		background-color: color-mix(in srgb, currentColor 25%, transparent 75%);
+	}
+	.slc-view :global(.slc-action-button:hover) {
+		background-color: color-mix(in srgb, currentColor 20%, transparent 80%);
+	}
+	.slc-view :global(.slc-action-popup) {
+		border: 1px solid hsl(var(--surface-300));
+		background-color: hsl(var(--surface-50));
+		color: currentColor;
 	}
 </style>

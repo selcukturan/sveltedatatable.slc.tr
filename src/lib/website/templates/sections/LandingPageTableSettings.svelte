@@ -24,7 +24,7 @@
 		<button onclick={() => setPageData(10000)} class="bg-surface-200 p-1">10.000</button>
 		<button onclick={() => setPageData(100000)} class="bg-surface-200 p-1">100.000</button>
 	</div>
-	<div class="flex items-center gap-2">
+	<div class="flex flex-col items-center gap-2">
 		<p>Current Count:{table.get.data.length}</p>
 		<button
 			type="button"
@@ -47,7 +47,15 @@
 			class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 			onclick={() => table.rowSelection(table.get.rowSelection === 'none' ? 'multiple' : 'none')}
 		>
-			enableRowSelection = {table.get.rowSelection}
+			rowSelection = {table.get.rowSelection}
+		</button>
+
+		<button
+			type="button"
+			class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+			onclick={() => table.rowAction(!table.get.rowAction)}
+		>
+			rowAction = {table.get.rowAction}
 		</button>
 	</div>
 </div>

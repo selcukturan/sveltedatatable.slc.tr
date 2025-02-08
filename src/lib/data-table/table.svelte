@@ -70,9 +70,10 @@
 			class={tableClass}
 			style:grid-template-rows={table.gridTemplateRows}
 			style:grid-template-columns={table.gridTemplateColumns}
-			style:scroll-padding-block-start={table.headerRowsCount * table.get.theadRowHeight + 'px'}
-			style:scroll-padding-block-end={table.get.footers.length * table.get.tfootRowHeight + 'px'}
+			style:scroll-padding-block-start={table.headerRowsCount > 0 ? table.headerRowsCount * table.get.theadRowHeight + 'px' : undefined}
+			style:scroll-padding-block-end={table.get.footers.length > 0 ? table.get.footers.length * table.get.tfootRowHeight + 'px' : undefined}
 			style:scroll-padding-inline-start={table.getFocusedCell?.colIndex === -1 || table.get.rowSelection === 'none' ? undefined : table.get.rowSelectionColumnWidth + 'px'}
+			style:scroll-padding-inline-end={table.getFocusedCell?.colIndex === table.visibleColumns.length || table.get.rowAction === false ? undefined : table.get.rowActionColumnWidth + 'px'}
 			aria-colcount={table.visibleColumns.length}
 			aria-rowcount={table.get.data.length + table.get.footers.length + table.headerRowsCount}
 			{...attributes}
