@@ -46,7 +46,7 @@
 		const val = slcselectvalue || '';
 		value = cntrts?.required && val === '' ? undefined : val;
 		await tick(); // DOM güncellemelerinin tamamlanmasını bekler */
-		if (myPopover) myPopover.hidePopover();
+		// if (myPopover) myPopover.hidePopover();
 	};
 
 	const data = [
@@ -114,7 +114,6 @@
 
 	.slc-action-popup {
 		display: none;
-		/* anchoring to the button */
 		position: absolute;
 		inset: auto;
 		opacity: 0;
@@ -155,7 +154,7 @@
 
 	@keyframes slide {
 		from {
-			transform: translateY(-8px);
+			transform: translateY(8px);
 		}
 		to {
 			transform: translateY(0);

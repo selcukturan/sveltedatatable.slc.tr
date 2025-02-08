@@ -163,6 +163,7 @@
 	spellcheck="false"
 	{...attributes}
 >
+	<!-- Metin içerik kapsayıcısı -->
 	<div style="display: flex; height: 100%; width: 100%; justify-content: space-between;">
 		<div style="display: none; align-items: center;">x</div>
 		<div
@@ -175,6 +176,13 @@
 		</div>
 		<div style="display: none; align-items: center;">x</div>
 	</div>
+
+	<!-- Diğer içerik kapsayıcıları -->
+	<!--
+	<div>
+		{@render children?.()}
+	</div>
+	-->
 </div>
 
 <style>
@@ -182,7 +190,6 @@
 		/* position: relative; */
 		z-index: 2;
 		user-select: none;
-		overflow: hidden;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */

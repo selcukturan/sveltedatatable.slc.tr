@@ -81,7 +81,6 @@
 		position: sticky;
 		z-index: 4;
 		user-select: none;
-		overflow: hidden;
 		padding: 0px;
 		padding-left: 0.5rem; /* 8px */
 		padding-right: 0.5rem; /* 8px */
