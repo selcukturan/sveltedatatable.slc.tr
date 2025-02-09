@@ -9,6 +9,7 @@
 	 * Anchor positioning polyfill:				https://github.com/oddbird/css-anchor-positioning
 	 *
 	 */
+	import { fly } from 'svelte/transition';
 	import type { Row, Sources, Column, Footer } from './types';
 	import { getTable } from './tables.svelte';
 	import { Th, Td, Tf } from '.';
@@ -43,20 +44,15 @@
 
 	const col: Column<TData> = { field: '_action', align: 'center' };
 
-	let isPopoverOpen = $state(false);
-	const uuid = `${crypto.randomUUID()}`;
-	let myPopover: HTMLDivElement | undefined = $state(undefined);
+	let isDropdownOpen = $state(false);
 
-	const handleSelectOnClick = async (e: MouseEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
-		isPopoverOpen = !isPopoverOpen;
-		/* const target = e.currentTarget as HTMLButtonElement;
-		const { slcselectvalue } = target.dataset;
-		const val = slcselectvalue || '';
-		value = cntrts?.required && val === '' ? undefined : val;
-		await tick(); // DOM güncellemelerinin tamamlanmasını bekler */
-		if (myPopover) myPopover.hidePopover();
+	const toggleDropdown = () => {
+		isDropdownOpen = !isDropdownOpen;
+	};
+
+	const handleItemClick = (item: { label: string; icon: string; action: () => {} }) => {
+		item.action();
+		isDropdownOpen = false; // Menüyü kapat
 	};
 
 	const data = [
@@ -64,7 +60,14 @@
 		{ label: 'Sil', icon: '🗑️', action: () => {} },
 		{ label: 'Detay', icon: 'ℹ️', action: () => {} }
 	];
+
+	function hide() {
+		if (!isDropdownOpen) return; // already hidden
+		isDropdownOpen = false;
+	}
 </script>
+
+<svelte:window onmousedown={hide} />
 
 {#if table.get.rowAction === true}
 	{#if type === 'header'}
@@ -73,21 +76,23 @@
 		</Th>
 	{:else if type === 'cell' && row != null && ri != null}
 		<Td {src} {col} ci={table.visibleColumns.length} {row} {ri}>
-			<button class="slc-action-button" popovertarget={`s${uuid}`} style:anchor-name={`--anchor-${uuid}`} aria-expanded={isPopoverOpen} type="button" aria-haspopup="true" tabindex="0">
-				<span>
-					{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>`}
-				</span>
-			</button>
-
-			<div class="slc-action-popup" id={`s${uuid}`} bind:this={myPopover} style:position-anchor={`--anchor-${uuid}`} style:top={`anchor(bottom)`} style:right={`anchor(right)`} popover="">
-				{#if data}
-					{#each data as item}
-						<button onclick={handleSelectOnClick}>
-							{item.label + ' ' + row_oi}
-						</button>
-					{/each}
-				{:else}
-					<div>No data</div>
+			<div class="slc-action" tabindex="-1" role="menu">
+				<button class="slc-action-button" onclick={toggleDropdown} type="button" aria-haspopup="true" tabindex="0">
+					<span>
+						{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>`}
+					</span>
+				</button>
+				{#if isDropdownOpen}
+					<div class="slc-action-popup" transition:fly={{ y: 0, duration: 200 }}>
+						<div style:display="grid">
+							{#each data as item}
+								<button type="button" role="menuitem" tabindex="0">
+									<span>{item.icon}</span>
+									<span>{item.label + ' - ' + row_oi}</span>
+								</button>
+							{/each}
+						</div>
+					</div>
 				{/if}
 			</div>
 		</Td>
@@ -114,60 +119,22 @@
 		outline: none;
 		cursor: pointer;
 	}
-	.slc-action-button span {
-		height: 1rem;
-		width: 1rem;
-		user-select: none;
-		padding: 0;
-		margin: 0;
-	}
-
 	.slc-action-popup {
-		display: none;
+		display: block;
 		position: absolute;
-		inset: auto;
-		opacity: 0;
-		transition:
-			opacity 0.15s,
-			display 0.15s,
-			overlay 0.15s;
+		/* z-index: 1; */
+		cursor: default;
+		width: auto;
+		min-width: 140px;
+		max-width: 450px;
+		max-height: 330px;
+		overflow-x: hidden;
+		overflow-y: auto;
+		border-radius: 4px;
 
-		transition-behavior: allow-discrete;
-
-		animation: slide 0.15s ease-out;
-		position-visibility: anchors-visible;
-
-		position-try-fallbacks: --left;
-
-		margin-left: 0.25rem;
-
-		& > * {
-			padding: 0.5rem;
-		}
-
-		&:popover-open {
-			display: grid;
-			opacity: 1;
-
-			@starting-style {
-				display: grid;
-				opacity: 0;
-			}
-		}
-	}
-
-	@position-try --left {
-		inset: auto;
-		top: anchor(bottom);
-		right: anchor(right);
-	}
-
-	@keyframes slide {
-		from {
-			transform: translateY(8px);
-		}
-		to {
-			transform: translateY(0);
-		}
+		top: 0;
+		right: 100%;
+		bottom: auto;
+		left: auto;
 	}
 </style>
