@@ -38,6 +38,10 @@ export type Sources<TData> = {
 	enableVirtualization?: boolean;
 	rowSelection?: 'none' | 'single' | 'multiple';
 	rowSelectionColumnWidth?: number;
+	actions?: {
+		tableActions?: { label: string; action: string }[];
+		rowActions?: { label: string; action: string }[];
+	};
 	rowAction?: boolean;
 	rowActionColumnWidth?: number;
 	theadRowHeight?: number;
@@ -55,6 +59,9 @@ export type FocucedCell = {
 	tabIndex?: number;
 };
 
+export type OnActionParams = { type: 'row' | 'table'; rowIndex?: number; action: string };
 // Events Types
 export type OnCellFocusChange = (params: { rowIndex: number; colIndex: number }) => void;
 export type OnRowSelectionChange = (params: { selectedRows: number[] }) => void;
+export type OnRowAction = (params: OnActionParams) => void;
+export type OnTableAction = (params: OnActionParams) => void;

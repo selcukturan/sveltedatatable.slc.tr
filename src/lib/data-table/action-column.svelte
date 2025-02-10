@@ -1,6 +1,6 @@
 <script lang="ts" generics="TData extends Row">
 	/**
-	 *
+	 * HTML Popover - CSS Anchor Positioning
 	 * Support;
 	 * Browser support for anchor positioning:	https://caniuse.com/css-anchor-positioning
 	 * Browser support for popover:				https://caniuse.com/mdn-api_htmlelement_popover
@@ -10,9 +10,10 @@
 	 *
 	 */
 	import { fly } from 'svelte/transition';
-	import type { Row, Sources, Column, Footer } from './types';
+	import type { Row, Sources, Column, Footer, OnActionParams } from './types';
 	import { getTable } from './tables.svelte';
 	import { Th, Td, Tf } from '.';
+	import { flushSync } from 'svelte';
 
 	type Props = {
 		src: Sources<TData>;
@@ -28,73 +29,136 @@
 
 	const row_oi = $derived(table.get.enableVirtualization === false ? ri : row?.oi);
 
-	const action = (buttonNode: HTMLButtonElement) => {
-		const handleClick = async (e: MouseEvent) => {
-			alert('Row action clicked ' + row_oi);
-		};
-
-		buttonNode.addEventListener('click', handleClick);
-
-		return {
-			destroy() {
-				buttonNode.removeEventListener('click', handleClick);
-			}
-		};
-	};
-
 	const col: Column<TData> = { field: '_action', align: 'center' };
 
-	let isDropdownOpen = $state(false);
+	let container: HTMLDivElement | undefined = $state(undefined);
+	let active = $state(false);
+	let isOutsideMouseDown = $state(false);
+	let escClose = $state(true);
 
-	const toggleDropdown = () => {
-		isDropdownOpen = !isDropdownOpen;
+	const show = () => {
+		if (active) return;
+		active = true;
+		flushSync(); // active değiştikten sonra $effect içindeki değişikliklerin hemen işlenmesi için flushSync kullanılır
+	};
+	const hide = () => {
+		if (!active) return;
+		active = false;
+		flushSync(); // active değiştikten sonra $effect içindeki değişikliklerin hemen işlenmesi için flushSync kullanılır
+	};
+	const toggle = () => (active ? hide() : show());
+
+	const handleItemClick = (params: OnActionParams) => {
+		hide();
+		table.actionTrigger(params);
 	};
 
-	const handleItemClick = (item: { label: string; icon: string; action: () => {} }) => {
-		item.action();
-		isDropdownOpen = false; // Menüyü kapat
+	// `window: Window` Event Listeners
+	const handleFocusChange = (e: FocusEvent) => {
+		const target = e.target as HTMLElement;
+		if (active && !container?.contains(target)) {
+			hide();
+		}
+	};
+	const handleEscPress = (e: KeyboardEvent) => {
+		if (active && escClose && e.code === 'Escape') {
+			e.preventDefault();
+			hide();
+		}
+	};
+	const handleOutsideMousedown = (e: MouseEvent) => {
+		if (!active) return;
+
+		const target = e.target as HTMLElement;
+		isOutsideMouseDown = !container?.contains(target); // Tıklama container dışındaysa true olur
+	};
+	const handleOutsideClick = (e: MouseEvent) => {
+		const target = e.target as HTMLElement;
+		if (active && isOutsideMouseDown && !container?.contains(target)) {
+			hide();
+		}
 	};
 
-	const data = [
-		{ label: 'Düzenle', icon: '✏️', action: () => {} },
-		{ label: 'Sil', icon: '🗑️', action: () => {} },
-		{ label: 'Detay', icon: 'ℹ️', action: () => {} }
-	];
-
-	function hide() {
-		if (!isDropdownOpen) return; // already hidden
-		isDropdownOpen = false;
-	}
+	$effect(() => {
+		if (active) {
+			window.addEventListener('click', handleOutsideClick);
+			window.addEventListener('mousedown', handleOutsideMousedown);
+			window.addEventListener('keydown', handleEscPress);
+			window.addEventListener('focusin', handleFocusChange);
+			return () => {
+				window.removeEventListener('click', handleOutsideClick);
+				window.removeEventListener('mousedown', handleOutsideMousedown);
+				window.removeEventListener('keydown', handleEscPress);
+				window.removeEventListener('focusin', handleFocusChange);
+			};
+		}
+	});
 </script>
-
-<svelte:window onmousedown={hide} />
 
 {#if table.get.rowAction === true}
 	{#if type === 'header'}
 		<Th {src} {col} ci={table.visibleColumns.length}>
-			{@html ``}
+			{#if table.get.actions.tableActions != null && table.get.actions.tableActions.length > 0}
+				<div bind:this={container} class="slc-action" data-scope="table" tabindex="-1">
+					<button data-part="trigger" onclick={toggle} type="button" tabindex="0">
+						<span>
+							{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>`}
+						</span>
+					</button>
+					{#if active}
+						<div data-part="popup" transition:fly={{ y: 0, duration: 200 }}>
+							<div style:display="grid" role="menu">
+								{#each table.get.actions.tableActions as item}
+									<button
+										data-part="popup-item"
+										data-action={item.action}
+										type="button"
+										onclick={() => handleItemClick({ type: 'table', action: item.action })}
+										role="menuitem"
+										tabindex="-1"
+									>
+										<span>{item.label}</span>
+									</button>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				</div>
+			{:else}
+				{@html ``}
+			{/if}
 		</Th>
 	{:else if type === 'cell' && row != null && ri != null}
 		<Td {src} {col} ci={table.visibleColumns.length} {row} {ri}>
-			<div class="slc-action" tabindex="-1" role="menu">
-				<button class="slc-action-button" onclick={toggleDropdown} type="button" aria-haspopup="true" tabindex="0">
-					<span>
-						{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>`}
-					</span>
-				</button>
-				{#if isDropdownOpen}
-					<div class="slc-action-popup" transition:fly={{ y: 0, duration: 200 }}>
-						<div style:display="grid">
-							{#each data as item}
-								<button type="button" role="menuitem" tabindex="0">
-									<span>{item.icon}</span>
-									<span>{item.label + ' - ' + row_oi}</span>
-								</button>
-							{/each}
+			{#if table.get.actions.rowActions != null && table.get.actions.rowActions.length > 0}
+				<div bind:this={container} class="slc-action" data-scope="row" tabindex="-1">
+					<button data-part="trigger" onclick={toggle} type="button" tabindex="0">
+						<span>
+							{@html `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>`}
+						</span>
+					</button>
+					{#if active}
+						<div data-part="popup" transition:fly={{ y: 0, duration: 200 }}>
+							<div style:display="grid" role="menu">
+								{#each table.get.actions.rowActions as item}
+									<button
+										data-part="popup-item"
+										data-action={item.action}
+										type="button"
+										onclick={() => handleItemClick({ type: 'row', rowIndex: row_oi, action: item.action })}
+										role="menuitem"
+										tabindex="-1"
+									>
+										<span>{item.label + ' - ' + row_oi}</span>
+									</button>
+								{/each}
+							</div>
 						</div>
-					</div>
-				{/if}
-			</div>
+					{/if}
+				</div>
+			{:else}
+				{@html ``}
+			{/if}
 		</Td>
 	{:else if type === 'footer' && foot != null && fi != null}
 		<Tf {src} {col} ci={table.visibleColumns.length} {foot} {fi}>
@@ -108,7 +172,10 @@
 {/if}
 
 <style>
-	.slc-action-button {
+	.slc-action {
+		outline: none;
+	}
+	.slc-action [data-part='trigger'] {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -119,7 +186,7 @@
 		outline: none;
 		cursor: pointer;
 	}
-	.slc-action-popup {
+	.slc-action [data-part='popup'] {
 		display: block;
 		position: absolute;
 		/* z-index: 1; */
@@ -131,10 +198,18 @@
 		overflow-x: hidden;
 		overflow-y: auto;
 		border-radius: 4px;
-
+		/* position */
 		top: 0;
 		right: 100%;
 		bottom: auto;
 		left: auto;
+	}
+	.slc-action [data-part='popup-item'] {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		padding: 0.5rem 1rem;
+		border: none;
+		cursor: pointer;
 	}
 </style>

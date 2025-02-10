@@ -1,4 +1,4 @@
-import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field, OnCellFocusChange, OnRowSelectionChange } from './types';
+import type { Sources, RequiredSources, Row, FocucedCell, Footer, Field, OnCellFocusChange, OnRowSelectionChange, OnTableAction, OnRowAction, OnActionParams } from './types';
 import { getContext, setContext, untrack } from 'svelte';
 import { tick } from 'svelte';
 
@@ -19,6 +19,7 @@ class Table<TData extends Row> {
 		width: '100%',
 		height: '100%',
 		enableVirtualization: true,
+		actions: {},
 		rowSelection: 'none',
 		rowSelectionColumnWidth: 50,
 		rowAction: true,
@@ -45,6 +46,7 @@ class Table<TData extends Row> {
 		this.clearFocusedCell();
 		this.set.enableVirtualization = value;
 	};
+	readonly actions = (value: RequiredSources<TData>['actions']) => (this.set.actions = value);
 	readonly rowSelection = (value: RequiredSources<TData>['rowSelection']) => {
 		this.clearSelectedRows();
 		this.clearFocusedCell();
@@ -112,8 +114,26 @@ class Table<TData extends Row> {
 	private onRowSelectionChangeThis: OnRowSelectionChange = (params) => {
 		if (this.onRowSelectionChangeRun != null) this.onRowSelectionChangeRun(params);
 	};
+	// ***** onRowAction Event *****
+	readonly onRowAction = (fn: OnRowAction) => (this.onRowActionRun = fn);
+	private onRowActionRun?: OnRowAction;
+	private onRowActionThis: OnRowAction = (params) => {
+		if (this.onRowActionRun != null) this.onRowActionRun(params);
+	};
+	// ***** onTableAction Event *****
+	readonly onTableAction = (fn: OnTableAction) => (this.onTableActionRun = fn);
+	private onTableActionRun?: OnTableAction;
+	private onTableActionThis: OnTableAction = (params) => {
+		if (this.onTableActionRun != null) this.onTableActionRun(params);
+	};
 	// ################################## END Events ############################################################
-
+	readonly actionTrigger = (params: OnActionParams) => {
+		if (params.type === 'row') {
+			this.onRowActionThis(params);
+		} else if (params.type === 'table') {
+			this.onTableActionThis(params);
+		}
+	};
 	// ################################## BEGIN Vertical Virtual Data ##################################################
 	private calculatingVirtualData = false;
 	private virtualDataDerivedTrigger?: string = $state();

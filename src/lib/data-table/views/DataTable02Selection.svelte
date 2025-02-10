@@ -10,7 +10,7 @@
 	// $inspect('$inspect-selectedRows', table.selectedRows);
 </script>
 
-<div class:slc-view={true} style:display="contents">
+<div class="slc-view" style:display="contents">
 	<Table {src}>
 		{#snippet thead()}
 			<Trh {src}>
@@ -57,6 +57,9 @@
 </div>
 
 <style>
+	/**
+	* Herhangi bir bileşende, bu bileşene ait `.slc-view` öğelerinin içinde bulunan tüm `:global(.xxx)` öğeleri için geçerlidir.
+	*/
 	.slc-view :global(.slc-table) {
 		background-color: hsl(var(--surface-50));
 	}
@@ -100,4 +103,10 @@
 		background-color: hsl(var(--surface-50));
 		color: currentColor;
 	}
+	.slc-view :global(.slc-action-popup-item:hover) {
+		background-color: hsl(var(--surface-200));
+	}
+	/* .slc-view :global(.slc-action-popup-item[data-type='table'][data-action='add']) {
+		background-color: red;
+	} */
 </style>

@@ -1,0 +1,49 @@
+.slc-view-global .slc-table {
+	background-color: hsl(var(--surface-50));
+}
+.slc-view-global .slc-th {
+	border-right: 1px solid hsl(var(--surface-200));
+	border-bottom: 1px solid hsl(var(--surface-200));
+	background-color: hsl(var(--surface-100));
+}
+.slc-view-global .slc-td {
+	border-right: 1px solid hsl(var(--surface-200));
+	border-bottom: 1px solid hsl(var(--surface-200));
+	background-color: hsl(var(--surface-50));
+}
+.slc-view-global .slc-td[data-focused='true'] {
+	outline-color: #f59e0b;
+}
+.slc-view-global .slc-tf {
+	border-right: 1px solid hsl(var(--surface-200));
+	border-bottom: 1px solid hsl(var(--surface-200));
+	background-color: hsl(var(--surface-100));
+}
+
+.slc-view-global .slc-selection {
+	background-color: color-mix(in srgb, currentColor 15%, transparent 85%);
+}
+.slc-view-global .slc-selection:focus-visible {
+	background-color: color-mix(in srgb, currentColor 30%, transparent 70%);
+}
+
+.slc-view-global .slc-action-button {
+	background-color: color-mix(in srgb, currentColor 10%, transparent 90%);
+}
+.slc-view-global .slc-action-button:focus-visible {
+	background-color: color-mix(in srgb, currentColor 25%, transparent 75%);
+}
+.slc-view-global .slc-action-button:hover {
+	background-color: color-mix(in srgb, currentColor 20%, transparent 80%);
+}
+.slc-view-global .slc-action-popup {
+	border: 1px solid hsl(var(--surface-300));
+	background-color: hsl(var(--surface-50));
+	color: currentColor;
+}
+.slc-view-global .slc-action-popup-item:hover {
+	background-color: hsl(var(--surface-200));
+}
+.slc-view-global .slc-action-popup-item[data-type='table'][data-action='add'] {
+	background-color: blue;
+}
